@@ -8,1152 +8,1127 @@
   :root {
     --teal: #1AAFA8;
     --teal-light: #e8f7f7;
-    --teal-dark: #147f7a;
+    --teal-dark: #148f89;
     --orange: #F39C34;
     --orange-light: #fff4e0;
     --red: #E84B3C;
     --green: #4CAF50;
-    --gray-900: #2d2d2d;
-    --gray-700: #4a4a4a;
-    --gray-500: #7a7a7a;
-    --gray-300: #d4d4d4;
+    --gray-900: #1a1a1a;
+    --gray-700: #444;
+    --gray-500: #888;
+    --gray-300: #ccc;
+    --gray-200: #e5e5e5;
     --gray-100: #f5f5f5;
-    --white: #ffffff;
+    --white: #fff;
     --radius: 16px;
     --radius-sm: 10px;
     --shadow: 0 2px 12px rgba(0,0,0,0.08);
-    --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.12);
   }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f0f2f5; color:var(--gray-900); min-height:100vh; }
-
-  /* ── SCREENS ── */
-  .screen { display:none; min-height:100vh; background:#f0f2f5; padding-bottom:80px; }
-  .screen.active { display:block; }
-
-  /* ── SPLASH ── */
-  #screen-splash { background: linear-gradient(160deg, var(--teal) 0%, var(--teal-dark) 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding-bottom:0; }
-  .splash-logo { width:200px; margin-bottom:16px; filter:brightness(0) invert(1); }
-  .splash-guadi { width:140px; margin-bottom:24px; animation: bounce 2s infinite; }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-  .splash-title { color:white; font-size:22px; font-weight:700; margin-bottom:8px; }
-  .splash-sub { color:rgba(255,255,255,0.8); font-size:14px; margin-bottom:40px; }
-  .btn-primary { background:var(--orange); color:white; border:none; padding:16px 32px; border-radius:50px; font-size:16px; font-weight:700; cursor:pointer; width:80%; max-width:300px; margin-bottom:12px; transition:transform .1s,box-shadow .1s; box-shadow:0 4px 16px rgba(243,156,52,0.4); }
-  .btn-primary:active { transform:scale(0.97); }
-  .btn-secondary { background:rgba(255,255,255,0.15); color:white; border:2px solid rgba(255,255,255,0.5); padding:14px 32px; border-radius:50px; font-size:15px; font-weight:600; cursor:pointer; width:80%; max-width:300px; transition:background .2s; }
-  .btn-secondary:active { background:rgba(255,255,255,0.25); }
-
-  /* ── LOGIN ── */
-  #screen-login { background: linear-gradient(160deg, var(--teal) 0%, var(--teal-dark) 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; min-height:100vh; padding-bottom:0; }
-  .login-logo { width:160px; margin-bottom:40px; filter:brightness(0) invert(1); }
-  .login-card { background:white; border-radius:24px; padding:32px 24px; width:100%; max-width:380px; box-shadow:var(--shadow-md); }
-  .login-card h2 { font-size:20px; font-weight:700; margin-bottom:6px; }
-  .login-card p { color:var(--gray-500); font-size:14px; margin-bottom:24px; }
-  .form-group { margin-bottom:16px; }
-  .form-group label { font-size:13px; font-weight:600; color:var(--gray-700); display:block; margin-bottom:6px; }
-  .form-group input, .form-group select { width:100%; padding:14px 16px; border:2px solid var(--gray-300); border-radius:var(--radius-sm); font-size:15px; outline:none; transition:border-color .2s; background:white; }
-  .form-group input:focus { border-color:var(--teal); }
-  .btn-full { width:100%; padding:15px; border-radius:50px; font-size:16px; font-weight:700; cursor:pointer; border:none; margin-top:8px; transition:transform .1s; }
-  .btn-full:active { transform:scale(0.98); }
-  .btn-teal { background:var(--teal); color:white; box-shadow:0 4px 16px rgba(26,175,168,0.3); }
-  .btn-outline { background:transparent; color:var(--teal); border:2px solid var(--teal); margin-top:12px; }
-  .link-text { text-align:center; margin-top:16px; font-size:14px; color:var(--gray-500); }
-  .link-text span { color:var(--teal); font-weight:600; cursor:pointer; }
-
-  /* ── TOP BAR ── */
-  .top-bar { background:white; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 1px 0 var(--gray-300); }
-  .top-bar .logo { height:32px; }
-  .top-bar-right { display:flex; align-items:center; gap:12px; }
-  .notif-btn { width:38px; height:38px; border-radius:50%; border:none; background:var(--gray-100); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; position:relative; }
-  .notif-dot { width:8px; height:8px; background:var(--red); border-radius:50%; position:absolute; top:6px; right:6px; }
-  .avatar { width:38px; height:38px; border-radius:50%; background:var(--teal); color:white; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-
-  /* ── HOME ── */
-  .home-content { padding:16px; }
-
-  /* Notification pill */
-  .notif-pill { background:var(--teal-light); border-radius:var(--radius-sm); padding:12px 16px; display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; border:1px solid rgba(26,175,168,0.15); }
-  .notif-pill .icon { font-size:18px; }
-  .notif-pill-text strong { font-size:14px; font-weight:700; display:block; margin-bottom:2px; }
-  .notif-pill-text span { font-size:12px; color:var(--gray-500); }
-
-  /* Banner carousel */
-  .banner-wrap { border-radius:var(--radius); overflow:hidden; margin-bottom:16px; position:relative; }
-  .banner-track { display:flex; transition:transform .4s cubic-bezier(.25,.8,.25,1); }
-  .banner-slide { min-width:100%; border-radius:var(--radius); overflow:hidden; background:var(--teal); padding:24px 20px 20px; position:relative; display:flex; align-items:center; }
-  .banner-slide.slide-sorteo { background:linear-gradient(120deg, #1e3a5f, #2d5a8e); }
-  .banner-text { flex:1; z-index:1; }
-  .banner-eyebrow { background:rgba(255,255,255,0.2); color:white; font-size:11px; font-weight:700; padding:4px 10px; border-radius:50px; display:inline-block; margin-bottom:10px; }
-  .banner-text h2 { color:white; font-size:22px; font-weight:800; line-height:1.2; margin-bottom:8px; }
-  .banner-text p { color:rgba(255,255,255,0.85); font-size:13px; margin-bottom:16px; }
-  .btn-banner { background:var(--orange); color:white; border:none; padding:11px 18px; border-radius:50px; font-size:13px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
-  .banner-img { width:120px; height:120px; object-fit:contain; flex-shrink:0; }
-  .banner-next { position:absolute; right:12px; top:50%; transform:translateY(-50%); width:32px; height:32px; background:rgba(255,255,255,0.25); border-radius:50%; border:none; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .banner-dots { display:flex; justify-content:center; gap:6px; margin-top:10px; }
-  .dot { width:8px; height:8px; border-radius:50%; background:var(--gray-300); transition:background .3s; }
-  .dot.active { background:var(--teal); width:20px; border-radius:4px; }
-
-  /* Points card */
-  .points-card { background:white; border-radius:var(--radius); padding:16px 20px; margin-bottom:16px; display:flex; align-items:center; gap:16px; box-shadow:var(--shadow); }
-  .points-icon { width:44px; height:44px; background:var(--orange-light); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
-  .points-info { flex:1; }
-  .points-value { font-size:32px; font-weight:800; color:var(--orange); line-height:1; }
-  .points-label { font-size:13px; color:var(--gray-500); margin-top:2px; }
-  .points-bar { height:4px; background:var(--gray-100); border-radius:2px; margin-top:8px; overflow:hidden; }
-  .points-bar-fill { height:100%; background:linear-gradient(90deg, var(--teal), var(--orange)); border-radius:2px; transition:width .8s ease; }
-
-  /* Quick actions */
-  .quick-actions { display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:20px; }
-  .qa-item { background:white; border-radius:var(--radius-sm); padding:14px 8px; text-align:center; cursor:pointer; box-shadow:var(--shadow); transition:transform .15s; border:none; }
-  .qa-item:active { transform:scale(0.95); }
-  .qa-icon { font-size:22px; margin-bottom:6px; display:block; }
-  .qa-label { font-size:11px; font-weight:600; color:var(--gray-700); line-height:1.3; }
-
-  /* Offers section */
-  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-  .section-title { font-size:17px; font-weight:700; }
-  .see-all { font-size:13px; color:var(--teal); font-weight:600; cursor:pointer; }
-  .offers-scroll { display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
-  .offers-scroll::-webkit-scrollbar { display:none; }
-  .offer-card { flex-shrink:0; width:180px; background:white; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); cursor:pointer; }
-  .offer-img { width:100%; height:110px; object-fit:cover; background:var(--gray-100); display:flex; align-items:center; justify-content:center; }
-  .offer-img img { width:100%; height:100%; object-fit:cover; }
-  .offer-img-placeholder { font-size:32px; }
-  .offer-body { padding:10px 12px 12px; }
-  .offer-store { font-size:11px; color:var(--teal); font-weight:700; margin-bottom:3px; }
-  .offer-title { font-size:13px; font-weight:700; margin-bottom:4px; line-height:1.3; }
-  .offer-badge { background:var(--teal-light); color:var(--teal); font-size:11px; font-weight:700; padding:3px 8px; border-radius:50px; display:inline-block; }
-  .offer-badge.orange { background:var(--orange-light); color:var(--orange); }
-  .offer-valid { font-size:11px; color:var(--gray-500); margin-top:4px; }
-
-  /* ── BOTTOM NAV ── */
-  .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid var(--gray-300); display:flex; z-index:200; padding-bottom:env(safe-area-inset-bottom); box-shadow:0 -2px 16px rgba(0,0,0,0.06); }
-  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px 4px 8px; cursor:pointer; border:none; background:none; gap:4px; }
-  .nav-icon { font-size:22px; }
-  .nav-label { font-size:10px; font-weight:600; color:var(--gray-500); }
-  .nav-item.active .nav-icon, .nav-item.active .nav-label { color:var(--teal); }
-  .nav-item.active .nav-label { color:var(--teal); }
-
-  /* ── SCREEN: OFERTAS ── */
-  .offers-grid { padding:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .offer-card-full { background:white; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); cursor:pointer; }
-  .offer-card-full .offer-img { height:130px; }
-
-  /* ── SCREEN: NOTA FISCAL ── */
-  .nfe-content { padding:16px; }
-  .steps-row { display:flex; gap:0; margin-bottom:24px; }
-  .step { flex:1; text-align:center; position:relative; }
-  .step:not(:last-child)::after { content:''; position:absolute; top:16px; left:50%; width:100%; height:2px; background:var(--gray-300); z-index:0; }
-  .step.done:not(:last-child)::after { background:var(--teal); }
-  .step-circle { width:32px; height:32px; border-radius:50%; background:var(--gray-300); color:white; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; margin:0 auto 6px; position:relative; z-index:1; }
-  .step.done .step-circle { background:var(--teal); }
-  .step.active .step-circle { background:var(--orange); box-shadow:0 0 0 4px var(--orange-light); }
-  .step-label { font-size:10px; color:var(--gray-500); font-weight:600; }
-
-  .scan-box { border:2px dashed var(--gray-300); border-radius:var(--radius); padding:32px 16px; text-align:center; cursor:pointer; margin-bottom:16px; background:var(--gray-100); transition:border-color .2s,background .2s; }
-  .scan-box:active { border-color:var(--teal); background:var(--teal-light); }
-  .scan-icon { font-size:48px; margin-bottom:12px; }
-  .scan-box p { font-weight:600; color:var(--gray-700); margin-bottom:4px; }
-  .scan-box small { color:var(--gray-500); font-size:12px; }
-  .divider-text { text-align:center; color:var(--gray-500); font-size:12px; margin:12px 0; position:relative; }
-  .divider-text::before, .divider-text::after { content:''; position:absolute; top:50%; width:40%; height:1px; background:var(--gray-300); }
-  .divider-text::before { left:0; }
-  .divider-text::after { right:0; }
-  .nfe-input-row { display:flex; gap:8px; margin-bottom:20px; }
-  .nfe-input { flex:1; padding:14px 16px; border:2px solid var(--gray-300); border-radius:var(--radius-sm); font-size:14px; outline:none; font-family:monospace; }
-  .nfe-input:focus { border-color:var(--teal); }
-  .btn-buscar { background:var(--teal); color:white; border:none; padding:14px 20px; border-radius:var(--radius-sm); font-size:15px; font-weight:700; cursor:pointer; white-space:nowrap; }
-
-  .historico-title { font-size:15px; font-weight:700; margin-bottom:12px; }
-  .nota-item { background:white; border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; gap:14px; box-shadow:var(--shadow); }
-  .nota-icon { width:40px; height:40px; border-radius:10px; background:var(--teal-light); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-  .nota-info { flex:1; }
-  .nota-store { font-size:14px; font-weight:700; }
-  .nota-meta { font-size:12px; color:var(--gray-500); margin-top:2px; }
-  .nota-pts { text-align:right; }
-  .nota-pts strong { color:var(--teal); font-size:15px; font-weight:800; display:block; }
-  .nota-pts small { color:var(--green); font-size:11px; font-weight:600; }
-
-  .tip-box { background:#fff9ee; border:1px solid #ffe0a0; border-radius:var(--radius-sm); padding:14px 16px; margin-top:16px; display:flex; gap:12px; align-items:flex-start; }
-  .tip-box-text { font-size:13px; color:var(--gray-700); line-height:1.5; }
-  .tip-box-text strong { color:var(--orange); }
-
-  /* ── SCREEN: COLEÇÃO ── */
-  .colecao-content { padding:16px; }
-  .colecao-header { background:linear-gradient(135deg, var(--teal), var(--teal-dark)); border-radius:var(--radius); padding:20px; margin-bottom:20px; color:white; text-align:center; }
-  .colecao-header img { width:80px; }
-  .colecao-header h2 { font-size:20px; font-weight:800; margin-top:8px; }
-  .colecao-header p { font-size:13px; opacity:0.85; margin-top:4px; }
-  .guadis-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px; }
-  .guadi-slot { background:white; border-radius:var(--radius-sm); padding:16px 8px; text-align:center; box-shadow:var(--shadow); }
-  .guadi-slot.unlocked { border:2px solid var(--teal); }
-  .guadi-slot img { width:64px; height:64px; object-fit:contain; }
-  .guadi-slot .locked-icon { width:64px; height:64px; background:var(--gray-100); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:28px; }
-  .guadi-slot .guadi-num { font-size:12px; font-weight:700; margin-top:8px; color:var(--gray-700); }
-  .guadi-slot.locked .guadi-num { color:var(--gray-300); }
-  .sorteo-banner { background:linear-gradient(120deg, #1e3a5f, #2d5a8e); border-radius:var(--radius); overflow:hidden; position:relative; }
-  .sorteo-banner img { width:100%; height:180px; object-fit:cover; opacity:0.5; }
-  .sorteo-overlay { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:20px; }
-  .sorteo-overlay h3 { color:white; font-size:20px; font-weight:800; margin-bottom:6px; }
-  .sorteo-overlay p { color:rgba(255,255,255,0.85); font-size:13px; margin-bottom:16px; }
-  .btn-sorteo { background:var(--orange); color:white; border:none; padding:12px 20px; border-radius:50px; font-size:14px; font-weight:700; cursor:pointer; display:inline-block; width:fit-content; }
-
-  /* ── SCREEN: PERFIL ── */
-  .perfil-content { padding:16px; }
-  .perfil-hero { background:white; border-radius:var(--radius); padding:24px 20px; text-align:center; margin-bottom:16px; box-shadow:var(--shadow); }
-  .perfil-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg, var(--teal), var(--teal-dark)); color:white; font-size:28px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; }
-  .perfil-name { font-size:20px; font-weight:800; }
-  .perfil-email { font-size:13px; color:var(--gray-500); margin-top:4px; }
-  .perfil-badges { display:flex; gap:8px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
-  .badge { background:var(--teal-light); color:var(--teal); font-size:12px; font-weight:600; padding:5px 12px; border-radius:50px; display:inline-flex; align-items:center; gap:4px; }
-  .stats-row { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:16px; }
-  .stat-card { background:white; border-radius:var(--radius-sm); padding:14px; text-align:center; box-shadow:var(--shadow); }
-  .stat-value { font-size:24px; font-weight:800; color:var(--gray-900); }
-  .stat-value.orange { color:var(--orange); }
-  .stat-label { font-size:11px; color:var(--gray-500); margin-top:2px; }
-  .menu-list { background:white; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
-  .menu-item { display:flex; align-items:center; gap:14px; padding:16px; border-bottom:1px solid var(--gray-100); cursor:pointer; }
-  .menu-item:last-child { border-bottom:none; }
-  .menu-item-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-  .mi-teal { background:var(--teal-light); }
-  .mi-orange { background:var(--orange-light); }
-  .mi-red { background:#feeaea; }
-  .mi-green { background:#e8f5e9; }
-  .mi-gray { background:var(--gray-100); }
-  .menu-item-text { flex:1; }
-  .menu-item-text strong { font-size:14px; font-weight:700; display:block; }
-  .menu-item-text small { font-size:12px; color:var(--gray-500); }
-  .menu-chevron { color:var(--gray-300); font-size:18px; }
-  .logout-btn { width:100%; padding:15px; background:var(--gray-100); border:none; border-radius:var(--radius); font-size:15px; font-weight:700; color:var(--red); cursor:pointer; margin-top:16px; }
-
-  /* ── MODAL ── */
-  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:500; display:none; align-items:flex-end; }
-  .modal-overlay.open { display:flex; }
-  .modal-sheet { background:white; width:100%; border-radius:24px 24px 0 0; padding:0 0 32px; max-height:90vh; overflow-y:auto; animation:slideUp .3s ease; }
-  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-  .modal-handle { width:40px; height:4px; background:var(--gray-300); border-radius:2px; margin:12px auto 20px; }
-  .modal-body { padding:0 24px; }
-  .modal-title { font-size:20px; font-weight:800; margin-bottom:6px; }
-  .modal-sub { font-size:14px; color:var(--gray-500); margin-bottom:24px; }
-
-  /* ── TOAST ── */
-  .toast { position:fixed; bottom:96px; left:16px; right:16px; background:var(--gray-900); color:white; padding:14px 20px; border-radius:12px; font-size:14px; font-weight:600; text-align:center; z-index:999; opacity:0; transform:translateY(20px); transition:all .3s; pointer-events:none; }
-  .toast.show { opacity:1; transform:translateY(0); }
-  .toast.success { background:var(--teal); }
-  .toast.error { background:var(--red); }
-
-  /* ── LOADING ── */
-  .loading { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.4); border-top-color:white; border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-right:6px; }
-  @keyframes spin { to{transform:rotate(360deg)} }
-  .skeleton { background:linear-gradient(90deg, var(--gray-100) 25%, #e8e8e8 50%, var(--gray-100) 75%); background-size:200% 100%; animation:shimmer 1.2s infinite; border-radius:8px; }
-  @keyframes shimmer { to{background-position:-200% 0} }
-
-  /* ── CADASTRO ── */
-  .cadastro-scroll { padding:20px 16px; }
-  .cadastro-scroll h2 { font-size:22px; font-weight:800; margin-bottom:6px; }
-  .cadastro-scroll p { color:var(--gray-500); font-size:14px; margin-bottom:24px; }
-
-  /* FAB Guadi */
-  .fab-guadi { position:fixed; bottom:88px; right:16px; width:56px; height:56px; border-radius:50%; background:white; box-shadow:0 4px 16px rgba(0,0,0,0.15); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:150; transition:transform .2s; }
-  .fab-guadi:active { transform:scale(0.9); }
-  .fab-guadi img { width:44px; height:44px; object-fit:contain; }
-
-  /* Empty state */
-  .empty-state { text-align:center; padding:40px 20px; }
-  .empty-state p { color:var(--gray-500); font-size:14px; margin-top:8px; }
-
-  @media (min-width: 480px) {
-    body { max-width:480px; margin:0 auto; }
-    .bottom-nav { max-width:480px; left:50%; transform:translateX(-50%); }
-    .toast { max-width:448px; left:50%; transform:translateX(-50%) translateY(20px); }
-    .toast.show { transform:translateX(-50%) translateY(0); }
-    .fab-guadi { right:calc(50% - 224px); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
   }
+  .screen { display: none; min-height: 100vh; background: var(--white); }
+  .screen.active { display: block; }
+
+  /* TOPBAR */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--white);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .topbar-logo { height: 32px; object-fit: contain; }
+  .topbar-logo-text { font-size: 18px; font-weight: 800; color: var(--teal); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .btn-notif {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1.5px solid var(--gray-300);
+    background: var(--white); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; font-size: 17px;
+  }
+  .notif-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--red); border: 2px solid var(--white);
+    display: none;
+  }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--teal); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+
+  /* BOTTOM NAV */
+  .bottomnav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: var(--white);
+    border-top: 1px solid var(--gray-100);
+    display: flex; z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 10px 4px 8px; cursor: pointer; gap: 3px;
+    font-size: 10px; color: var(--gray-500);
+    border: none; background: none; text-align: center;
+    transition: color .2s;
+  }
+  .nav-item.active { color: var(--teal); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 14px 24px; border-radius: 50px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    border: none; transition: opacity .2s, transform .1s;
+    text-decoration: none; width: 100%;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--teal); color: var(--white); }
+  .btn-orange { background: var(--orange); color: var(--white); }
+  .btn-outline { background: transparent; color: var(--teal); border: 1.5px solid var(--teal); }
+  .btn-ghost { background: transparent; color: var(--gray-700); border: 1.5px solid var(--gray-300); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* INPUTS */
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; padding: 13px 16px;
+    border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm);
+    font-size: 15px; color: var(--gray-900); background: var(--white);
+    outline: none; transition: border-color .2s; -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--teal); }
+  .field input::placeholder { color: var(--gray-300); }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--gray-900); color: var(--white);
+    padding: 12px 24px; border-radius: 50px;
+    font-size: 14px; font-weight: 500; z-index: 9999;
+    opacity: 0; transition: all .3s; pointer-events: none;
+    white-space: nowrap; max-width: 340px; text-align: center;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.success { background: var(--green); }
+  #toast.error { background: var(--red); }
+
+  /* LOADING */
+  #loading-overlay {
+    position: fixed; inset: 0; background: rgba(255,255,255,.9);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9998; flex-direction: column; gap: 16px;
+  }
+  #loading-overlay.show { display: flex; }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid var(--gray-100);
+    border-top-color: var(--teal); border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    z-index: 500; display: none; align-items: flex-end;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: var(--white); border-radius: 24px 24px 0 0;
+    padding: 32px 24px; width: 100%; max-height: 90vh;
+    overflow-y: auto; animation: slideUp .3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle {
+    width: 40px; height: 4px; background: var(--gray-300);
+    border-radius: 2px; margin: 0 auto 24px;
+  }
+
+  /* LOGIN SCREEN */
+  #screen-login {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 40px 24px;
+    background: linear-gradient(160deg, var(--teal-light) 0%, var(--white) 50%);
+  }
+  #screen-login .logo-big { width: 200px; margin-bottom: 8px; }
+  #screen-login .mascot { width: 130px; margin-bottom: 28px; }
+  #screen-login h1 { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; }
+  #screen-login p { color: var(--gray-500); text-align: center; margin-bottom: 28px; font-size: 14px; }
+  .tab-switcher {
+    display: flex; background: var(--gray-100); border-radius: 50px;
+    padding: 4px; margin-bottom: 20px; width: 100%;
+  }
+  .tab-btn {
+    flex: 1; padding: 10px; border-radius: 50px; border: none;
+    background: transparent; font-size: 14px; font-weight: 600;
+    cursor: pointer; color: var(--gray-500); transition: all .2s;
+  }
+  .tab-btn.active { background: var(--white); color: var(--teal); box-shadow: var(--shadow); }
+
+  /* HOME */
+  #screen-home { padding-bottom: 80px; }
+  .banner-carousel { position: relative; overflow: hidden; }
+  .banner-track { display: flex; transition: transform .4s ease; }
+  .banner-slide {
+    min-width: 100%; padding: 28px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .banner-guadi { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%); color: var(--white); }
+  .banner-rio { background: linear-gradient(135deg, #1a6b8a 0%, #0d4a6b 100%); color: var(--white); }
+  .banner-content { flex: 1; }
+  .banner-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.2); border-radius: 50px;
+    padding: 4px 12px; font-size: 12px; font-weight: 600; margin-bottom: 12px;
+  }
+  .banner-content h2 { font-size: 26px; font-weight: 800; line-height: 1.1; margin-bottom: 6px; }
+  .banner-content p { font-size: 13px; opacity: .85; margin-bottom: 16px; }
+  .banner-img { width: 110px; flex-shrink: 0; margin-left: 8px; }
+  .banner-img img { width: 100%; }
+  .banner-dots { display: flex; gap: 6px; justify-content: center; padding: 10px 0 4px; }
+  .banner-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--gray-300); transition: all .3s; }
+  .banner-dot.active { width: 20px; background: var(--teal); }
+  .section-title {
+    font-size: 16px; font-weight: 700; padding: 20px 20px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-title a { font-size: 13px; color: var(--teal); font-weight: 600; text-decoration: none; }
+  .notif-bar {
+    margin: 12px 16px; padding: 14px 16px;
+    background: var(--teal-light); border-radius: var(--radius-sm);
+    border-left: 3px solid var(--teal);
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .notif-bar-icon { font-size: 20px; flex-shrink: 0; }
+  .notif-bar strong { font-size: 14px; }
+  .notif-bar p { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .notif-bar-time { font-size: 11px; color: var(--gray-500); white-space: nowrap; }
+  .points-card {
+    margin: 16px 16px 0; padding: 18px 20px;
+    background: var(--gray-100); border-radius: var(--radius);
+    display: flex; align-items: center; gap: 16px;
+  }
+  .points-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--orange-light); display: flex;
+    align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+  }
+  .points-number { font-size: 28px; font-weight: 800; color: var(--orange); line-height: 1; }
+  .points-label { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+  .points-bar { height: 4px; background: var(--gray-300); border-radius: 2px; margin-top: 8px; }
+  .points-bar-fill { height: 100%; background: var(--teal); border-radius: 2px; transition: width .5s; }
+  .quick-actions {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px; padding: 16px 16px 0;
+  }
+  .qa-item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; cursor: pointer; padding: 12px 6px;
+    background: var(--gray-100); border-radius: var(--radius-sm);
+    border: none; transition: background .2s;
+  }
+  .qa-item:active { background: var(--teal-light); }
+  .qa-icon { font-size: 22px; }
+  .qa-label { font-size: 11px; font-weight: 600; color: var(--gray-700); text-align: center; }
+  .offers-scroll {
+    display: flex; gap: 12px; padding: 0 16px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .offers-scroll::-webkit-scrollbar { display: none; }
+  .offer-card {
+    min-width: 200px; border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow);
+    flex-shrink: 0; cursor: pointer; background: var(--white);
+    border: 1px solid var(--gray-100);
+  }
+  .offer-img { width: 100%; height: 120px; object-fit: cover; display: block; background: var(--gray-100); }
+  .offer-img-ph {
+    width: 100%; height: 120px; background: linear-gradient(135deg, var(--teal-light), var(--gray-100));
+    display: flex; align-items: center; justify-content: center; font-size: 36px;
+  }
+  .offer-info { padding: 12px; }
+  .offer-store { font-size: 11px; color: var(--teal); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .offer-title { font-size: 14px; font-weight: 700; margin: 2px 0; }
+  .offer-desc { font-size: 12px; color: var(--gray-500); }
+  .offer-pts { font-size: 11px; color: var(--orange); font-weight: 600; margin-top: 4px; }
+
+  /* NOTA FISCAL */
+  #screen-nota { padding-bottom: 80px; }
+  .nota-hero {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+    padding: 28px 24px; color: var(--white); text-align: center;
+  }
+  .nota-hero h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .nota-hero p { font-size: 13px; opacity: .85; }
+  .how-steps { display: flex; flex-direction: column; gap: 0; }
+  .how-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 0; border-bottom: 1px solid var(--gray-100);
+  }
+  .how-step:last-child { border-bottom: none; }
+  .step-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--teal); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; flex-shrink: 0;
+  }
+  .step-text strong { font-size: 14px; display: block; }
+  .step-text span { font-size: 12px; color: var(--gray-500); }
+  .scan-area {
+    margin: 20px 16px;
+    border: 2px dashed var(--gray-300); border-radius: var(--radius);
+    padding: 28px; text-align: center; cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .scan-area:hover { border-color: var(--teal); background: var(--teal-light); }
+  .scan-icon { font-size: 40px; margin-bottom: 8px; }
+  .scan-area strong { display: block; font-size: 15px; margin-bottom: 4px; }
+  .scan-area span { font-size: 12px; color: var(--gray-500); }
+  .divider-text {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 16px; margin-bottom: 16px;
+    color: var(--gray-500); font-size: 13px;
+  }
+  .divider-text::before, .divider-text::after {
+    content: ''; flex: 1; height: 1px; background: var(--gray-200);
+  }
+  .nota-input-row { display: flex; gap: 8px; padding: 0 16px 16px; }
+  .nota-input-row input {
+    flex: 1; padding: 13px 16px;
+    border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm);
+    font-size: 13px; outline: none;
+    font-family: 'Courier New', monospace; letter-spacing: .5px;
+  }
+  .nota-input-row input:focus { border-color: var(--teal); }
+  .nota-input-row .btn { width: auto; padding: 13px 18px; white-space: nowrap; }
+  .history-list { padding: 0 16px; }
+  .history-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--gray-100);
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--teal-light); display: flex;
+    align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .history-info { flex: 1; }
+  .history-info strong { font-size: 14px; display: block; }
+  .history-info span { font-size: 12px; color: var(--gray-500); }
+  .history-pts { text-align: right; }
+  .history-pts .pts { font-size: 15px; font-weight: 700; color: var(--teal); }
+  .history-pts .status-ok { font-size: 11px; color: var(--green); font-weight: 600; }
+  .dica-guadi {
+    margin: 4px 16px 20px; padding: 14px 16px;
+    background: var(--orange-light); border-radius: var(--radius-sm);
+    display: flex; align-items: flex-start; gap: 10px;
+    border-left: 3px solid var(--orange);
+  }
+  .dica-guadi img { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
+  .dica-guadi-text strong { font-size: 13px; color: var(--orange); display: block; margin-bottom: 4px; }
+  .dica-guadi-text p { font-size: 12px; color: var(--gray-700); }
+
+  /* BENEFÍCIOS */
+  #screen-beneficios { padding-bottom: 80px; }
+  .beneficios-hero {
+    background: linear-gradient(135deg, var(--orange) 0%, #e08020 100%);
+    padding: 28px 24px; color: var(--white); text-align: center;
+  }
+  .beneficios-hero h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .beneficios-hero p { font-size: 13px; opacity: .9; }
+  .lojas-list { padding: 0 16px; }
+  .loja-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--gray-100); cursor: pointer;
+  }
+  .loja-item:last-child { border-bottom: none; }
+  .loja-emoji {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .loja-info { flex: 1; }
+  .loja-info strong { font-size: 14px; display: block; }
+  .loja-info span { font-size: 12px; color: var(--gray-500); }
+  .loja-arrow { color: var(--gray-300); }
+
+  /* COLEÇÃO */
+  #screen-colecao { padding-bottom: 80px; }
+  .colecao-hero {
+    background: linear-gradient(135deg, var(--teal) 0%, #0d6b66 100%);
+    padding: 24px; color: var(--white); text-align: center;
+  }
+  .colecao-hero h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .colecao-hero p { font-size: 13px; opacity: .85; }
+  .colecao-count {
+    display: inline-flex; gap: 20px; background: rgba(255,255,255,.15);
+    border-radius: 50px; padding: 8px 20px; margin-top: 12px; font-size: 13px;
+  }
+  .colecao-count strong { font-size: 20px; font-weight: 800; display: block; line-height: 1; }
+  .guadi-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; padding: 20px 16px;
+  }
+  .guadi-card {
+    background: var(--gray-100); border-radius: var(--radius-sm);
+    padding: 14px 8px; text-align: center; position: relative;
+    border: 2px solid transparent; transition: all .2s;
+  }
+  .guadi-card.unlocked { background: var(--teal-light); border-color: var(--teal); }
+  .guadi-card img { width: 68px; height: 68px; object-fit: contain; }
+  .guadi-ph {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: var(--gray-300); display: flex; align-items: center;
+    justify-content: center; font-size: 26px; margin: 0 auto;
+    filter: grayscale(1); opacity: .35;
+  }
+  .guadi-card.unlocked .guadi-ph { filter: none; opacity: 1; background: var(--teal); }
+  .guadi-num { font-size: 11px; font-weight: 700; color: var(--teal); margin-top: 6px; }
+  .guadi-name { font-size: 10px; color: var(--gray-500); margin-top: 2px; }
+  .guadi-lock { position: absolute; top: 8px; right: 8px; font-size: 12px; color: var(--gray-300); }
+  .guadi-card.unlocked .guadi-lock { display: none; }
+  .sorteio-banner { margin: 16px 16px 0; border-radius: var(--radius); overflow: hidden; cursor: pointer; }
+  .sorteio-bg {
+    background: linear-gradient(135deg, #1a6b8a 0%, #0d4a6b 100%);
+    padding: 18px 20px; color: var(--white);
+    display: flex; align-items: center; gap: 16px;
+  }
+  .sorteio-text { flex: 1; }
+  .sorteio-text h3 { font-size: 15px; font-weight: 800; margin-bottom: 3px; }
+  .sorteio-text p { font-size: 12px; opacity: .85; }
+  .sorteio-img { font-size: 44px; }
+
+  /* PERFIL */
+  #screen-perfil { padding-bottom: 80px; }
+  .perfil-header {
+    background: linear-gradient(160deg, var(--teal-light) 0%, var(--white) 100%);
+    padding: 28px 24px 20px; text-align: center;
+  }
+  .perfil-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--teal); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 800; margin: 0 auto 10px;
+  }
+  .perfil-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .perfil-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .perfil-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--teal-light); border-radius: 50px;
+    padding: 4px 12px; font-size: 12px; color: var(--teal); font-weight: 600;
+  }
+  .perfil-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--gray-100); border-radius: var(--radius);
+    overflow: hidden; margin: 0 16px 16px;
+  }
+  .stat-item { background: var(--white); padding: 14px 8px; text-align: center; }
+  .stat-number { font-size: 22px; font-weight: 800; color: var(--gray-900); line-height: 1; }
+  .stat-number.teal { color: var(--teal); }
+  .stat-number.orange { color: var(--orange); }
+  .stat-label { font-size: 11px; color: var(--gray-500); margin-top: 3px; }
+  .menu-list { padding: 0 16px; }
+  .menu-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 15px 0; border-bottom: 1px solid var(--gray-100); cursor: pointer;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .menu-info { flex: 1; }
+  .menu-info strong { font-size: 14px; display: block; }
+  .menu-info span { font-size: 12px; color: var(--gray-500); }
+  .menu-arrow { color: var(--gray-300); font-size: 18px; }
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
-<div id="screen-splash" class="screen active">
-  <img class="splash-logo" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" onerror="this.style.display='none'" alt="Pátio Guadix">
-  <img class="splash-guadi" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦎</text></svg>'" alt="Guadi">
-  <div class="splash-title">Clube Guadix</div>
-  <div class="splash-sub">Compre, acumule pontos e ganhe prêmios!</div>
-  <button class="btn-primary" onclick="showScreen('login-cadastro')">Começar agora</button>
-  <button class="btn-secondary" onclick="showLoginCPF()">Já tenho conta</button>
-</div>
+<div id="toast"></div>
+<div id="loading-overlay"><div class="spinner"></div><p style="font-size:14px;color:var(--gray-500)">Aguarde...</p></div>
 
-<!-- LOGIN / CADASTRO -->
-<div id="screen-login-cadastro" class="screen">
-  <div id="screen-login" style="display:flex;">
-    <img class="login-logo" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" onerror="this.style.display='none'" alt="Pátio Guadix">
-    <div class="login-card" id="card-cpf">
-      <h2>Entrar com CPF</h2>
-      <p>Digite seu CPF para acessar seus pontos</p>
-      <div class="form-group">
-        <label>CPF</label>
-        <input type="tel" id="login-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)">
-      </div>
-      <button class="btn-full btn-teal" onclick="doLogin()">
-        <span id="login-btn-text">Entrar</span>
-      </button>
-      <button class="btn-full btn-outline" onclick="showScreen('cadastro')">Criar conta grátis</button>
-      <div class="link-text">Voltar para o <span onclick="showScreen('splash')">início</span></div>
+<!-- ══════ SCREEN LOGIN ══════ -->
+<div id="screen-login" class="screen active" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;background:linear-gradient(160deg,var(--teal-light) 0%,var(--white) 50%)">
+  <img id="login-logo" class="logo-big" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" alt="Pátio Guadix" onerror="this.style.display='none';document.getElementById('login-logo-text').style.display='block'">
+  <div id="login-logo-text" style="display:none;font-size:28px;font-weight:800;color:var(--teal);margin-bottom:8px">🦎 Clube Guadix</div>
+  <img id="login-mascot" class="mascot" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:80px;margin-bottom:24px>🦎</div>'">
+  <h1>Clube Guadix</h1>
+  <p>Acumule pontos, ganhe Guadis e concorra a uma viagem ao Rio!</p>
+  <div style="width:100%">
+    <div class="tab-switcher">
+      <button class="tab-btn active" onclick="setLoginTab('login')">Entrar</button>
+      <button class="tab-btn" onclick="setLoginTab('cadastro')">Cadastrar</button>
+    </div>
+    <div id="tab-login">
+      <div class="field"><label>CPF</label><input type="tel" id="login-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-primary" onclick="doLogin()">Entrar com CPF</button>
+    </div>
+    <div id="tab-cadastro" style="display:none">
+      <div class="field"><label>Nome completo</label><input type="text" id="cad-nome" placeholder="Seu nome completo"></div>
+      <div class="field"><label>CPF</label><input type="tel" id="cad-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)"></div>
+      <div class="field"><label>E-mail</label><input type="email" id="cad-email" placeholder="email@exemplo.com"></div>
+      <div class="field"><label>WhatsApp</label><input type="tel" id="cad-whats" placeholder="(51) 99999-9999" maxlength="15" oninput="maskPhone(this)"></div>
+      <div class="field"><label>Data de nascimento</label><input type="date" id="cad-nasc"></div>
+      <div class="field"><label>CEP</label><input type="tel" id="cad-cep" placeholder="00000-000" maxlength="9" oninput="maskCEP(this)"></div>
+      <button class="btn btn-primary" onclick="doCadastro()">Criar conta grátis 🦎</button>
     </div>
   </div>
 </div>
 
-<!-- CADASTRO -->
-<div id="screen-cadastro" class="screen">
-  <div style="background:linear-gradient(160deg,var(--teal),var(--teal-dark));padding:20px 20px 0;min-height:100vh;padding-bottom:0">
-    <img style="height:28px;filter:brightness(0) invert(1);margin-bottom:20px;" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" onerror="this.style.display='none'" alt="">
-    <div style="background:white;border-radius:24px 24px 0 0;padding:24px 20px 40px;min-height:80vh;overflow-y:auto;">
-      <h2 style="font-size:22px;font-weight:800;margin-bottom:6px;">Criar conta</h2>
-      <p style="color:var(--gray-500);font-size:14px;margin-bottom:20px;">Preencha seus dados para começar a acumular pontos</p>
-      <div class="form-group"><label>Nome completo *</label><input type="text" id="cad-nome" placeholder="Seu nome"></div>
-      <div class="form-group"><label>CPF *</label><input type="tel" id="cad-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)"></div>
-      <div class="form-group"><label>E-mail</label><input type="email" id="cad-email" placeholder="seu@email.com"></div>
-      <div class="form-group"><label>WhatsApp</label><input type="tel" id="cad-whatsapp" placeholder="(51) 9 9999-9999" maxlength="16" oninput="maskPhone(this)"></div>
-      <div class="form-group"><label>Data de nascimento</label><input type="date" id="cad-aniversario"></div>
-      <div class="form-group"><label>CEP</label><input type="tel" id="cad-cep" placeholder="00000-000" maxlength="9" oninput="maskCEP(this)"></div>
-      <div class="form-group"><label>Profissão</label><input type="text" id="cad-profissao" placeholder="Ex: Professor, Comerciante..."></div>
-      <button class="btn-full btn-teal" onclick="doCadastro()" style="margin-top:8px;">
-        <span id="cad-btn-text">Criar minha conta</span>
-      </button>
-      <div class="link-text" style="margin-top:16px;">Já tem conta? <span onclick="showLoginCPF()">Entrar com CPF</span></div>
-    </div>
-  </div>
-</div>
+<!-- ══════ APP SHELL ══════ -->
+<div id="app-shell" style="display:none">
 
-<!-- HOME -->
-<div id="screen-home" class="screen">
-  <div class="top-bar">
-    <img class="logo" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" onerror="this.style.display='none'" alt="Clube Guadix">
-    <div class="top-bar-right">
-      <button class="notif-btn" onclick="showToast('Nenhuma notificação nova','')">
-        🔔<span class="notif-dot"></span>
-      </button>
-      <div class="avatar" id="home-avatar" onclick="goTo('perfil')">?</div>
-    </div>
-  </div>
-
-  <div class="home-content">
-    <!-- Notif pill dinâmica -->
-    <div class="notif-pill" id="home-notif" style="display:none;">
-      <span class="icon">⏰</span>
-      <div class="notif-pill-text">
-        <strong id="notif-text">Promoção ativa!</strong>
-        <span id="notif-sub">Veja as ofertas de hoje</span>
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div class="topbar">
+      <img class="topbar-logo" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" alt="Pátio Guadix" onerror="this.outerHTML='<span class=topbar-logo-text>🦎 Guadix</span>'">
+      <div class="topbar-right">
+        <button class="btn-notif">🔔<span class="notif-dot" id="notif-dot"></span></button>
+        <div class="avatar" id="home-avatar" onclick="navTo('perfil')">?</div>
       </div>
     </div>
-
-    <!-- Banner carousel -->
-    <div class="banner-wrap">
+    <div class="notif-bar" id="smart-notif" style="display:none">
+      <span class="notif-bar-icon">⏰</span>
+      <div style="flex:1"><strong id="notif-title"></strong><p id="notif-desc"></p></div>
+      <span class="notif-bar-time" id="notif-time"></span>
+    </div>
+    <div class="banner-carousel">
       <div class="banner-track" id="banner-track">
-        <div class="banner-slide">
-          <div class="banner-text">
-            <span class="banner-eyebrow">🏆 Colecionável exclusivo</span>
-            <h2>Ganhe um Guadi!</h2>
+        <div class="banner-slide banner-guadi">
+          <div class="banner-content">
+            <div class="banner-badge">🏆 Colecionável exclusivo</div>
+            <h2>Ganhe um<br>Guadi!</h2>
             <p>Compras acima de R$300 em uma nota</p>
-            <button class="btn-banner" onclick="goTo('colecao')">🎁 Saiba como ganhar</button>
+            <button class="btn btn-orange" style="width:auto;padding:11px 18px;font-size:13px" onclick="navTo('colecao')">🎁 Saiba como ganhar</button>
           </div>
-          <img class="banner-img" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" onerror="this.style.display='none'" alt="Guadi">
+          <div class="banner-img">
+            <img src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:72px>🦎</div>'">
+          </div>
         </div>
-        <div class="banner-slide slide-sorteo">
-          <div class="banner-text">
-            <span class="banner-eyebrow">✈️ Sorteio exclusivo</span>
-            <h2>Viagem ao Rio de Janeiro!</h2>
-            <p>Cada Guadi desbloqueado é uma chance no sorteio</p>
-            <button class="btn-banner" onclick="goTo('colecao')">🎲 Participar</button>
+        <div class="banner-slide banner-rio">
+          <div class="banner-content">
+            <div class="banner-badge">✈️ Sorteio especial</div>
+            <h2>Viagem ao<br>Rio de Janeiro!</h2>
+            <p>Desbloqueie Guadis e participe</p>
+            <button class="btn btn-orange" style="width:auto;padding:11px 18px;font-size:13px" onclick="navTo('colecao')">🗺️ Ver sorteio</button>
           </div>
-          <img class="banner-img" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/rio.jpg" onerror="this.style.display='none'" alt="Rio">
+          <div style="font-size:64px;margin-left:8px">🏖️</div>
         </div>
       </div>
-      <button class="banner-next" onclick="nextSlide()">›</button>
+      <div class="banner-dots">
+        <div class="banner-dot active" id="dot-0"></div>
+        <div class="banner-dot" id="dot-1"></div>
+      </div>
     </div>
-    <div class="banner-dots">
-      <div class="dot active" id="dot-0"></div>
-      <div class="dot" id="dot-1"></div>
-    </div>
-
-    <!-- Points -->
-    <div class="points-card" style="margin-top:16px;">
+    <div class="points-card">
       <div class="points-icon">⭐</div>
-      <div class="points-info" style="flex:1;">
-        <div class="points-value" id="home-pontos">—</div>
+      <div style="flex:1">
+        <div class="points-number" id="home-pontos">0</div>
         <div class="points-label">pontos acumulados</div>
-        <div class="points-bar"><div class="points-bar-fill" id="home-pontos-bar" style="width:0%"></div></div>
-        <div style="font-size:11px;color:var(--gray-500);margin-top:4px;" id="home-pontos-hint">Cadastre-se para acumular pontos</div>
+        <div class="points-bar"><div class="points-bar-fill" id="pontos-bar" style="width:0%"></div></div>
       </div>
     </div>
-
-    <!-- Quick Actions -->
     <div class="quick-actions">
-      <button class="qa-item" onclick="goTo('nota')">
-        <span class="qa-icon">🧾</span>
-        <span class="qa-label">Cadastrar nota</span>
-      </button>
-      <button class="qa-item" onclick="goTo('ofertas')">
-        <span class="qa-icon">🎁</span>
-        <span class="qa-label">Benefícios</span>
-      </button>
-      <button class="qa-item" onclick="goTo('colecao')">
-        <span class="qa-icon">🏆</span>
-        <span class="qa-label">Coleção Guadi</span>
-      </button>
-      <button class="qa-item" onclick="showQRCode()">
-        <span class="qa-icon">📱</span>
-        <span class="qa-label">Meu QR Code</span>
-      </button>
+      <button class="qa-item" onclick="navTo('nota')"><span class="qa-icon">📄</span><span class="qa-label">Cadastrar nota</span></button>
+      <button class="qa-item" onclick="navTo('beneficios')"><span class="qa-icon">🎁</span><span class="qa-label">Benefícios</span></button>
+      <button class="qa-item" onclick="navTo('colecao')"><span class="qa-icon">🏆</span><span class="qa-label">Coleção Guadi</span></button>
+      <button class="qa-item" onclick="showQR()"><span class="qa-icon">📱</span><span class="qa-label">Meu QR Code</span></button>
     </div>
+    <div class="section-title">Ofertas de Hoje <a href="#" onclick="navTo('beneficios');return false">Ver todas</a></div>
+    <div class="offers-scroll" id="offers-container"><div style="padding:8px 4px 16px;color:var(--gray-400);font-size:13px">Carregando...</div></div>
+    <div style="height:20px"></div>
+  </div>
 
-    <!-- Offers -->
-    <div class="section-header">
-      <span class="section-title">Ofertas de hoje</span>
-      <span class="see-all" onclick="goTo('ofertas')">Ver todas</span>
+  <!-- NOTA FISCAL -->
+  <div id="screen-nota" class="screen">
+    <div class="nota-hero">
+      <h2>Cadastrar Nota Fiscal</h2>
+      <p>Escaneie o QR Code ou digite a chave de acesso</p>
     </div>
-    <div class="offers-scroll" id="home-offers">
-      <div style="display:flex;gap:12px;">
-        <div class="offer-card"><div class="offer-img"><span class="offer-img-placeholder">⏳</span></div><div class="offer-body"><div class="offer-store">Carregando...</div></div></div>
+    <div style="padding:20px 16px 0">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">Como funciona</div>
+      <div class="how-steps">
+        <div class="how-step"><div class="step-num">1</div><div class="step-text"><strong>Peça CPF na nota</strong><span>Na hora da compra, informe seu CPF ao caixa</span></div></div>
+        <div class="how-step"><div class="step-num">2</div><div class="step-text"><strong>Escaneie o QR Code da nota</strong><span>Seus dados ficam vinculados à compra na SEFAZ</span></div></div>
+        <div class="how-step"><div class="step-num">3</div><div class="step-text"><strong>Pontos creditados em segundos</strong><span>Consultamos a SEFAZ e os pontos são adicionados automaticamente</span></div></div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- OFERTAS -->
-<div id="screen-ofertas" class="screen">
-  <div class="top-bar">
-    <button onclick="goBack()" style="background:none;border:none;font-size:22px;cursor:pointer;">‹</button>
-    <span style="font-size:17px;font-weight:700;">Ofertas de hoje</span>
-    <div style="width:38px;"></div>
-  </div>
-  <div class="offers-grid" id="ofertas-grid">
-    <div class="empty-state" style="grid-column:1/-1;">
-      <div class="skeleton" style="height:130px;border-radius:16px;margin-bottom:12px;"></div>
-      <div class="skeleton" style="height:130px;border-radius:16px;"></div>
+    <div class="scan-area" onclick="toast('Câmera: use o leitor de QR do seu celular e cole a chave abaixo','')">
+      <div class="scan-icon">⬛</div>
+      <strong>Escanear QR Code da nota</strong>
+      <span>Toque para abrir a câmera</span>
     </div>
-  </div>
-</div>
-
-<!-- NOTA FISCAL -->
-<div id="screen-nota" class="screen">
-  <div class="top-bar">
-    <button onclick="goBack()" style="background:none;border:none;font-size:22px;cursor:pointer;">‹</button>
-    <span style="font-size:17px;font-weight:700;">Cadastrar nota</span>
-    <div style="width:38px;"></div>
-  </div>
-  <div class="nfe-content">
-    <!-- Steps -->
-    <div class="steps-row">
-      <div class="step done" id="step1"><div class="step-circle">✓</div><div class="step-label">Logado</div></div>
-      <div class="step active" id="step2"><div class="step-circle">2</div><div class="step-label">Nota</div></div>
-      <div class="step" id="step3"><div class="step-circle">3</div><div class="step-label">Pontos</div></div>
-    </div>
-
-    <div class="scan-box" onclick="showToast('Câmera: abra pelo app de câmera do seu celular e leia o QR Code da nota','')">
-      <div class="scan-icon">⬚</div>
-      <p>Escanear QR Code da nota</p>
-      <small>Toque para abrir a câmera</small>
-    </div>
-
     <div class="divider-text">— ou digite a chave —</div>
-
-    <div class="nfe-input-row">
-      <input type="tel" class="nfe-input" id="nfe-chave" placeholder="Chave de 44 dígitos" maxlength="44" oninput="this.value=this.value.replace(/\D/g,'')">
-      <button class="btn-buscar" onclick="validarNFe()" id="nfe-btn">Buscar</button>
+    <div class="nota-input-row">
+      <input type="tel" id="chave-nfe" placeholder="Chave de acesso (44 dígitos)" maxlength="44" oninput="this.value=this.value.replace(/\D/g,'')">
+      <button class="btn btn-primary nota-input-row" style="width:auto" onclick="validarNFe()">Buscar</button>
     </div>
-
-    <!-- Resultado -->
-    <div id="nfe-resultado" style="display:none;background:var(--teal-light);border:1px solid var(--teal);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:8px;">✅ Nota validada!</div>
-      <div id="nfe-resultado-info" style="font-size:14px;color:var(--gray-700);"></div>
+    <div class="section-title" style="padding-top:4px">Últimas notas</div>
+    <div class="history-list" id="history-list"><div style="padding:16px 0;color:var(--gray-400);font-size:13px;text-align:center">Carregando...</div></div>
+    <div class="dica-guadi">
+      <img src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:32px>🦎</div>'">
+      <div class="dica-guadi-text"><strong>💡 Dica do Guadi</strong><p>Notas acima de R$300 desbloqueiam o Guadi colecionável! Não esqueça de pedir CPF na nota.</p></div>
     </div>
-
-    <div class="historico-title">Últimas notas</div>
-    <div id="notas-list">
-      <div class="empty-state"><span style="font-size:32px;">🧾</span><p>Nenhuma nota cadastrada ainda</p></div>
-    </div>
-
-    <div class="tip-box">
-      <span style="font-size:20px;">💡</span>
-      <div class="tip-box-text"><strong>Dica do Guadi</strong><br>Notas acima de R$300 desbloqueiam o Guadi colecionável! Não esqueça de pedir CPF na nota.</div>
-    </div>
+    <div style="height:20px"></div>
   </div>
-</div>
 
-<!-- COLEÇÃO -->
-<div id="screen-colecao" class="screen">
-  <div class="top-bar">
-    <button onclick="goBack()" style="background:none;border:none;font-size:22px;cursor:pointer;">‹</button>
-    <span style="font-size:17px;font-weight:700;">Coleção Guadi</span>
-    <div style="width:38px;"></div>
+  <!-- BENEFÍCIOS -->
+  <div id="screen-beneficios" class="screen">
+    <div class="beneficios-hero">
+      <h2>Benefícios e Ofertas</h2>
+      <p>Ofertas exclusivas das lojas parceiras</p>
+    </div>
+    <div class="section-title">Lojas participantes</div>
+    <div class="lojas-list" id="lojas-list"></div>
+    <div class="section-title" style="padding-top:4px">Todas as ofertas</div>
+    <div style="padding:0 16px 80px" id="all-offers-list"></div>
   </div>
-  <div class="colecao-content">
-    <div class="colecao-header">
-      <img src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" onerror="this.style.fontSize='48px';this.outerHTML='<div style=font-size:48px>🦎</div>'" alt="Guadi">
-      <h2>Sua coleção de Guadis</h2>
-      <p>Cada R$300 em compras = 1 Guadi desbloqueado!</p>
-    </div>
-    <div class="guadis-grid" id="guadis-grid">
-      <!-- Preenchido pelo JS -->
-    </div>
-    <div class="sorteo-banner">
-      <img src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/rio.jpg" alt="Rio de Janeiro" onerror="this.style.display='none'">
-      <div class="sorteo-overlay">
-        <h3>✈️ Sorteio: Rio de Janeiro!</h3>
-        <p>Cada Guadi desbloqueado = 1 chance no sorteio de uma viagem para o Rio!</p>
-        <button class="btn-sorteo" onclick="participarSorteo()">Participar agora</button>
+
+  <!-- COLEÇÃO -->
+  <div id="screen-colecao" class="screen">
+    <div class="colecao-hero">
+      <h2>Minha Coleção Guadi 🦎</h2>
+      <p>A cada R$300 em uma nota, você desbloqueia um Guadi!</p>
+      <div class="colecao-count">
+        <div><strong id="guadis-total">0</strong>desbloqueados</div>
+        <div><strong>10</strong>disponíveis</div>
       </div>
     </div>
+    <div style="padding:16px 16px 0">
+      <div class="sorteio-banner" onclick="openModal('modal-sorteio')">
+        <div class="sorteio-bg">
+          <div class="sorteio-text"><h3>✈️ Viagem ao Rio de Janeiro</h3><p>Desbloqueie Guadis para participar do sorteio</p></div>
+          <div class="sorteio-img">🏖️</div>
+        </div>
+      </div>
+    </div>
+    <div class="guadi-grid" id="guadi-grid"></div>
   </div>
-</div>
 
-<!-- PERFIL -->
-<div id="screen-perfil" class="screen">
-  <div class="top-bar">
-    <span style="font-size:17px;font-weight:700;">Meu Perfil</span>
-    <div style="width:38px;"></div>
-  </div>
-  <div class="perfil-content">
-    <div class="perfil-hero">
+  <!-- PERFIL -->
+  <div id="screen-perfil" class="screen">
+    <div class="perfil-header">
       <div class="perfil-avatar" id="perfil-avatar">?</div>
-      <div class="perfil-name" id="perfil-nome">—</div>
-      <div class="perfil-email" id="perfil-email">—</div>
+      <div class="perfil-name" id="perfil-name">—</div>
+      <div style="font-size:13px;color:var(--gray-500)" id="perfil-cpf-disp">—</div>
       <div class="perfil-badges">
-        <span class="badge" id="perfil-desde">📅 Membro</span>
-        <span class="badge" id="perfil-nivel">⭐ Explorador</span>
+        <span class="perfil-badge" id="perfil-membro">📅 Membro desde —</span>
+        <span class="perfil-badge" id="perfil-nivel">⭐ Nível Explorador</span>
       </div>
     </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-value orange" id="p-pontos">0</div><div class="stat-label">pontos acumulados</div></div>
-      <div class="stat-card"><div class="stat-value" id="p-guadis">0</div><div class="stat-label">Guadis desbloqueados</div></div>
-      <div class="stat-card"><div class="stat-value" id="p-notas">0</div><div class="stat-label">notas cadastradas</div></div>
+    <div class="perfil-stats">
+      <div class="stat-item"><div class="stat-number orange" id="stat-pontos">0</div><div class="stat-label">pontos acumulados</div></div>
+      <div class="stat-item"><div class="stat-number teal" id="stat-guadis">0</div><div class="stat-label">Guadis desbloqueados</div></div>
+      <div class="stat-item"><div class="stat-number" id="stat-notas">0</div><div class="stat-label">notas cadastradas</div></div>
     </div>
     <div class="menu-list">
-      <div class="menu-item" onclick="showModalDados()">
-        <div class="menu-item-icon mi-teal">👤</div>
-        <div class="menu-item-text"><strong>Meus dados</strong><small>CPF, endereço, contato</small></div>
-        <span class="menu-chevron">›</span>
+      <div class="menu-item" onclick="showMeusDados()">
+        <div class="menu-icon" style="background:var(--teal-light)">👤</div>
+        <div class="menu-info"><strong>Meus dados</strong><span>CPF, endereço, contato</span></div>
+        <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" onclick="goTo('nota')">
-        <div class="menu-item-icon mi-orange">🧾</div>
-        <div class="menu-item-text"><strong>Histórico de notas</strong><small id="p-notas-label">0 notas cadastradas</small></div>
-        <span class="menu-chevron">›</span>
+      <div class="menu-item" onclick="navTo('nota')">
+        <div class="menu-icon" style="background:var(--orange-light)">📄</div>
+        <div class="menu-info"><strong>Histórico de notas</strong><span id="hist-notas-label">0 notas cadastradas</span></div>
+        <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" onclick="showToast('Em breve: lojas favoritas','')">
-        <div class="menu-item-icon mi-red">🏪</div>
-        <div class="menu-item-text"><strong>Lojas favoritas</strong><small>Bistek, Boticário, QuieroCafé</small></div>
-        <span class="menu-chevron">›</span>
+      <div class="menu-item" onclick="navTo('beneficios')">
+        <div class="menu-icon" style="background:#fff0f0">🏪</div>
+        <div class="menu-info"><strong>Lojas favoritas</strong><span>Bistek, Boticário, QuieroCafé</span></div>
+        <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" onclick="showToast('Notificações em desenvolvimento','')">
-        <div class="menu-item-icon mi-green">🔔</div>
-        <div class="menu-item-text"><strong>Notificações</strong><small>Push, WhatsApp, e-mail</small></div>
-        <span class="menu-chevron">›</span>
+      <div class="menu-item">
+        <div class="menu-icon" style="background:#f0fff0">🔔</div>
+        <div class="menu-info"><strong>Notificações</strong><span>Push, WhatsApp, e-mail</span></div>
+        <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" onclick="showToast('Privacidade e LGPD: seus dados são protegidos','')">
-        <div class="menu-item-icon mi-gray">🛡️</div>
-        <div class="menu-item-text"><strong>Privacidade e LGPD</strong><small>Gerenciar consentimentos</small></div>
-        <span class="menu-chevron">›</span>
+      <div class="menu-item">
+        <div class="menu-icon" style="background:#f5f0ff">🛡️</div>
+        <div class="menu-info"><strong>Privacidade e LGPD</strong><span>Gerenciar consentimentos</span></div>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" onclick="doLogout()">
+        <div class="menu-icon" style="background:#fff0f0">🚪</div>
+        <div class="menu-info"><strong style="color:var(--red)">Sair</strong><span>Encerrar sessão</span></div>
+        <span class="menu-arrow">›</span>
       </div>
     </div>
-    <button class="logout-btn" onclick="doLogout()">Sair da conta</button>
+    <div style="height:20px"></div>
   </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottomnav">
+    <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="nav-icon">🏠</span>Início</button>
+    <button class="nav-item" id="nav-beneficios" onclick="navTo('beneficios')"><span class="nav-icon">🎁</span>Benefícios</button>
+    <button class="nav-item" id="nav-nota" onclick="navTo('nota')"><span class="nav-icon">📄</span>Nota</button>
+    <button class="nav-item" id="nav-colecao" onclick="navTo('colecao')"><span class="nav-icon">🏆</span>Coleção</button>
+    <button class="nav-item" id="nav-perfil" onclick="navTo('perfil')"><span class="nav-icon">👤</span>Perfil</button>
+  </nav>
 </div>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav" id="bottom-nav" style="display:none;">
-  <button class="nav-item active" onclick="goTo('home')" id="nav-home">
-    <span class="nav-icon">🏠</span><span class="nav-label">Início</span>
-  </button>
-  <button class="nav-item" onclick="goTo('ofertas')" id="nav-ofertas">
-    <span class="nav-icon">🎁</span><span class="nav-label">Ofertas</span>
-  </button>
-  <button class="nav-item" onclick="goTo('nota')" id="nav-nota">
-    <span class="nav-icon">🧾</span><span class="nav-label">Nota</span>
-  </button>
-  <button class="nav-item" onclick="goTo('colecao')" id="nav-colecao">
-    <span class="nav-icon">🏆</span><span class="nav-label">Guadis</span>
-  </button>
-  <button class="nav-item" onclick="goTo('perfil')" id="nav-perfil">
-    <span class="nav-icon">👤</span><span class="nav-label">Perfil</span>
-  </button>
-</nav>
-
-<!-- FAB GUADI -->
-<button class="fab-guadi" id="fab-guadi" style="display:none;" onclick="goTo('colecao')">
-  <img src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" onerror="this.outerHTML='🦎'" alt="Guadi">
-</button>
-
-<!-- MODAL: QR CODE -->
-<div class="modal-overlay" id="modal-qr" onclick="closeModal('modal-qr')">
-  <div class="modal-sheet" onclick="event.stopPropagation()">
+<!-- MODAL QR -->
+<div class="modal-overlay" id="modal-qr">
+  <div class="modal-box" style="text-align:center">
     <div class="modal-handle"></div>
-    <div class="modal-body" style="text-align:center;">
-      <div class="modal-title">Meu QR Code</div>
-      <div class="modal-sub">Mostre na loja para identificação rápida</div>
-      <div id="qr-container" style="margin:20px auto;width:200px;height:200px;background:var(--gray-100);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:80px;">📱</div>
-      <div id="qr-cpf" style="font-family:monospace;font-size:18px;font-weight:700;letter-spacing:2px;margin:12px 0;color:var(--gray-700);"></div>
-      <div id="qr-nome-label" style="font-size:14px;color:var(--gray-500);margin-bottom:24px;"></div>
-    </div>
+    <h3 style="margin-bottom:4px">Meu QR Code</h3>
+    <p style="color:var(--gray-500);font-size:13px;margin-bottom:20px">Apresente na loja para identificação</p>
+    <canvas id="qr-canvas" width="200" height="200" style="border-radius:12px"></canvas>
+    <p style="margin-top:12px;font-size:13px;color:var(--gray-500);letter-spacing:1px" id="qr-cpf-label"></p>
+    <button class="btn btn-ghost" style="margin-top:16px" onclick="closeModal('modal-qr')">Fechar</button>
   </div>
 </div>
 
-<!-- MODAL: MEUS DADOS -->
-<div class="modal-overlay" id="modal-dados" onclick="closeModal('modal-dados')">
-  <div class="modal-sheet" onclick="event.stopPropagation()">
+<!-- MODAL DADOS -->
+<div class="modal-overlay" id="modal-dados">
+  <div class="modal-box">
     <div class="modal-handle"></div>
-    <div class="modal-body">
-      <div class="modal-title">Meus Dados</div>
-      <div class="modal-sub">Seus dados cadastrados</div>
-      <div id="dados-content" style="font-size:14px;color:var(--gray-700);line-height:2.2;"></div>
-    </div>
+    <h3 style="margin-bottom:20px">Meus dados</h3>
+    <div id="dados-content"></div>
+    <button class="btn btn-ghost" style="margin-top:16px" onclick="closeModal('modal-dados')">Fechar</button>
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- MODAL SORTEIO -->
+<div class="modal-overlay" id="modal-sorteio">
+  <div class="modal-box" style="text-align:center">
+    <div class="modal-handle"></div>
+    <div style="font-size:52px;margin-bottom:12px">🏖️</div>
+    <h3 style="margin-bottom:8px">Viagem ao Rio de Janeiro</h3>
+    <p style="color:var(--gray-500);font-size:14px;margin-bottom:20px">Para cada Guadi desbloqueado, você ganha <strong>1 número da sorte</strong> no sorteio de uma viagem para 2 pessoas ao Rio de Janeiro!</p>
+    <div style="background:var(--teal-light);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px">
+      <div style="font-size:28px;font-weight:800;color:var(--teal)" id="sorteio-nums">0</div>
+      <div style="font-size:13px;color:var(--gray-500)">números da sorte</div>
+    </div>
+    <button class="btn btn-primary" onclick="closeModal('modal-sorteio')">Entendido! 🎉</button>
+  </div>
+</div>
 
 <script>
-// ─── CONFIG SUPABASE ───────────────────────────────────────
 const SUPABASE_URL = 'https://nkfawcjautqgkyrvakpd.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_03UmZhysJsqyMgubzVt9Cw_oi5W2h3N';
+const IMG_BASE = SUPABASE_URL + '/storage/v1/object/public/imagens';
 
-const db = {
-  async query(path, opts={}) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation',
-        ...opts.headers
-      },
-      ...opts
-    });
-    const text = await r.text();
-    if (!r.ok) throw new Error(text);
-    return text ? JSON.parse(text) : [];
-  },
-  get: (table, params='') => db.query(`${table}?${params}`),
-  post: (table, body) => db.query(table, { method:'POST', body:JSON.stringify(body) }),
-  patch: (table, params, body) => db.query(`${table}?${params}`, { method:'PATCH', body:JSON.stringify(body) }),
-};
-
-// ─── STATE ─────────────────────────────────────────────────
 let currentUser = null;
-let currentScreen = 'splash';
-let previousScreen = 'home';
-let bannerIdx = 0;
 
-// ─── SCREENS ───────────────────────────────────────────────
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById('screen-' + id);
-  if (el) el.classList.add('active');
-  previousScreen = currentScreen;
-  currentScreen = id;
+// ─── UTILS ───
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + (type||'');
+  clearTimeout(t._t); t._t = setTimeout(() => t.className = '', 3500);
+}
+function loading(on) { document.getElementById('loading-overlay').classList.toggle('show', on); }
 
-  const hasNav = ['home','ofertas','nota','colecao','perfil'].includes(id);
-  document.getElementById('bottom-nav').style.display = hasNav ? 'flex' : 'none';
-  document.getElementById('fab-guadi').style.display = hasNav && id !== 'colecao' ? 'flex' : 'none';
-
-  // nav active state
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const navEl = document.getElementById('nav-' + id);
-  if (navEl) navEl.classList.add('active');
-
-  if (id === 'home') loadHome();
-  if (id === 'ofertas') loadOfertas();
-  if (id === 'nota') loadNotas();
-  if (id === 'colecao') loadColecao();
-  if (id === 'perfil') loadPerfil();
+function maskCPF(i) {
+  let v = i.value.replace(/\D/g,'').slice(0,11);
+  if(v.length>9) v=v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');
+  else if(v.length>6) v=v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');
+  else if(v.length>3) v=v.replace(/(\d{3})(\d{1,3})/,'$1.$2');
+  i.value=v;
+}
+function maskPhone(i) {
+  let v = i.value.replace(/\D/g,'').slice(0,11);
+  if(v.length>6) v=v.replace(/(\d{2})(\d{5})(\d{1,4})/,'($1) $2-$3');
+  else if(v.length>2) v=v.replace(/(\d{2})(\d{1,5})/,'($1) $2');
+  i.value=v;
+}
+function maskCEP(i) {
+  let v = i.value.replace(/\D/g,'').slice(0,8);
+  if(v.length>5) v=v.replace(/(\d{5})(\d{1,3})/,'$1-$2');
+  i.value=v;
+}
+function cleanCPF(c) { return c.replace(/\D/g,''); }
+function initials(name) { return name?name.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase():'?'; }
+function fmtDate(d) {
+  if(!d) return '—';
+  return new Date(d).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'});
+}
+function fmtCPF(c) {
+  if(!c) return '—';
+  return c.replace(/\D/g,'').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');
+}
+function fmtMoney(v) { return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v||0); }
+function timeAgo(iso) {
+  const d = Math.floor((Date.now()-new Date(iso).getTime())/86400000);
+  return d===0?'Hoje':d===1?'Ontem':d+' dias';
 }
 
-function goTo(id) { showScreen(id); }
-function goBack() { showScreen(previousScreen || 'home'); }
-
-function showLoginCPF() {
-  showScreen('login-cadastro');
-  document.getElementById('card-cpf').style.display = 'block';
+// ─── SUPABASE FETCH ───
+async function sb(path, method, body) {
+  const r = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    method: method||'GET',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer '+SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method==='POST'?'return=representation':''
+    },
+    body: body?JSON.stringify(body):undefined
+  });
+  if(!r.ok) { const e=await r.text(); throw new Error(e); }
+  return r.status===204?null:r.json();
 }
 
-// ─── MASKS ─────────────────────────────────────────────────
-function maskCPF(el) {
-  let v = el.value.replace(/\D/g,'').slice(0,11);
-  v = v.replace(/(\d{3})(\d)/,'$1.$2')
-       .replace(/(\d{3})\.(\d{3})(\d)/,'$1.$2.$3')
-       .replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/,'$1.$2.$3-$4');
-  el.value = v;
-}
-function maskPhone(el) {
-  let v = el.value.replace(/\D/g,'').slice(0,11);
-  v = v.replace(/(\d{2})(\d)/,'($1) $2')
-       .replace(/(\d{5})(\d)/,'$1-$2');
-  el.value = v;
-}
-function maskCEP(el) {
-  let v = el.value.replace(/\D/g,'').slice(0,8);
-  v = v.replace(/(\d{5})(\d)/,'$1-$2');
-  el.value = v;
+// ─── NAVIGATION ───
+function navTo(screen) {
+  document.querySelectorAll('#app-shell .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+screen).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el = document.getElementById('nav-'+screen);
+  if(el) el.classList.add('active');
+  if(screen==='home') loadHome();
+  if(screen==='nota') loadHistorico();
+  if(screen==='colecao') loadColecao();
+  if(screen==='beneficios') loadBeneficios();
+  if(screen==='perfil') loadPerfil();
 }
 
-// ─── AUTH ──────────────────────────────────────────────────
+// ─── LOGIN TAB ───
+function setLoginTab(tab) {
+  document.getElementById('tab-login').style.display = tab==='login'?'block':'none';
+  document.getElementById('tab-cadastro').style.display = tab==='cadastro'?'block':'none';
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='cadastro')));
+}
+
+// ─── LOGIN ───
 async function doLogin() {
-  const cpf = document.getElementById('login-cpf').value.replace(/\D/g,'');
-  if (cpf.length < 11) return showToast('CPF inválido','error');
-  const btn = document.getElementById('login-btn-text');
-  btn.innerHTML = '<span class="loading"></span>Verificando...';
+  const cpf = cleanCPF(document.getElementById('login-cpf').value);
+  if(cpf.length!==11){toast('Digite um CPF válido','error');return;}
+  loading(true);
   try {
-    const rows = await db.get('clientes', `cpf=eq.${cpf}&select=*`);
-    if (!rows.length) {
-      btn.textContent = 'Entrar';
-      return showToast('CPF não encontrado. Crie uma conta!','error');
+    const data = await sb('clientes?cpf=eq.'+cpf+'&select=*');
+    if(!data||!data.length) {
+      toast('CPF não encontrado. Faça seu cadastro!','error');
+      setLoginTab('cadastro');
+      document.getElementById('cad-cpf').value = document.getElementById('login-cpf').value;
+    } else {
+      currentUser = data[0];
+      saveSession();
+      enterApp();
     }
-    currentUser = rows[0];
-    localStorage.setItem('clube_user', JSON.stringify(currentUser));
-    btn.textContent = 'Entrar';
-    showScreen('home');
-    showToast(`Bem-vindo, ${currentUser.nome.split(' ')[0]}! 🎉`,'success');
-  } catch(e) {
-    btn.textContent = 'Entrar';
-    showToast('Erro ao conectar. Tente novamente.','error');
-    console.error(e);
-  }
+  } catch(e) { toast('Erro de conexão. Verifique sua internet.','error'); console.error(e); }
+  finally { loading(false); }
 }
 
+// ─── CADASTRO ───
 async function doCadastro() {
   const nome = document.getElementById('cad-nome').value.trim();
-  const cpf = document.getElementById('cad-cpf').value.replace(/\D/g,'');
+  const cpf = cleanCPF(document.getElementById('cad-cpf').value);
   const email = document.getElementById('cad-email').value.trim();
-  const whatsapp = document.getElementById('cad-whatsapp').value.replace(/\D/g,'');
-  const aniversario = document.getElementById('cad-aniversario').value;
+  const whats = document.getElementById('cad-whats').value.replace(/\D/g,'');
+  const nasc = document.getElementById('cad-nasc').value;
   const cep = document.getElementById('cad-cep').value.replace(/\D/g,'');
-  const profissao = document.getElementById('cad-profissao').value.trim();
-
-  if (!nome) return showToast('Informe seu nome','error');
-  if (cpf.length < 11) return showToast('CPF inválido','error');
-
-  const btn = document.getElementById('cad-btn-text');
-  btn.innerHTML = '<span class="loading"></span>Criando conta...';
-
+  if(!nome){toast('Digite seu nome','error');return;}
+  if(cpf.length!==11){toast('CPF inválido','error');return;}
+  if(!email){toast('Digite seu e-mail','error');return;}
+  loading(true);
   try {
-    // Verifica se CPF já existe
-    const exist = await db.get('clientes', `cpf=eq.${cpf}`);
-    if (exist.length) {
-      btn.textContent = 'Criar minha conta';
-      return showToast('CPF já cadastrado. Faça login!','error');
-    }
-
-    const novo = { nome, cpf, email: email||null, whatsapp: whatsapp||null, aniversario: aniversario||null, cep: cep||null, profissao: profissao||null, pontos: 0, nivel: 'Explorador' };
-    const rows = await db.post('clientes', novo);
-    currentUser = rows[0] || { ...novo, id: Date.now() };
-    localStorage.setItem('clube_user', JSON.stringify(currentUser));
-    btn.textContent = 'Criar minha conta';
-    showScreen('home');
-    showToast('Conta criada! Bem-vindo ao Clube Guadix 🦎','success');
-  } catch(e) {
-    btn.textContent = 'Criar minha conta';
-    showToast('Erro ao criar conta. Verifique os dados.','error');
-    console.error(e);
-  }
+    const exists = await sb('clientes?cpf=eq.'+cpf+'&select=id');
+    if(exists&&exists.length){toast('CPF já cadastrado. Faça login!','error');setLoginTab('login');loading(false);return;}
+    const res = await sb('clientes','POST',{
+      nome, cpf, email,
+      whatsapp: whats||null,
+      data_nascimento: nasc||null,
+      cep: cep||null,
+      pontos_total: 0
+    });
+    currentUser = res[0];
+    saveSession();
+    toast('Bem-vindo ao Clube Guadix! 🦎','success');
+    enterApp();
+  } catch(e) { toast('Erro no cadastro. Tente novamente.','error'); console.error(e); }
+  finally { loading(false); }
 }
 
+// ─── SESSION ───
+function saveSession() { try{localStorage.setItem('cg_user',JSON.stringify(currentUser));}catch(e){} }
+function enterApp() {
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('app-shell').style.display='block';
+  navTo('home');
+}
 function doLogout() {
-  currentUser = null;
-  localStorage.removeItem('clube_user');
-  showScreen('splash');
+  if(!confirm('Deseja sair da conta?')) return;
+  currentUser=null;
+  try{localStorage.removeItem('cg_user');}catch(e){}
+  document.getElementById('screen-login').style.display='flex';
+  document.getElementById('app-shell').style.display='none';
+  document.getElementById('login-cpf').value='';
 }
 
-// ─── HOME ──────────────────────────────────────────────────
+// ─── HOME ───
+let bannerIdx=0, bannerTimer;
 async function loadHome() {
-  if (!currentUser) return;
-
-  // Atualiza pontos do banco
+  if(!currentUser) return;
+  document.getElementById('home-avatar').textContent = initials(currentUser.nome);
+  // Refresh pontos do banco
   try {
-    const rows = await db.get('clientes', `id=eq.${currentUser.id}&select=pontos,nome`);
-    if (rows.length) {
-      currentUser.pontos = rows[0].pontos || 0;
-      localStorage.setItem('clube_user', JSON.stringify(currentUser));
-    }
-  } catch(e) {}
-
-  const pts = currentUser.pontos || 0;
+    const d = await sb('clientes?id=eq.'+currentUser.id+'&select=pontos_total');
+    if(d&&d[0]) { currentUser.pontos_total=d[0].pontos_total||0; saveSession(); }
+  } catch(e){}
+  const pts = currentUser.pontos_total||0;
   document.getElementById('home-pontos').textContent = pts.toLocaleString('pt-BR');
-  const pct = Math.min((pts / 300) * 100, 100);
-  document.getElementById('home-pontos-bar').style.width = pct + '%';
-  document.getElementById('home-pontos-hint').textContent = pts >= 300 ? '🦎 Você desbloqueou um Guadi!' : `Faltam ${300 - (pts%300)} pts para o próximo Guadi`;
-
-  const initials = currentUser.nome ? currentUser.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase() : '?';
-  document.getElementById('home-avatar').textContent = initials;
-
-  // Notificação contextual por hora
+  document.getElementById('pontos-bar').style.width = Math.min((pts%300)/3,100)+'%';
+  // Notif inteligente por hora
   const h = new Date().getHours();
-  const notif = document.getElementById('home-notif');
-  if (h >= 11 && h < 15) {
-    document.getElementById('notif-text').textContent = 'Hora do almoço!';
-    document.getElementById('notif-sub').textContent = 'QuieroCafé com combo especial 11h–15h';
-    notif.style.display = 'flex';
-  } else if (h >= 17 && h < 20) {
-    document.getElementById('notif-text').textContent = 'Boa tarde!';
-    document.getElementById('notif-sub').textContent = 'Terça do Açougue Bistek — confira as promoções';
-    notif.style.display = 'flex';
-  } else {
-    notif.style.display = 'none';
-  }
-
-  loadOffersHome();
+  const nb = document.getElementById('smart-notif');
+  if(h>=11&&h<15) {
+    document.getElementById('notif-title').textContent='Hora do almoço!';
+    document.getElementById('notif-desc').textContent='QuieroCafé com combo 15% off das 11h–15h';
+    document.getElementById('notif-time').textContent=h+':'+String(new Date().getMinutes()).padStart(2,'0');
+    nb.style.display='flex'; document.getElementById('notif-dot').style.display='block';
+  } else if(h>=18&&h<21) {
+    document.getElementById('notif-title').textContent='Boa tarde!';
+    document.getElementById('notif-desc').textContent='O Boticário com 20% off para membros Clube Guadix';
+    document.getElementById('notif-time').textContent=h+':'+String(new Date().getMinutes()).padStart(2,'0');
+    nb.style.display='flex'; document.getElementById('notif-dot').style.display='block';
+  } else { nb.style.display='none'; }
+  loadOffers();
+  clearInterval(bannerTimer);
+  bannerTimer=setInterval(()=>{
+    bannerIdx=(bannerIdx+1)%2;
+    document.getElementById('banner-track').style.transform='translateX(-'+bannerIdx*100+'%)';
+    document.querySelectorAll('.banner-dot').forEach((d,i)=>d.classList.toggle('active',i===bannerIdx));
+  },4000);
 }
 
-async function loadOffersHome() {
+// ─── OFFERS ───
+const EMOJIS = {'Bistek':'🛒','QuieroCafé':'☕',"McDonald's":'🍔','Boticário':'💄','Cacau':'🍫','Farmácia':'💊','Natura':'🌿','Patas':'🐾','Bellafast':'✂️','BigKey':'🔑','Chuá':'👕','Supertec':'📱','Momentus':'🪴','Loterias':'🍀','Casa Maria':'👗'};
+const COLORS = ['#e8f7f7','#fff4e0','#fff0f0','#f0fff0','#f5f0ff','#fff8e1'];
+function getEmoji(name) { return Object.entries(EMOJIS).find(([k])=>name&&name.includes(k))?.[1]||'🏪'; }
+
+async function loadOffers() {
   try {
-    const ofertas = await db.get('ofertas', 'ativa=eq.true&order=criado_em.desc&limit=5&select=*');
-    const container = document.getElementById('home-offers');
-    if (!ofertas.length) {
-      container.innerHTML = getStaticOffers();
-      return;
-    }
-    container.innerHTML = ofertas.map(o => `
-      <div class="offer-card">
-        <div class="offer-img">${o.imagem_url ? `<img src="${o.imagem_url}" alt="${o.titulo}" loading="lazy">` : `<span class="offer-img-placeholder">${storeEmoji(o.loja_id)}</span>`}</div>
-        <div class="offer-body">
-          <div class="offer-store">${o.loja_nome||'Loja'}</div>
-          <div class="offer-title">${o.titulo}</div>
-          <div class="offer-badge orange">${o.desconto||'Oferta especial'}</div>
-          ${o.validade ? `<div class="offer-valid">Até ${formatDate(o.validade)}</div>` : ''}
-        </div>
-      </div>`).join('');
-  } catch(e) {
-    document.getElementById('home-offers').innerHTML = getStaticOffers();
-  }
+    const offers = await sb('ofertas?ativa=eq.true&select=*,lojas(nome)&order=created_at.desc&limit=10');
+    renderOffersHome(offers||[]);
+    renderOffersAll(offers||[]);
+  } catch(e) { renderOffersHome([]); renderOffersAll([]); }
 }
 
-function getStaticOffers() {
-  const static_offers = [
-    { store:'QuieroCafé', title:'Café especial', badge:'Hoje 11h–15h', img:'https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/quierocafe.jpg' },
-    { store:'Bistek', title:'Terça do Açougue', badge:'Toda terça', img:'https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/bistek.jpg' },
-    { store:'O Boticário', title:'Cuide-se Bem', badge:'Desconto especial', img:'https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/boticario.jpg' },
-    { store:'Patas & Garras', title:'Ração Pedigree', badge:'Promoção', img:'https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/patas.jpg' },
-  ];
-  return static_offers.map(o => `
-    <div class="offer-card">
-      <div class="offer-img"><img src="${o.img}" alt="${o.store}" loading="lazy" onerror="this.outerHTML='<span class=offer-img-placeholder>🛍️</span>'"></div>
-      <div class="offer-body">
-        <div class="offer-store">${o.store}</div>
-        <div class="offer-title">${o.title}</div>
-        <div class="offer-badge orange">${o.badge}</div>
-      </div>
+function renderOffersHome(offers) {
+  const c = document.getElementById('offers-container');
+  if(!offers.length){c.innerHTML='<div style="padding:8px 4px 16px;color:var(--gray-400);font-size:13px">Nenhuma oferta ativa</div>';return;}
+  c.innerHTML = offers.map(o=>{
+    const sn=o.lojas?.nome||'Loja'; const em=getEmoji(sn);
+    const img=o.imagem_url
+      ?`<img class="offer-img" src="${o.imagem_url}" alt="${o.titulo}" loading="lazy" onerror="this.outerHTML='<div class=offer-img-ph>${em}</div>'">`
+      :`<div class="offer-img-ph">${em}</div>`;
+    return `<div class="offer-card">${img}<div class="offer-info"><div class="offer-store">${sn}</div><div class="offer-title">${o.titulo}</div><div class="offer-desc">${o.descricao||''}</div>${o.pontos_bonus?`<div class="offer-pts">+${o.pontos_bonus} pts bônus</div>`:''}</div></div>`;
+  }).join('');
+}
+
+function renderOffersAll(offers) {
+  const c = document.getElementById('all-offers-list');
+  if(!offers.length){c.innerHTML='<div style="padding:20px 0;text-align:center;color:var(--gray-400);font-size:13px">Nenhuma oferta ativa</div>';return;}
+  c.innerHTML = offers.map(o=>{
+    const sn=o.lojas?.nome||'Loja'; const em=getEmoji(sn);
+    const img=o.imagem_url
+      ?`<img src="${o.imagem_url}" style="width:100%;height:150px;object-fit:cover;display:block" loading="lazy" onerror="this.outerHTML='<div style=height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--teal-light)>${em}</div>'">`
+      :`<div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--teal-light)">${em}</div>`;
+    return `<div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;border:1px solid var(--gray-100)">${img}<div style="padding:14px"><div style="font-size:11px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:.5px">${sn}</div><div style="font-size:15px;font-weight:700;margin:4px 0">${o.titulo}</div><div style="font-size:13px;color:var(--gray-500)">${o.descricao||''}</div>${o.pontos_bonus?`<div style="margin-top:8px;font-size:12px;color:var(--orange);font-weight:600">+${o.pontos_bonus} pontos bônus</div>`:''}${o.validade?`<div style="margin-top:4px;font-size:11px;color:var(--gray-400)">Válido até ${new Date(o.validade).toLocaleDateString('pt-BR')}</div>`:''}</div></div>`;
+  }).join('');
+}
+
+// ─── BENEFÍCIOS ───
+const LOJAS = [
+  {n:'Bistek Supermercados',d:'Supermercado completo',e:'🛒'},
+  {n:'QuieroCafé',d:'Café especial e snacks',e:'☕'},
+  {n:"McDonald's",d:'Fast food',e:'🍔'},
+  {n:'O Boticário',d:'Cosméticos e perfumaria',e:'💄'},
+  {n:'CacauShow',d:'Chocolates e presentes',e:'🍫'},
+  {n:'Farmácia São João',d:'Farmácia e saúde',e:'💊'},
+  {n:'Natura',d:'Cosméticos naturais',e:'🌿'},
+  {n:'Casa Maria',d:'Moda e acessórios',e:'👗'},
+  {n:'Bellafast Salão',d:'Beleza e estética',e:'✂️'},
+  {n:'Momentus Tabacaria',d:'Tabacaria e acessórios',e:'🪴'},
+  {n:'Supertec Assistência',d:'Reparo de eletrônicos',e:'📱'},
+  {n:'BigKey Chaveiro',d:'Chaves e acessórios',e:'🔑'},
+  {n:'Agropet Patas e Garras',d:'Pet shop',e:'🐾'},
+  {n:'Chuá Lavanderia',d:'Lavanderia',e:'👕'},
+  {n:'Loterias Caixa',d:'Jogos e loterias',e:'🍀'}
+];
+
+async function loadBeneficios() {
+  document.getElementById('lojas-list').innerHTML = LOJAS.map((l,i)=>`
+    <div class="loja-item">
+      <div class="loja-emoji" style="background:${COLORS[i%COLORS.length]}">${l.e}</div>
+      <div class="loja-info"><strong>${l.n}</strong><span>${l.d}</span></div>
+      <span class="loja-arrow">›</span>
     </div>`).join('');
-}
-
-// ─── BANNER ────────────────────────────────────────────────
-function nextSlide() {
-  bannerIdx = (bannerIdx + 1) % 2;
-  document.getElementById('banner-track').style.transform = `translateX(-${bannerIdx*100}%)`;
-  document.querySelectorAll('.dot').forEach((d,i) => {
-    d.classList.toggle('active', i === bannerIdx);
-  });
-}
-setInterval(nextSlide, 5000);
-
-// ─── OFERTAS ───────────────────────────────────────────────
-async function loadOfertas() {
-  const grid = document.getElementById('ofertas-grid');
-  grid.innerHTML = '<div style="grid-column:1/-1;"><div class="skeleton" style="height:130px;border-radius:16px;margin-bottom:12px;"></div><div class="skeleton" style="height:130px;border-radius:16px;"></div></div>';
   try {
-    const ofertas = await db.get('ofertas', 'ativa=eq.true&order=criado_em.desc&select=*');
-    if (!ofertas.length) {
-      grid.innerHTML = getStaticOffersGrid();
-      return;
-    }
-    grid.innerHTML = ofertas.map(o => `
-      <div class="offer-card-full">
-        <div class="offer-img">${o.imagem_url ? `<img src="${o.imagem_url}" alt="${o.titulo}" loading="lazy">` : `<span class="offer-img-placeholder">${storeEmoji(o.loja_id)}</span>`}</div>
-        <div class="offer-body">
-          <div class="offer-store">${o.loja_nome||'Loja'}</div>
-          <div class="offer-title">${o.titulo}</div>
-          <div class="offer-badge orange">${o.desconto||'Oferta'}</div>
-          ${o.descricao ? `<div style="font-size:12px;color:var(--gray-500);margin-top:4px;">${o.descricao}</div>` : ''}
-          ${o.validade ? `<div class="offer-valid">Até ${formatDate(o.validade)}</div>` : ''}
-        </div>
-      </div>`).join('');
-  } catch(e) {
-    grid.innerHTML = getStaticOffersGrid();
-  }
+    const offers = await sb('ofertas?ativa=eq.true&select=*,lojas(nome)&order=created_at.desc');
+    renderOffersAll(offers||[]);
+  } catch(e) { renderOffersAll([]); }
 }
 
-function getStaticOffersGrid() {
-  const imgs = [
-    { store:'QuieroCafé', title:'Café especial do dia', badge:'Hoje 11h–15h', img:'https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/quierocafe.jpg' },
-    { store:'Bistek Supermercados', title:'Terça do Açougue', badge:'Toda terça', img:'https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/bistek.jpg' },
-    { store:'O Boticário', title:'Cuide-se Bem Deleite', badge:'Desconto especial', img:'https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/boticario.jpg' },
-    { store:'Agropet Patas & Garras', title:'Ração Pedigree 2,7kg', badge:'Promoção', img:'https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/patas.jpg' },
-  ];
-  return imgs.map(o => `
-    <div class="offer-card-full">
-      <div class="offer-img"><img src="${o.img}" alt="${o.store}" loading="lazy" onerror="this.outerHTML='<span class=offer-img-placeholder>🛍️</span>'"></div>
-      <div class="offer-body">
-        <div class="offer-store">${o.store}</div>
-        <div class="offer-title">${o.title}</div>
-        <div class="offer-badge orange">${o.badge}</div>
-      </div>
-    </div>`).join('');
-}
-
-// ─── NOTA FISCAL ───────────────────────────────────────────
-async function loadNotas() {
-  if (!currentUser) return;
-  try {
-    const notas = await db.get('notas_fiscais', `cliente_id=eq.${currentUser.id}&order=criado_em.desc&limit=10&select=*`);
-    const list = document.getElementById('notas-list');
-    if (!notas.length) {
-      list.innerHTML = '<div class="empty-state"><span style="font-size:32px;">🧾</span><p>Nenhuma nota cadastrada ainda</p></div>';
-      return;
-    }
-    list.innerHTML = notas.map(n => `
-      <div class="nota-item">
-        <div class="nota-icon">${storeEmojiByName(n.loja_nome)}</div>
-        <div class="nota-info">
-          <div class="nota-store">${n.loja_nome||'Loja parceira'}</div>
-          <div class="nota-meta">${relDate(n.criado_em)} · R$${parseFloat(n.valor||0).toFixed(2).replace('.',',')}</div>
-        </div>
-        <div class="nota-pts">
-          <strong>+${n.pontos_creditados||0} pts</strong>
-          <small>✅ Aprovado</small>
-        </div>
-      </div>`).join('');
-  } catch(e) {
-    console.error(e);
-  }
-}
-
+// ─── NOTA FISCAL ───
 async function validarNFe() {
-  if (!currentUser) return showToast('Faça login primeiro','error');
-  const chave = document.getElementById('nfe-chave').value.replace(/\D/g,'');
-  if (chave.length !== 44) return showToast('Chave deve ter 44 dígitos','error');
-
-  const btn = document.getElementById('nfe-btn');
-  btn.textContent = '...';
-  btn.disabled = true;
-
+  if(!currentUser){toast('Faça login primeiro','error');return;}
+  const chave = document.getElementById('chave-nfe').value.replace(/\D/g,'');
+  if(chave.length!==44){toast('A chave deve ter 44 dígitos','error');return;}
+  loading(true);
   try {
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/validar-nfe`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_KEY}`
-      },
-      body: JSON.stringify({ chave_nfe: chave, cliente_id: currentUser.id })
+    const exists = await sb('notas_fiscais?chave_acesso=eq.'+chave+'&cliente_id=eq.'+currentUser.id+'&select=id');
+    if(exists&&exists.length){toast('Nota já cadastrada anteriormente','error');loading(false);return;}
+    const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
+      body:JSON.stringify({chave, cliente_id:currentUser.id})
     });
     const data = await res.json();
-
-    if (data.erro || !res.ok) {
-      showToast(data.erro || 'Nota não encontrada na SEFAZ','error');
-    } else {
-      const pts = data.pontos_creditados || Math.floor((data.valor||0) / 1);
-      document.getElementById('nfe-resultado').style.display = 'block';
-      document.getElementById('nfe-resultado-info').innerHTML = `
-        <strong>Loja:</strong> ${data.loja_nome || 'Loja parceira'}<br>
-        <strong>Valor:</strong> R$${parseFloat(data.valor||0).toFixed(2).replace('.',',')}<br>
-        <strong>Pontos:</strong> +${pts} pontos creditados!`;
-      document.getElementById('nfe-chave').value = '';
-
-      // Atualiza pontos locais
-      currentUser.pontos = (currentUser.pontos||0) + pts;
-      localStorage.setItem('clube_user', JSON.stringify(currentUser));
-
-      showToast(`+${pts} pontos creditados! 🎉`,'success');
-
-      // Verifica Guadi
-      if (data.guadi_desbloqueado) {
-        setTimeout(() => showToast('🦎 Você desbloqueou um Guadi!','success'), 2000);
-      }
-
-      // Avança step
-      document.getElementById('step2').classList.remove('active');
-      document.getElementById('step2').classList.add('done');
-      document.getElementById('step3').classList.add('active');
-
-      loadNotas();
-    }
-  } catch(e) {
-    showToast('Erro ao validar nota. Tente novamente.','error');
-    console.error(e);
-  }
-
-  btn.textContent = 'Buscar';
-  btn.disabled = false;
+    if(!res.ok){toast(data.error||'Erro ao validar nota','error');loading(false);return;}
+    currentUser.pontos_total = (currentUser.pontos_total||0)+(data.pontos||0);
+    saveSession();
+    document.getElementById('home-pontos').textContent=currentUser.pontos_total.toLocaleString('pt-BR');
+    toast('✅ +'+data.pontos+' pontos! Nota de '+fmtMoney(data.valor)+' aprovada','success');
+    document.getElementById('chave-nfe').value='';
+    loadHistorico();
+    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi!','success'),2500);
+  } catch(e) { toast('Erro de conexão','error'); console.error(e); }
+  finally { loading(false); }
 }
 
-// ─── COLEÇÃO ───────────────────────────────────────────────
+async function loadHistorico() {
+  if(!currentUser) return;
+  try {
+    const notas = await sb('notas_fiscais?cliente_id=eq.'+currentUser.id+'&select=*,lojas(nome)&order=created_at.desc&limit=15');
+    const c = document.getElementById('history-list');
+    if(!notas||!notas.length){c.innerHTML='<div style="padding:20px 0;text-align:center;color:var(--gray-400);font-size:13px">Nenhuma nota cadastrada ainda</div>';return;}
+    c.innerHTML=notas.map(n=>{
+      const sn=n.lojas?.nome||'Loja parceira'; const em=getEmoji(sn);
+      return `<div class="history-item"><div class="history-icon">${em}</div><div class="history-info"><strong>${sn}</strong><span>${timeAgo(n.created_at)} · ${fmtMoney(n.valor)}</span></div><div class="history-pts"><div class="pts">+${n.pontos_gerados||0} pts</div><div class="status-ok">✅ Aprovado</div></div></div>`;
+    }).join('');
+  } catch(e) { document.getElementById('history-list').innerHTML='<div style="padding:16px 0;text-align:center;color:var(--gray-400);font-size:13px">Erro ao carregar</div>'; }
+}
+
+// ─── COLEÇÃO ───
+const GNOMES=['Guadi Explorador','Guadi Aventureiro','Guadi Festeiro','Guadi Dourado','Guadi Arco-íris','Guadi Noturno','Guadi Tropical','Guadi Gelado','Guadi Lendário','Guadi Supremo'];
+
 async function loadColecao() {
-  if (!currentUser) return;
+  if(!currentUser) return;
   try {
-    const rows = await db.get('clientes_guadis', `cliente_id=eq.${currentUser.id}&select=*`);
-    const unlocked = rows.length;
-    const total = 10;
-    const grid = document.getElementById('guadis-grid');
-    let html = '';
-    for (let i=1; i<=total; i++) {
-      const isUnlocked = i <= unlocked;
-      html += `<div class="guadi-slot ${isUnlocked?'unlocked':'locked'}">
-        ${isUnlocked
-          ? `<img src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" alt="Guadi ${i}" onerror="this.outerHTML='<div style=font-size:40px>🦎</div>'">`
-          : `<div class="locked-icon">🔒</div>`}
-        <div class="guadi-num">${isUnlocked ? `Guadi #${i}` : `R$${i*300}`}</div>
-      </div>`;
-    }
-    grid.innerHTML = html;
-  } catch(e) {
-    console.error(e);
-  }
+    const col = await sb('clientes_guadis?cliente_id=eq.'+currentUser.id+'&select=*');
+    const desbloq = new Set((col||[]).map(g=>g.numero_guadi));
+    const total = desbloq.size;
+    document.getElementById('guadis-total').textContent=total;
+    document.getElementById('sorteio-nums').textContent=total;
+    document.getElementById('guadi-grid').innerHTML=Array.from({length:10},(_,i)=>{
+      const n=i+1; const u=desbloq.has(n);
+      return `<div class="guadi-card ${u?'unlocked':''}"><span class="guadi-lock">${u?'':'🔒'}</span>${u?`<img src="${IMG_BASE}/guadi.png" style="width:68px;height:68px;object-fit:contain" onerror="this.outerHTML='<div style=font-size:44px>🦎</div>'">`:`<div class="guadi-ph">🦎</div>`}<div class="guadi-num">#${String(n).padStart(2,'0')}</div><div class="guadi-name">${u?GNOMES[i]:'Bloqueado'}</div></div>`;
+    }).join('');
+  } catch(e) { console.error(e); }
 }
 
-async function participarSorteo() {
-  if (!currentUser) return showToast('Faça login primeiro','error');
-  try {
-    // Verifica se já participa
-    const exist = await db.get('sorteio_participantes', `cliente_id=eq.${currentUser.id}`);
-    if (exist.length) return showToast('Você já está participando do sorteio! 🎲','');
-    await db.post('sorteio_participantes', { cliente_id: currentUser.id });
-    showToast('Você entrou no sorteio! Boa sorte! ✈️','success');
-  } catch(e) {
-    showToast('Erro ao participar. Tente novamente.','error');
-  }
-}
-
-// ─── PERFIL ────────────────────────────────────────────────
+// ─── PERFIL ───
 async function loadPerfil() {
-  if (!currentUser) return;
+  if(!currentUser) return;
+  document.getElementById('perfil-avatar').textContent=initials(currentUser.nome);
+  document.getElementById('perfil-name').textContent=currentUser.nome||'—';
+  document.getElementById('perfil-cpf-disp').textContent=fmtCPF(currentUser.cpf);
+  document.getElementById('perfil-membro').textContent='📅 Membro desde '+fmtDate(currentUser.created_at);
   try {
-    const rows = await db.get('clientes', `id=eq.${currentUser.id}&select=*`);
-    if (rows.length) currentUser = { ...currentUser, ...rows[0] };
-    localStorage.setItem('clube_user', JSON.stringify(currentUser));
-  } catch(e) {}
-
-  const initials = currentUser.nome ? currentUser.nome.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase() : '?';
-  document.getElementById('perfil-avatar').textContent = initials;
-  document.getElementById('perfil-nome').textContent = currentUser.nome || '—';
-  document.getElementById('perfil-email').textContent = currentUser.email || currentUser.cpf ? `CPF: ${fmtCPF(currentUser.cpf||'')}` : '—';
-
-  const pts = currentUser.pontos || 0;
-  document.getElementById('p-pontos').textContent = pts.toLocaleString('pt-BR');
-
-  // Guadis
-  let guadis = 0, notas = 0;
-  try {
-    const [g, n] = await Promise.all([
-      db.get('clientes_guadis', `cliente_id=eq.${currentUser.id}&select=id`),
-      db.get('notas_fiscais', `cliente_id=eq.${currentUser.id}&select=id`)
+    const [pd,nd,gd]=await Promise.all([
+      sb('clientes?id=eq.'+currentUser.id+'&select=pontos_total'),
+      sb('notas_fiscais?cliente_id=eq.'+currentUser.id+'&select=id'),
+      sb('clientes_guadis?cliente_id=eq.'+currentUser.id+'&select=id')
     ]);
-    guadis = g.length; notas = n.length;
-  } catch(e) {}
-  document.getElementById('p-guadis').textContent = guadis;
-  document.getElementById('p-notas').textContent = notas;
-  document.getElementById('p-notas-label').textContent = `${notas} nota${notas!==1?'s':''} cadastrada${notas!==1?'s':''}`;
-
-  const mes = new Date(currentUser.criado_em||Date.now()).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'});
-  document.getElementById('perfil-desde').textContent = `📅 Membro desde ${mes}`;
-  document.getElementById('perfil-nivel').textContent = `⭐ ${currentUser.nivel||'Explorador'}`;
+    const pts=pd?.[0]?.pontos_total||0;
+    const notas=nd?.length||0;
+    const guadis=gd?.length||0;
+    currentUser.pontos_total=pts; saveSession();
+    document.getElementById('stat-pontos').textContent=pts.toLocaleString('pt-BR');
+    document.getElementById('stat-guadis').textContent=guadis;
+    document.getElementById('stat-notas').textContent=notas;
+    document.getElementById('hist-notas-label').textContent=notas+' notas cadastradas';
+    let nivel='Explorador';
+    if(pts>=2000)nivel='Lendário';
+    else if(pts>=1000)nivel='Aventureiro';
+    else if(pts>=500)nivel='Descobridor';
+    document.getElementById('perfil-nivel').textContent='⭐ Nível '+nivel;
+  } catch(e){ console.error(e); }
 }
 
-// ─── MODALS ────────────────────────────────────────────────
-function showQRCode() {
-  if (!currentUser) return showToast('Faça login para ver seu QR Code','error');
-  const cpf = currentUser.cpf || '';
-  document.getElementById('qr-cpf').textContent = fmtCPF(cpf);
-  document.getElementById('qr-nome-label').textContent = currentUser.nome || '';
-  // QR simples baseado no CPF
-  document.getElementById('qr-container').innerHTML = `
-    <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-      ${generateQRSVG(cpf)}
-    </svg>`;
-  openModal('modal-qr');
-}
-
-function generateQRSVG(data) {
-  // QR visual simplificado — padrão de squares baseado no CPF
-  const size = 9; const cell = 18;
-  let svg = '';
-  const seed = data.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-  // Cantos fixos (finder patterns)
-  [[0,0],[0,6],[6,0]].forEach(([r,c]) => {
-    svg += `<rect x="${c*cell+18}" y="${r*cell+18}" width="${cell*3}" height="${cell*3}" fill="#1AAFA8" rx="3"/>`;
-    svg += `<rect x="${c*cell+18+cell*0.5}" y="${r*cell+18+cell*0.5}" width="${cell*2}" height="${cell*2}" fill="white" rx="2"/>`;
-    svg += `<rect x="${c*cell+18+cell}" y="${r*cell+18+cell}" width="${cell}" height="${cell}" fill="#1AAFA8" rx="1"/>`;
-  });
-  // Data modules
-  for(let i=0;i<size;i++) for(let j=0;j<size;j++) {
-    if((i<3&&j<3)||(i<3&&j>5)||(i>5&&j<3)) continue;
-    if(((seed*(i+1)*(j+1))%7)<3) {
-      svg += `<rect x="${j*cell+18}" y="${i*cell+18}" width="${cell-2}" height="${cell-2}" fill="#2d2d2d" rx="2"/>`;
-    }
-  }
-  return svg;
-}
-
-function showModalDados() {
-  if (!currentUser) return;
-  const u = currentUser;
-  document.getElementById('dados-content').innerHTML = `
-    <strong>Nome:</strong> ${u.nome||'—'}<br>
-    <strong>CPF:</strong> ${fmtCPF(u.cpf||'')}<br>
-    <strong>E-mail:</strong> ${u.email||'—'}<br>
-    <strong>WhatsApp:</strong> ${u.whatsapp||'—'}<br>
-    <strong>CEP:</strong> ${u.cep||'—'}<br>
-    <strong>Profissão:</strong> ${u.profissao||'—'}<br>
-    <strong>Pontos:</strong> ${(u.pontos||0).toLocaleString('pt-BR')}<br>
-    <strong>Nível:</strong> ${u.nivel||'Explorador'}`;
+function showMeusDados() {
+  const u=currentUser;
+  document.getElementById('dados-content').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div><div style="font-size:12px;color:var(--gray-500);margin-bottom:3px">Nome</div><div style="font-weight:600">${u.nome||'—'}</div></div>
+      <div><div style="font-size:12px;color:var(--gray-500);margin-bottom:3px">CPF</div><div style="font-weight:600">${fmtCPF(u.cpf)}</div></div>
+      <div><div style="font-size:12px;color:var(--gray-500);margin-bottom:3px">E-mail</div><div style="font-weight:600">${u.email||'—'}</div></div>
+      <div><div style="font-size:12px;color:var(--gray-500);margin-bottom:3px">WhatsApp</div><div style="font-weight:600">${u.whatsapp||'—'}</div></div>
+      <div><div style="font-size:12px;color:var(--gray-500);margin-bottom:3px">CEP</div><div style="font-weight:600">${u.cep||'—'}</div></div>
+    </div>`;
   openModal('modal-dados');
 }
 
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// ─── TOAST ─────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.className = 'toast', 3000);
-}
-
-// ─── UTILS ─────────────────────────────────────────────────
-function fmtCPF(c) { return c.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4'); }
-function formatDate(d) { return new Date(d).toLocaleDateString('pt-BR'); }
-function relDate(d) {
-  const diff = Math.floor((Date.now()-new Date(d))/86400000);
-  if (diff===0) return 'Hoje';
-  if (diff===1) return 'Ontem';
-  return `${diff} dias`;
-}
-function storeEmoji(id) { const m={1:'🛒',2:'☕',3:'🍔',4:'💄',5:'🍫',6:'💊',7:'🌿',8:'🏠',9:'💇',10:'🚬',11:'📱',12:'🔑',13:'🐾',14:'👗',15:'🎲'}; return m[id]||'🛍️'; }
-function storeEmojiByName(n) {
-  if(!n) return '🛍️';
-  n = n.toLowerCase();
-  if(n.includes('bistek')||n.includes('super')) return '🛒';
-  if(n.includes('café')||n.includes('cafe')) return '☕';
-  if(n.includes('mc')||n.includes('burger')) return '🍔';
-  if(n.includes('boticário')||n.includes('boticario')) return '💄';
-  if(n.includes('cacau')||n.includes('chocolate')) return '🍫';
-  if(n.includes('farmácia')||n.includes('farmacia')) return '💊';
-  if(n.includes('pet')||n.includes('pata')) return '🐾';
-  return '🛍️';
-}
-
-// ─── INIT ──────────────────────────────────────────────────
-(function init() {
-  // Restaura sessão
-  const saved = localStorage.getItem('clube_user');
-  if (saved) {
-    try {
-      currentUser = JSON.parse(saved);
-      showScreen('home');
-    } catch(e) { showScreen('splash'); }
-  } else {
-    showScreen('splash');
+// ─── QR CODE ───
+function showQR() {
+  if(!currentUser){toast('Faça login primeiro','error');return;}
+  const canvas=document.getElementById('qr-canvas');
+  const ctx=canvas.getContext('2d');
+  const cpf=currentUser.cpf||'';
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,200,200);
+  const S=20; const data=cpf.split('').map(c=>c.charCodeAt(0));
+  ctx.fillStyle='#000';
+  // border
+  for(let i=0;i<10;i++){
+    ctx.fillRect(i*S,0,S,S); ctx.fillRect(i*S,9*S,S,S);
+    ctx.fillRect(0,i*S,S,S); ctx.fillRect(9*S,i*S,S,S);
   }
+  // corner squares
+  [[1,1],[1,7],[7,1]].forEach(([x,y])=>{
+    ctx.fillStyle='#000'; ctx.fillRect(x*S,y*S,3*S,3*S);
+    ctx.fillStyle='#fff'; ctx.fillRect((x+.5)*S,(y+.5)*S,2*S,2*S);
+    ctx.fillStyle='#000'; ctx.fillRect((x+1)*S,(y+1)*S,S,S);
+  });
+  // data
+  ctx.fillStyle='#000';
+  for(let r=2;r<8;r++) for(let c=2;c<8;c++) {
+    const idx=(r*6+c)%data.length;
+    if((data[idx]+r+c)%2===0) ctx.fillRect(c*S,r*S,S,S);
+  }
+  // teal accent
+  ctx.fillStyle='var(--teal)';
+  ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+  ctx.fillStyle='#1AAFA8';
+  ctx.fillText('CLUBE GUADIX',100,190);
+  document.getElementById('qr-cpf-label').textContent=fmtCPF(cpf);
+  openModal('modal-qr');
+}
+
+// ─── MODALS ───
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('show'); });
+});
+
+// ─── SESSION RESTORE ───
+(function(){
+  try{
+    const s=localStorage.getItem('cg_user');
+    if(s){ currentUser=JSON.parse(s); enterApp(); }
+  }catch(e){}
 })();
 </script>
 </body>
