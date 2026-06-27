@@ -462,6 +462,21 @@
   .menu-info span { font-size: 12px; color: var(--gray-500); }
   .menu-arrow { color: var(--gray-300); font-size: 18px; }
 </style>
+<!-- QR Scanner lib (lightweight, no dependencies) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+/* QR Scanner modal */
+#modal-scanner .modal-box { padding: 24px 16px; }
+#qr-reader { width: 100%; border-radius: 12px; overflow: hidden; }
+#qr-reader video { border-radius: 12px; }
+#qr-reader__scan_region { border-radius: 12px; }
+.scan-status {
+  text-align: center; padding: 12px; font-size: 14px;
+  color: var(--gray-500); margin-top: 8px;
+}
+.scan-status.success { color: var(--green); font-weight: 600; }
+.scan-status.error { color: var(--red); }
+</style>
 </head>
 <body>
 
@@ -574,8 +589,8 @@
         <div class="how-step"><div class="step-num">3</div><div class="step-text"><strong>Pontos creditados em segundos</strong><span>Consultamos a SEFAZ e os pontos são adicionados automaticamente</span></div></div>
       </div>
     </div>
-    <div class="scan-area" onclick="toast('Câmera: use o leitor de QR do seu celular e cole a chave abaixo','')">
-      <div class="scan-icon">⬛</div>
+    <div class="scan-area" onclick="abrirScanner()">
+      <div class="scan-icon">📷</div>
       <strong>Escanear QR Code da nota</strong>
       <span>Toque para abrir a câmera</span>
     </div>
@@ -694,6 +709,20 @@
     <button class="nav-item" id="nav-colecao" onclick="navTo('colecao')"><span class="nav-icon">🏆</span>Coleção</button>
     <button class="nav-item" id="nav-perfil" onclick="navTo('perfil')"><span class="nav-icon">👤</span>Perfil</button>
   </nav>
+</div>
+
+<!-- MODAL SCANNER QR NF-e -->
+<div class="modal-overlay" id="modal-scanner">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <h3 style="text-align:center;margin-bottom:4px">Escanear Nota Fiscal</h3>
+    <p style="text-align:center;color:var(--gray-500);font-size:13px;margin-bottom:16px">
+      Aponte para o QR Code impresso na nota
+    </p>
+    <div id="qr-reader"></div>
+    <div class="scan-status" id="scan-status">Iniciando câmera...</div>
+    <button class="btn btn-ghost" style="margin-top:12px" onclick="fecharScanner()">Cancelar</button>
+  </div>
 </div>
 
 <!-- MODAL QR -->
@@ -1167,6 +1196,175 @@ function closeModal(id){ document.getElementById(id).classList.remove('show'); }
 document.querySelectorAll('.modal-overlay').forEach(el=>{
   el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('show'); });
 });
+
+// ─── QR SCANNER ───
+let qrScanner = null;
+
+function abrirScanner() {
+  if(!currentUser){toast('Faça login primeiro','error');return;}
+  openModal('modal-scanner');
+  document.getElementById('scan-status').textContent = 'Iniciando câmera...';
+  document.getElementById('scan-status').className = 'scan-status';
+
+  // Pequeno delay para o modal aparecer antes de iniciar câmera
+  setTimeout(() => {
+    try {
+      qrScanner = new Html5Qrcode('qr-reader');
+      qrScanner.start(
+        { facingMode: 'environment' }, // câmera traseira
+        { fps: 10, qrbox: { width: 280, height: 280 } },
+        (decodedText) => {
+          // QR Code lido com sucesso!
+          qrScanner.stop().catch(() => {});
+          processarQRCode(decodedText);
+        },
+        () => {} // erro silencioso (frame sem QR)
+      ).catch(err => {
+        document.getElementById('scan-status').textContent = 'Permita o acesso à câmera nas configurações do navegador.';
+        document.getElementById('scan-status').className = 'scan-status error';
+        console.error(err);
+      });
+
+      document.getElementById('scan-status').textContent = 'Câmera ativa. Aponte para o QR Code da nota.';
+    } catch(e) {
+      document.getElementById('scan-status').textContent = 'Câmera não disponível. Digite a chave manualmente.';
+      document.getElementById('scan-status').className = 'scan-status error';
+    }
+  }, 400);
+}
+
+function fecharScanner() {
+  if(qrScanner) {
+    qrScanner.stop().catch(()=>{});
+    qrScanner.clear().catch(()=>{});
+    qrScanner = null;
+  }
+  closeModal('modal-scanner');
+}
+
+function processarQRCode(url) {
+  document.getElementById('scan-status').textContent = '✅ QR Code lido! Processando...';
+  document.getElementById('scan-status').className = 'scan-status success';
+
+  setTimeout(() => fecharScanner(), 800);
+
+  try {
+    // URL do QR Code NFC-e tem a chave como parâmetro
+    // Ex: https://dfe-portal.svrs.rs.gov.br/Nfce/QrCodeNFCe?chQRCode=4326...
+    // Ou: https://nfce.sefaz.xxx.gov.br/?chNFe=4326...
+    // Ou a própria chave de 44 dígitos diretamente
+
+    let chave = '';
+    let valorUrl = 0;
+
+    // Tenta extrair de URL
+    if(url.startsWith('http')) {
+      // Extrai chave da URL (parâmetro chQRCode, chNFe, chaveNFe ou p=)
+      const urlParams = new URL(url);
+      
+      // Formato SVRS RS: chQRCode=chave|nVersao|tpAmb|cIdToken|cHashQRCode
+      const chQRCode = urlParams.searchParams.get('chQRCode') || 
+                       urlParams.searchParams.get('p') || '';
+      
+      if(chQRCode) {
+        // Chave está nos primeiros 44 caracteres antes do pipe "|"
+        const partes = chQRCode.split('|');
+        chave = partes[0].replace(/\D/g,'').substring(0,44);
+        // Alguns formatos incluem valor: |vNF=25.48|
+        const vNF = partes.find(p => p.startsWith('vNF='));
+        if(vNF) valorUrl = parseFloat(vNF.replace('vNF=','')) || 0;
+      } else {
+        // Tenta outros parâmetros
+        const possivel = urlParams.searchParams.get('chNFe') ||
+                         urlParams.searchParams.get('chaveNFe') ||
+                         urlParams.searchParams.get('chave') || '';
+        chave = possivel.replace(/\D/g,'').substring(0,44);
+      }
+
+      // Se não achou na querystring, procura na URL toda (44 dígitos consecutivos)
+      if(chave.length !== 44) {
+        const match = url.match(/(\d{44})/);
+        if(match) chave = match[1];
+      }
+
+    } else {
+      // QR Code é a própria chave (44 dígitos)
+      chave = url.replace(/\D/g,'').substring(0,44);
+    }
+
+    if(chave.length !== 44) {
+      toast('QR Code inválido. Digite a chave manualmente.', 'error');
+      return;
+    }
+
+    // Preenche o campo da chave
+    document.getElementById('chave-nfe').value = chave;
+    navTo('nota');
+    toast('✅ Chave capturada! Verificando nota...', 'success');
+
+    // Chama a validação automaticamente após pequeno delay
+    setTimeout(() => validarNFeComValor(chave, valorUrl), 600);
+
+  } catch(e) {
+    console.error(e);
+    // Tenta extrair 44 dígitos da string
+    const match = url.replace(/\D/g,'');
+    if(match.length >= 44) {
+      const chave = match.substring(0,44);
+      document.getElementById('chave-nfe').value = chave;
+      navTo('nota');
+      toast('Chave capturada! Clique em Validar.', 'success');
+    } else {
+      toast('Não foi possível ler a chave. Tente digitar manualmente.', 'error');
+    }
+  }
+}
+
+async function validarNFeComValor(chave, valorHint) {
+  if(!currentUser) return;
+  if(chave.length !== 44) return;
+
+  loading(true);
+  toast('🔍 Consultando SEFAZ...', '');
+
+  try {
+    const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
+      body: JSON.stringify({chave, cliente_id: currentUser.id, valor: valorHint || 0})
+    });
+    const data = await res.json();
+
+    if(!res.ok) {
+      // Valor não encontrado automaticamente
+      if(res.status === 422 || data.precisa_valor) {
+        document.getElementById('valor-manual-box').style.display = 'block';
+        document.getElementById('valor-nfe').focus();
+        toast('Digite o valor da nota no campo abaixo', '');
+        loading(false);
+        return;
+      }
+      toast(data.error || 'Erro ao validar nota', 'error');
+      loading(false);
+      return;
+    }
+
+    const pts = data.pontos || 0;
+    currentUser.pontos_total = data.pontos_total || (currentUser.pontos_total||0) + pts;
+    saveSession();
+    document.getElementById('home-pontos').textContent = currentUser.pontos_total.toLocaleString('pt-BR');
+
+    const modeloNome = chave.substring(20,22)==='65'?'NFC-e':'NF-e';
+    toast('✅ +'+pts+' pontos! '+modeloNome+' de '+fmtMoney(data.valor)+' aprovada', 'success');
+    document.getElementById('chave-nfe').value = '';
+    document.getElementById('valor-manual-box').style.display = 'none';
+    loadHistorico();
+
+    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi!','success'), 2500);
+
+  } catch(e) { toast('Erro de conexão.', 'error'); console.error(e); }
+  finally { loading(false); }
+}
 
 // ─── SESSION RESTORE ───
 (function(){
