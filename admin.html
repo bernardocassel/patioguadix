@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Clube Guadix</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#1AAFA8;--teal-lt:#E8F7F6;--orange:#F39C34;--orange-lt:#FEF4E6;
+  --green:#4CAF50;--red:#E84B3C;--blue:#2FB7B3;
+  --g50:#F9F9F9;--g100:#F2F2F2;--g200:#E4E4E4;--g400:#A0A0A0;--g600:#5A5A5A;--g900:#181818;
+  --white:#fff;--sidebar:240px;
+}
+body{font-family:'Inter',sans-serif;background:var(--g50);display:flex;min-height:100vh;color:var(--g900);}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar);background:var(--g900);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+  padding:0 0 24px;
+}
+.sidebar-logo{
+  padding:22px 20px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;gap:10px;
+}
+.sidebar-logo-icon{
+  width:34px;height:34px;background:var(--teal);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  flex-shrink:0;
+}
+.sidebar-logo-text{font-size:14px;font-weight:700;color:white;letter-spacing:-0.3px;}
+.sidebar-logo-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px;}
+.sidebar-section{padding:18px 12px 6px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:0.8px;}
+.nav-link{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;margin:2px 8px;
+  border-radius:8px;cursor:pointer;
+  font-size:13px;font-weight:500;color:rgba(255,255,255,0.6);
+  transition:all .15s;text-decoration:none;
+}
+.nav-link:hover{background:rgba(255,255,255,0.07);color:white;}
+.nav-link.active{background:var(--teal);color:white;}
+.nav-link svg{width:16px;height:16px;flex-shrink:0;}
+.sidebar-footer{margin-top:auto;padding:16px 16px 0;border-top:1px solid rgba(255,255,255,0.08);}
+.sidebar-footer-text{font-size:11px;color:rgba(255,255,255,0.25);line-height:1.6;}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;}
+.topbar{
+  background:white;border-bottom:1px solid var(--g200);
+  padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.page-title{font-size:17px;font-weight:700;color:var(--g900);letter-spacing:-0.3px;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.topbar-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--green));
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:white;cursor:pointer;
+}
+.topbar-date{font-size:12px;color:var(--g400);}
+
+.content{padding:24px 28px;flex:1;}
+
+/* SCREEN SYSTEM */
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{
+  background:white;border-radius:14px;padding:18px 20px;
+  border:1px solid var(--g100);
+}
+.stat-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:12px;
+}
+.stat-icon svg{width:20px;height:20px;}
+.stat-num{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1;}
+.stat-label{font-size:12px;color:var(--g400);margin-top:4px;font-weight:500;}
+.stat-delta{font-size:11px;font-weight:600;margin-top:6px;}
+.stat-delta.up{color:var(--green);}
+.stat-delta.down{color:var(--red);}
+
+/* CARDS / SECTIONS */
+.card{background:white;border-radius:14px;border:1px solid var(--g100);overflow:hidden;margin-bottom:16px;}
+.card-header{
+  padding:16px 20px;border-bottom:1px solid var(--g100);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:14px;font-weight:700;color:var(--g900);}
+.card-action{font-size:12px;font-weight:600;color:var(--teal);cursor:pointer;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;}
+th{
+  padding:10px 16px;text-align:left;
+  font-size:11px;font-weight:600;color:var(--g400);
+  text-transform:uppercase;letter-spacing:0.5px;
+  background:var(--g50);border-bottom:1px solid var(--g100);
+}
+td{
+  padding:12px 16px;font-size:13px;color:var(--g900);
+  border-bottom:1px solid var(--g100);
+}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--g50);}
+.badge{
+  display:inline-block;padding:3px 9px;border-radius:20px;
+  font-size:11px;font-weight:600;
+}
+.badge-green{background:#E8F5E9;color:#2E7D32;}
+.badge-orange{background:var(--orange-lt);color:#B45309;}
+.badge-teal{background:var(--teal-lt);color:#0D8A84;}
+.badge-gray{background:var(--g100);color:var(--g600);}
+.badge-red{background:#FFEBEE;color:#C62828;}
+
+/* CHARTS placeholder */
+.chart-wrap{padding:20px;min-height:180px;display:flex;align-items:flex-end;gap:8px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar{border-radius:4px 4px 0 0;width:100%;min-height:4px;transition:height .4s;}
+.bar-label{font-size:10px;color:var(--g400);text-align:center;}
+.bar-val{font-size:10px;font-weight:600;color:var(--g600);}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px;}
+.form-group{}
+.form-label{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:5px;}
+.form-input{
+  width:100%;padding:11px 13px;border:1.5px solid var(--g200);
+  border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;
+  color:var(--g900);outline:none;
+}
+.form-input:focus{border-color:var(--teal);}
+.form-full{grid-column:1/-1;}
+.btn{
+  padding:11px 20px;border:none;border-radius:8px;
+  font-size:13px;font-weight:700;font-family:'Inter',sans-serif;
+  cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+}
+.btn-teal{background:var(--teal);color:white;}
+.btn-outline{background:white;color:var(--g600);border:1.5px solid var(--g200);}
+.btn-red{background:var(--red);color:white;}
+.form-actions{padding:0 20px 20px;display:flex;gap:8px;}
+
+/* NOTIF BUILDER */
+.notif-preview{
+  background:var(--g900);border-radius:14px;padding:16px;color:white;
+  margin:0 20px 20px;
+}
+.notif-preview-header{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:8px;}
+.notif-preview-title{font-size:14px;font-weight:700;}
+.notif-preview-body{font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;line-height:1.5;}
+
+/* STORE FILTER */
+.store-filter{display:flex;gap:8px;padding:0 20px 16px;flex-wrap:wrap;}
+.store-chip{
+  padding:6px 13px;border-radius:20px;font-size:11px;font-weight:600;
+  cursor:pointer;border:1.5px solid var(--g200);background:white;color:var(--g600);
+  white-space:nowrap;
+}
+.store-chip.active{background:var(--teal);color:white;border-color:var(--teal);}
+
+/* PROGRESS BAR */
+.progress-wrap{background:var(--g100);border-radius:4px;height:6px;overflow:hidden;}
+.progress-bar{height:100%;border-radius:4px;background:var(--teal);}
+
+/* GRID 2 */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-65{display:grid;grid-template-columns:1.8fr 1fr;gap:16px;}
+
+/* ALERT */
+.alert{
+  padding:12px 16px;border-radius:8px;font-size:13px;
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.alert-info{background:var(--teal-lt);color:#0D6A64;border-left:3px solid var(--teal);}
+.alert svg{width:16px;height:16px;flex-shrink:0;}
+
+/* SCROLL */
+.content::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">🦎</div>
+    <div>
+      <div class="sidebar-logo-text">Clube Guadix</div>
+      <div class="sidebar-logo-sub">Painel Administrativo</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">VISÃO GERAL</div>
+  <a class="nav-link active" onclick="showPage('dashboard')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Dashboard
+  </a>
+  <a class="nav-link" onclick="showPage('clientes')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Clientes
+  </a>
+  <a class="nav-link" onclick="showPage('notas')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+    Notas Fiscais
+  </a>
+  <a class="nav-link" onclick="showPage('pontos')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    Pontos & Resgates
+  </a>
+
+  <div class="sidebar-section">COMUNICAÇÃO</div>
+  <a class="nav-link" onclick="showPage('campanhas')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+    Campanhas & Disparos
+  </a>
+  <a class="nav-link" onclick="showPage('ofertas')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+    Ofertas por Loja
+  </a>
+
+  <div class="sidebar-section">SORTEIO</div>
+  <a class="nav-link" onclick="showPage('sorteio')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2-7h-4l-2 2h-3l2-4-2-4h3l2 2h4l-2-7h3z"/></svg>
+    Sorteio Rio de Janeiro
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">Pátio Guadix · Admin v1.0<br>Dados protegidos pela LGPD</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="pageTitle">Dashboard</div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="topbarDate"></div>
+      <div class="topbar-avatar">AD</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="screen active" id="page-dashboard">
+
+      <!-- ROW 1: KPIs principais -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--teal-lt)">
+            <svg fill="none" stroke="#1AAFA8" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="stat-num">1.847</div>
+          <div class="stat-label">Clientes cadastrados</div>
+          <div class="stat-delta up">↑ +124 este mês</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--orange-lt)">
+            <svg fill="none" stroke="#F39C34" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="stat-num" style="color:var(--orange)">R$187</div>
+          <div class="stat-label">Ticket médio por nota</div>
+          <div class="stat-delta up">↑ +R$12 vs mês passado</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#E8F5E9">
+            <svg fill="none" stroke="#4CAF50" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div class="stat-num">6,2x</div>
+          <div class="stat-label">Visitas médias / mês</div>
+          <div class="stat-delta up">↑ +0,8 vs mês passado</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FFEBEE">
+            <svg fill="none" stroke="#E84B3C" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="stat-num">3.412</div>
+          <div class="stat-label">Notas cadastradas</div>
+          <div class="stat-delta up">↑ +87 hoje</div>
+        </div>
+      </div>
+
+      <!-- ROW 2: Faixa etária + Bairros -->
+      <div class="grid-2">
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Faixa etária dos clientes</span>
+            <span style="font-size:11px;color:var(--g400);">Idade média: 34 anos</span>
+          </div>
+          <div style="padding:14px 20px 16px;">
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--g600);">18–24 anos</span><span style="font-size:12px;font-weight:600;color:var(--g600);">187 · 10%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:10%"></div></div></div>
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--g600);">25–34 anos</span><span style="font-size:12px;font-weight:600;color:var(--g600);">554 · 30%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:30%"></div></div></div>
+            <div style="margin-bottom:11px;background:var(--orange-lt);border-radius:6px;padding:6px 8px;border-left:3px solid var(--orange);"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:700;color:#92650A;">35–44 anos ← maior grupo</span><span style="font-size:12px;font-weight:700;color:var(--orange);">628 · 34%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:34%;background:var(--orange)"></div></div></div>
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--g600);">45–54 anos</span><span style="font-size:12px;font-weight:600;color:var(--g600);">369 · 20%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:20%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--g600);">55+ anos</span><span style="font-size:12px;font-weight:600;color:var(--g600);">109 · 6%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:6%"></div></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Bairros com mais clientes</span>
+            <span class="card-action" onclick="showPage('inteligencia')">Ver mapa →</span>
+          </div>
+          <table>
+            <thead><tr><th>Bairro</th><th>Clientes</th><th>Ticket médio</th><th>%</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Zona Sul</strong></td><td>487</td><td style="color:var(--orange);font-weight:600">R$214</td><td><span class="badge badge-teal">26%</span></td></tr>
+              <tr><td><strong>Restinga</strong></td><td>312</td><td style="color:var(--orange);font-weight:600">R$178</td><td><span class="badge badge-teal">17%</span></td></tr>
+              <tr><td><strong>Cavalhada</strong></td><td>276</td><td style="color:var(--orange);font-weight:600">R$192</td><td><span class="badge badge-teal">15%</span></td></tr>
+              <tr><td><strong>Camaquã</strong></td><td>198</td><td style="color:var(--orange);font-weight:600">R$201</td><td><span class="badge badge-green">11%</span></td></tr>
+              <tr><td><strong>Belém Novo</strong></td><td>167</td><td style="color:var(--orange);font-weight:600">R$165</td><td><span class="badge badge-green">9%</span></td></tr>
+              <tr><td><strong>Aberta dos Morros</strong></td><td>143</td><td style="color:var(--orange);font-weight:600">R$158</td><td><span class="badge badge-gray">8%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ROW 3: Frequência por loja + Ticket por loja -->
+      <div class="grid-2">
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Frequência média por loja / mês</span>
+            <span style="font-size:11px;color:var(--g400);">visitas por cliente</span>
+          </div>
+          <div style="padding:16px 20px;">
+            <div style="margin-bottom:13px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;"></div>
+                  <span style="font-size:13px;font-weight:600;">Bistek</span>
+                </div>
+                <span style="font-size:14px;font-weight:800;color:var(--teal);">4,1x / mês</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:82%"></div></div>
+            </div>
+            <div style="margin-bottom:13px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;"></div>
+                  <span style="font-size:13px;font-weight:600;">QuieroCafé</span>
+                </div>
+                <span style="font-size:14px;font-weight:800;color:var(--orange);">2,8x / mês</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:56%;background:var(--orange)"></div></div>
+            </div>
+            <div style="margin-bottom:13px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;"></div>
+                  <span style="font-size:13px;">McDonald's</span>
+                </div>
+                <span style="font-size:14px;font-weight:700;color:var(--g600);">1,9x / mês</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:38%"></div></div>
+            </div>
+            <div style="margin-bottom:13px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;"></div>
+                  <span style="font-size:13px;">Farmácia São João</span>
+                </div>
+                <span style="font-size:14px;font-weight:700;color:var(--g600);">1,4x / mês</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:28%;background:var(--orange)"></div></div>
+            </div>
+            <div style="margin-bottom:13px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;"></div>
+                  <span style="font-size:13px;">O Boticário</span>
+                </div>
+                <span style="font-size:14px;font-weight:700;color:var(--g600);">1,1x / mês</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:22%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;"></div>
+                  <span style="font-size:13px;">CacauShow</span>
+                </div>
+                <span style="font-size:14px;font-weight:700;color:var(--g600);">0,6x / mês</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:12%;background:var(--orange)"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Ticket médio por loja</span>
+            <span style="font-size:11px;color:var(--g400);">média por nota</span>
+          </div>
+          <div class="chart-wrap" style="align-items:flex-end;padding:12px 16px 8px;">
+            <div class="bar-col"><div class="bar-val">R$248</div><div class="bar" style="height:140px;background:var(--teal)"></div><div class="bar-label">Bistek</div></div>
+            <div class="bar-col"><div class="bar-val">R$198</div><div class="bar" style="height:112px;background:var(--teal)"></div><div class="bar-label">Farm. SJ</div></div>
+            <div class="bar-col"><div class="bar-val">R$142</div><div class="bar" style="height:80px;background:var(--orange)"></div><div class="bar-label">Boticário</div></div>
+            <div class="bar-col"><div class="bar-val">R$118</div><div class="bar" style="height:66px;background:var(--orange)"></div><div class="bar-label">CacauShow</div></div>
+            <div class="bar-col"><div class="bar-val">R$86</div><div class="bar" style="height:48px;background:var(--teal)"></div><div class="bar-label">McD.</div></div>
+            <div class="bar-col"><div class="bar-val">R$62</div><div class="bar" style="height:35px;background:var(--orange)"></div><div class="bar-label">Quiero</div></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 4: Profissões + Horários de pico -->
+      <div class="grid-2">
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">Profissões mais comuns</span></div>
+          <div style="padding:14px 20px 16px;">
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;">Professora / Professor</span><span style="font-size:12px;font-weight:600;color:var(--teal);">18%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:18%"></div></div></div>
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;">Autônomo / MEI</span><span style="font-size:12px;font-weight:600;color:var(--teal);">15%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:15%"></div></div></div>
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;">Do lar</span><span style="font-size:12px;font-weight:600;color:var(--teal);">14%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:14%"></div></div></div>
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;">Funcionário público</span><span style="font-size:12px;font-weight:600;color:var(--teal);">11%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:11%"></div></div></div>
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;">Saúde (enfermagem, técnico)</span><span style="font-size:12px;font-weight:600;color:var(--teal);">9%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:9%"></div></div></div>
+            <div style="margin-bottom:11px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;">Comércio / Vendas</span><span style="font-size:12px;font-weight:600;color:var(--teal);">8%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:8%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;color:var(--g400);">Outros</span><span style="font-size:12px;color:var(--g400);">25%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:25%;background:var(--g200)"></div></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">Horários de pico por dia</span></div>
+          <div style="padding:14px 16px 16px;">
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;margin-bottom:14px;">
+              <div><div style="font-size:10px;color:var(--g400);font-weight:600;margin-bottom:6px;">SEG</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;margin-bottom:3px;">9–11h</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;">17–19h</div></div>
+              <div><div style="font-size:10px;color:var(--g400);font-weight:600;margin-bottom:6px;">TER</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;margin-bottom:3px;">10–12h</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;">18–20h</div></div>
+              <div><div style="font-size:10px;color:var(--g400);font-weight:600;margin-bottom:6px;">QUA</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;margin-bottom:3px;">11–13h</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;">17–19h</div></div>
+              <div><div style="font-size:10px;color:var(--g400);font-weight:600;margin-bottom:6px;">QUI</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;margin-bottom:3px;">9–11h</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;">16–18h</div></div>
+              <div><div style="font-size:10px;color:var(--g400);font-weight:600;margin-bottom:6px;">SEX</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;margin-bottom:3px;">11–13h</div><div style="background:var(--teal-lt);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--teal);font-weight:600;">17–20h</div></div>
+              <div style="background:var(--orange-lt);border-radius:7px;padding:4px 2px;border:1px solid rgba(243,156,52,0.2);">
+                <div style="font-size:10px;color:var(--orange);font-weight:700;margin-bottom:6px;">SÁB ★</div>
+                <div style="background:var(--orange);border-radius:5px;padding:5px 2px;font-size:10px;color:white;font-weight:700;margin-bottom:3px;">9–13h</div>
+                <div style="background:var(--orange);border-radius:5px;padding:5px 2px;font-size:10px;color:white;font-weight:700;">15–18h</div>
+              </div>
+              <div><div style="font-size:10px;color:var(--g400);font-weight:600;margin-bottom:6px;">DOM</div><div style="background:var(--g100);border-radius:5px;padding:5px 2px;font-size:10px;color:var(--g400);font-weight:500;margin-bottom:3px;">10–13h</div><div style="font-size:9px;color:var(--g300);margin-top:6px;">baixo</div></div>
+            </div>
+            <div style="background:var(--orange-lt);border-radius:8px;padding:10px 12px;font-size:11px;color:#92650A;border-left:3px solid var(--orange);line-height:1.5;">
+              <strong>Insight:</strong> Sábado manhã é o pico da semana. Campanhas enviadas às 8h30 no sábado têm <strong>72% de abertura</strong>.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 5: Notas por loja + Últimas notas + Sorteio/Guadis -->
+      <div class="grid-65">
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Notas por loja — junho 2026</span>
+              <span class="card-action" onclick="showPage('notas')">Ver detalhes →</span>
+            </div>
+            <div class="chart-wrap">
+              <div class="bar-col"><div class="bar-val">1.2k</div><div class="bar" style="height:150px;background:var(--teal)"></div><div class="bar-label">Bistek</div></div>
+              <div class="bar-col"><div class="bar-val">680</div><div class="bar" style="height:85px;background:var(--orange)"></div><div class="bar-label">QuieroCafé</div></div>
+              <div class="bar-col"><div class="bar-val">520</div><div class="bar" style="height:65px;background:var(--teal)"></div><div class="bar-label">McDonald's</div></div>
+              <div class="bar-col"><div class="bar-val">410</div><div class="bar" style="height:51px;background:var(--orange)"></div><div class="bar-label">Farm. SJ</div></div>
+              <div class="bar-col"><div class="bar-val">290</div><div class="bar" style="height:36px;background:var(--teal)"></div><div class="bar-label">Boticário</div></div>
+              <div class="bar-col"><div class="bar-val">180</div><div class="bar" style="height:22px;background:var(--orange)"></div><div class="bar-label">CacauShow</div></div>
+              <div class="bar-col"><div class="bar-val">132</div><div class="bar" style="height:16px;background:var(--teal)"></div><div class="bar-label">Natura</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Últimas notas cadastradas</span>
+              <span class="card-action" onclick="showPage('notas')">Ver todas →</span>
+            </div>
+            <table>
+              <thead><tr><th>Cliente</th><th>Loja</th><th>Valor</th><th>Pontos</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>João Silva</td><td>Bistek</td><td>R$87,50</td><td>+88</td><td><span class="badge badge-green">Aprovado</span></td></tr>
+                <tr><td>Maria Oliveira</td><td>O Boticário</td><td>R$124,00</td><td>+124</td><td><span class="badge badge-green">Aprovado</span></td></tr>
+                <tr><td>Carlos Santos</td><td>QuieroCafé</td><td>R$42,00</td><td>+42</td><td><span class="badge badge-green">Aprovado</span></td></tr>
+                <tr><td>Ana Lima</td><td>Farmácia São João</td><td>R$312,00</td><td>+312 🦎</td><td><span class="badge badge-teal">Guadi!</span></td></tr>
+                <tr><td>Pedro Costa</td><td>McDonald's</td><td>R$58,90</td><td>+59</td><td><span class="badge badge-orange">Pendente</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><span class="card-title">Guadis desbloqueados</span></div>
+            <div style="padding:14px 20px 16px;">
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;font-weight:600;">Explorador</span><span style="font-size:11px;color:var(--g400);">312 · 84%</span></div>
+                <div class="progress-wrap"><div class="progress-bar" style="width:84%"></div></div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;font-weight:600;">Chef</span><span style="font-size:11px;color:var(--g400);">98 · 26%</span></div>
+                <div class="progress-wrap"><div class="progress-bar" style="width:26%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;font-weight:600;">Aventureiro</span><span style="font-size:11px;color:var(--g400);">24 · 6%</span></div>
+                <div class="progress-wrap"><div class="progress-bar" style="width:6%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background:var(--g900);border-color:var(--g900);">
+            <div style="padding:18px 20px;">
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);font-weight:600;letter-spacing:0.5px;margin-bottom:8px;">SORTEIO — RIO DE JANEIRO</div>
+              <div style="font-size:24px;font-weight:800;color:white;letter-spacing:-0.5px;">434</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;">números da sorte emitidos</div>
+              <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);">
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:11px;color:rgba(255,255,255,0.5);">Data do sorteio</span>
+                  <span style="font-size:11px;font-weight:600;color:var(--orange);">30/09/2026</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                  <span style="font-size:11px;color:rgba(255,255,255,0.5);">Participantes</span>
+                  <span style="font-size:11px;font-weight:600;color:white;">312</span>
+                </div>
+              </div>
+              <button onclick="showPage('sorteio')" style="margin-top:14px;width:100%;background:var(--orange);color:white;border:none;border-radius:8px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Gerenciar sorteio →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+<!-- ═══ CLIENTES ═══ -->
+    <div class="screen" id="page-clientes">
+      <div class="alert alert-info">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Dados protegidos pela LGPD. Acesso restrito a administradores autorizados.
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Todos os clientes (1.847)</span>
+          <div style="display:flex;gap:8px;">
+            <input type="text" placeholder="Buscar por nome, CPF ou e-mail..." style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px;font-family:Inter,sans-serif;width:260px;outline:none;">
+            <button class="btn btn-teal" style="font-size:12px;padding:7px 14px;">Exportar CSV</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Nome</th><th>WhatsApp</th><th>Bairro/CEP</th><th>Pontos</th><th>Guadis</th><th>Cadastro</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>João Silva</strong><br><span style="font-size:11px;color:var(--g400)">joao@email.com</span></td><td>(51) 99999-0000</td><td>Zona Sul · 91760-000</td><td><strong style="color:var(--orange)">1.240</strong></td><td>🦎 1</td><td>jun/26</td><td><span class="badge badge-green">Ativo</span></td></tr>
+            <tr><td><strong>Maria Oliveira</strong><br><span style="font-size:11px;color:var(--g400)">maria@email.com</span></td><td>(51) 98888-1111</td><td>Restinga · 91790-000</td><td><strong style="color:var(--orange)">3.870</strong></td><td>🦎🦎 2</td><td>mai/26</td><td><span class="badge badge-green">Ativo</span></td></tr>
+            <tr><td><strong>Carlos Santos</strong><br><span style="font-size:11px;color:var(--g400)">carlos@email.com</span></td><td>(51) 97777-2222</td><td>Cavalhada · 91740-000</td><td><strong style="color:var(--orange)">580</strong></td><td>🦎 1</td><td>jun/26</td><td><span class="badge badge-green">Ativo</span></td></tr>
+            <tr><td><strong>Ana Lima</strong><br><span style="font-size:11px;color:var(--g400)">ana@email.com</span></td><td>(51) 96666-3333</td><td>Camaquã · 91780-000</td><td><strong style="color:var(--orange)">6.420</strong></td><td>🦎🦎🦎 3</td><td>abr/26</td><td><span class="badge badge-green">Ativo</span></td></tr>
+            <tr><td><strong>Pedro Costa</strong><br><span style="font-size:11px;color:var(--g400)">pedro@email.com</span></td><td>(51) 95555-4444</td><td>Belém Novo · 91800-000</td><td><strong style="color:var(--orange)">120</strong></td><td>—</td><td>jun/26</td><td><span class="badge badge-orange">Inativo</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Segmentação -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Segmentação automática</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 20px;">
+          <div style="background:var(--teal-lt);border-radius:10px;padding:14px;border:1px solid rgba(26,175,168,0.15);">
+            <div style="font-size:20px;font-weight:800;color:var(--teal);">312</div>
+            <div style="font-size:12px;font-weight:600;color:var(--teal);margin-top:2px;">Alto engajamento</div>
+            <div style="font-size:11px;color:var(--g400);margin-top:4px;">+1 Guadi desbloqueado</div>
+          </div>
+          <div style="background:var(--orange-lt);border-radius:10px;padding:14px;border:1px solid rgba(243,156,52,0.15);">
+            <div style="font-size:20px;font-weight:800;color:var(--orange);">891</div>
+            <div style="font-size:12px;font-weight:600;color:var(--orange);margin-top:2px;">Em progressão</div>
+            <div style="font-size:11px;color:var(--g400);margin-top:4px;">Cadastrou 1–5 notas</div>
+          </div>
+          <div style="background:var(--g100);border-radius:10px;padding:14px;border:1px solid var(--g200);">
+            <div style="font-size:20px;font-weight:800;color:var(--g600);">644</div>
+            <div style="font-size:12px;font-weight:600;color:var(--g600);margin-top:2px;">Inativos</div>
+            <div style="font-size:11px;color:var(--g400);margin-top:4px;">Sem nota nos últimos 30 dias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NOTAS FISCAIS ═══ -->
+    <div class="screen" id="page-notas">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card">
+          <div class="stat-num">3.412</div>
+          <div class="stat-label">Total de notas</div>
+          <div class="stat-delta up">↑ +87 hoje</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">R$638.044</div>
+          <div class="stat-label">Volume total (NF-e)</div>
+          <div class="stat-delta up">↑ +R$16.245 hoje</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">R$187</div>
+          <div class="stat-label">Ticket médio</div>
+          <div class="stat-delta up">↑ vs R$175 mês passado</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Notas fiscais registradas</span>
+          <button class="btn btn-teal" style="font-size:11px;padding:6px 12px;">Exportar</button>
+        </div>
+        <table>
+          <thead><tr><th>Data/Hora</th><th>Cliente</th><th>Loja</th><th>Valor</th><th>Pontos gerados</th><th>Chave NF-e</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>27/06 10:34</td><td>João Silva</td><td>Bistek</td><td>R$87,50</td><td>+88 pts</td><td style="font-family:monospace;font-size:10px;color:var(--g400)">43260...7890</td><td><span class="badge badge-green">Válida</span></td></tr>
+            <tr><td>27/06 09:12</td><td>Ana Lima</td><td>Farmácia São João</td><td>R$312,00</td><td>+312 pts 🦎</td><td style="font-family:monospace;font-size:10px;color:var(--g400)">43260...1234</td><td><span class="badge badge-teal">Guadi</span></td></tr>
+            <tr><td>26/06 18:45</td><td>Maria Oliveira</td><td>O Boticário</td><td>R$124,00</td><td>+124 pts</td><td style="font-family:monospace;font-size:10px;color:var(--g400)">43260...5678</td><td><span class="badge badge-green">Válida</span></td></tr>
+            <tr><td>26/06 15:20</td><td>Carlos Santos</td><td>QuieroCafé</td><td>R$42,00</td><td>+42 pts</td><td style="font-family:monospace;font-size:10px;color:var(--g400)">43260...9012</td><td><span class="badge badge-green">Válida</span></td></tr>
+            <tr><td>26/06 12:03</td><td>Pedro Costa</td><td>McDonald's</td><td>R$58,90</td><td>+59 pts</td><td style="font-family:monospace;font-size:10px;color:var(--g400)">43260...3456</td><td><span class="badge badge-orange">Pendente</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ PONTOS ═══ -->
+    <div class="screen" id="page-pontos">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Extrato de pontos</span></div>
+          <table>
+            <thead><tr><th>Cliente</th><th>Evento</th><th>Pontos</th><th>Data</th></tr></thead>
+            <tbody>
+              <tr><td>João Silva</td><td>Nota Bistek</td><td style="color:var(--green)">+88</td><td>27/06</td></tr>
+              <tr><td>Ana Lima</td><td>Resgate Bellafast</td><td style="color:var(--red)">-1.000</td><td>26/06</td></tr>
+              <tr><td>Maria Oliveira</td><td>Nota Boticário</td><td style="color:var(--green)">+124</td><td>26/06</td></tr>
+              <tr><td>Carlos Santos</td><td>Resgate CacauShow</td><td style="color:var(--red)">-500</td><td>25/06</td></tr>
+              <tr><td>Ana Lima</td><td>Bônus aniversário</td><td style="color:var(--green)">+200</td><td>24/06</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><span class="card-title">Resgates por tipo</span></div>
+            <div style="padding:16px 20px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--g100);">
+                <span style="font-size:13px;">Escova — Bellafast</span>
+                <span style="font-size:13px;font-weight:700;color:var(--orange);">47x</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--g100);">
+                <span style="font-size:13px;">Bombons — CacauShow</span>
+                <span style="font-size:13px;font-weight:700;color:var(--orange);">89x</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+                <span style="font-size:13px;">Desconto — Farmácia SJ</span>
+                <span style="font-size:13px;font-weight:700;color:var(--orange);">31x</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Ajuste manual de pontos</span></div>
+            <div style="padding:16px 20px;">
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">Cliente (CPF ou nome)</label>
+                <input class="form-input" type="text" placeholder="Buscar cliente...">
+              </div>
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">Pontos (use - para remover)</label>
+                <input class="form-input" type="number" placeholder="+100 ou -50">
+              </div>
+              <div class="form-group" style="margin-bottom:16px;">
+                <label class="form-label">Motivo</label>
+                <input class="form-input" type="text" placeholder="Ex: Bônus aniversário">
+              </div>
+              <button class="btn btn-teal" style="width:100%;justify-content:center;">Aplicar ajuste</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CAMPANHAS ═══ -->
+    <div class="screen" id="page-campanhas">
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Nova campanha de disparo</span></div>
+            <div class="form-grid">
+              <div class="form-group form-full">
+                <label class="form-label">Título da notificação</label>
+                <input class="form-input" type="text" id="notifTitle" placeholder="Ex: Hora do almoço no QuieroCafé!" oninput="updatePreview()">
+              </div>
+              <div class="form-group form-full">
+                <label class="form-label">Mensagem</label>
+                <textarea class="form-input" id="notifBody" rows="3" placeholder="Ex: Combo almoço com 15% de desconto das 11h às 15h. Só para membros do Clube!" oninput="updatePreview()" style="resize:none;"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Canal</label>
+                <select class="form-input">
+                  <option>Push (app)</option>
+                  <option>WhatsApp</option>
+                  <option>Push + WhatsApp</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Horário de envio</label>
+                <input class="form-input" type="time" value="12:00">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Segmento</label>
+                <select class="form-input">
+                  <option>Todos os clientes (1.847)</option>
+                  <option>Alto engajamento (312)</option>
+                  <option>Em progressão (891)</option>
+                  <option>Inativos há 30 dias (644)</option>
+                  <option>Aniversariantes do mês</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Loja associada</label>
+                <select class="form-input">
+                  <option>Todas as lojas</option>
+                  <option>QuieroCafé</option>
+                  <option>Bistek</option>
+                  <option>O Boticário</option>
+                  <option>McDonald's</option>
+                  <option>Farmácia São João</option>
+                  <option>CacauShow</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-teal">Enviar agora</button>
+              <button class="btn btn-outline">Agendar</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><span class="card-title">Preview da notificação</span></div>
+            <div class="notif-preview">
+              <div class="notif-preview-header">🦎 Clube Guadix · agora</div>
+              <div class="notif-preview-title" id="previewTitle">Hora do almoço no QuieroCafé!</div>
+              <div class="notif-preview-body" id="previewBody">Combo almoço com 15% de desconto das 11h às 15h. Só para membros do Clube!</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Histórico de campanhas</span></div>
+            <table>
+              <thead><tr><th>Campanha</th><th>Enviado</th><th>Aberto</th></tr></thead>
+              <tbody>
+                <tr><td>Almoço QuieroCafé</td><td>1.847</td><td><span style="color:var(--green);font-weight:600">68%</span></td></tr>
+                <tr><td>Terça do Açougue Bistek</td><td>1.523</td><td><span style="color:var(--green);font-weight:600">72%</span></td></tr>
+                <tr><td>Brinde Boticário</td><td>890</td><td><span style="color:var(--orange);font-weight:600">54%</span></td></tr>
+                <tr><td>Reativação inativos</td><td>644</td><td><span style="color:var(--orange);font-weight:600">41%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ OFERTAS ═══ -->
+    <div class="screen" id="page-ofertas">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Ofertas ativas</span>
+          <button class="btn btn-teal" style="font-size:11px;padding:6px 14px;">+ Nova oferta</button>
+        </div>
+        <div class="store-filter">
+          <div class="store-chip active">Todas</div>
+          <div class="store-chip">QuieroCafé</div>
+          <div class="store-chip">Bistek</div>
+          <div class="store-chip">Boticário</div>
+          <div class="store-chip">McDonald's</div>
+          <div class="store-chip">Farmácia SJ</div>
+          <div class="store-chip">CacauShow</div>
+        </div>
+        <table>
+          <thead><tr><th>Loja</th><th>Título</th><th>Descrição</th><th>Pontos</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody>
+            <tr><td><strong>QuieroCafé</strong></td><td>Combo almoço 15% off</td><td>Das 11h às 15h</td><td>Grátis</td><td>27/06</td><td><span class="badge badge-green">Ativa</span></td><td><span style="font-size:12px;color:var(--teal);cursor:pointer;">Editar</span></td></tr>
+            <tr><td><strong>Bistek</strong></td><td>Terça do Açougue</td><td>Cortes especiais</td><td>Grátis</td><td>30/06</td><td><span class="badge badge-green">Ativa</span></td><td><span style="font-size:12px;color:var(--teal);cursor:pointer;">Editar</span></td></tr>
+            <tr><td><strong>O Boticário</strong></td><td>Brinde em +R$80</td><td>Produto surpresa</td><td>Grátis</td><td>31/07</td><td><span class="badge badge-green">Ativa</span></td><td><span style="font-size:12px;color:var(--teal);cursor:pointer;">Editar</span></td></tr>
+            <tr><td><strong>CacauShow</strong></td><td>Caixa de bombons</td><td>12 unidades</td><td>500 pts</td><td>31/07</td><td><span class="badge badge-green">Ativa</span></td><td><span style="font-size:12px;color:var(--teal);cursor:pointer;">Editar</span></td></tr>
+            <tr><td><strong>Bellafast Salão</strong></td><td>Escova grátis</td><td>Agendamento pelo app</td><td>1.000 pts</td><td>31/08</td><td><span class="badge badge-orange">Pausada</span></td><td><span style="font-size:12px;color:var(--teal);cursor:pointer;">Editar</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ SORTEIO ═══ -->
+    <div class="screen" id="page-sorteio">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card">
+          <div class="stat-num">434</div>
+          <div class="stat-label">Números emitidos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">312</div>
+          <div class="stat-label">Participantes únicos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">95 dias</div>
+          <div class="stat-label">Para o sorteio (30/09)</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Participantes e números da sorte</span></div>
+          <table>
+            <thead><tr><th>Cliente</th><th>Guadis</th><th>Números</th></tr></thead>
+            <tbody>
+              <tr><td>Ana Lima</td><td>🦎🦎🦎 3</td><td><span class="badge badge-teal">#1201 #1202 #1203</span></td></tr>
+              <tr><td>Maria Oliveira</td><td>🦎🦎 2</td><td><span class="badge badge-teal">#0874 #0875</span></td></tr>
+              <tr><td>João Silva</td><td>🦎 1</td><td><span class="badge badge-teal">#4827</span></td></tr>
+              <tr><td>Carlos Santos</td><td>🦎 1</td><td><span class="badge badge-teal">#0312</span></td></tr>
+              <tr><td>Pedro Costa</td><td>🦎 1</td><td><span class="badge badge-teal">#0098</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="card" style="background:var(--g900);border-color:var(--g900);margin-bottom:16px;">
+            <div style="padding:20px;">
+              <div style="font-size:28px;margin-bottom:10px;">✈️</div>
+              <div style="font-size:18px;font-weight:800;color:white;letter-spacing:-0.4px;">Viagem ao Rio de Janeiro</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:6px;line-height:1.6;">Para você + 1 acompanhante<br>Sorteio em 30/09/2026<br>Ao vivo nas redes sociais</div>
+              <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:rgba(255,255,255,0.3);">Autorizado SEAE/MF · Regulamento no site</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Exportar lista para sorteio</span></div>
+            <div style="padding:16px 20px;">
+              <p style="font-size:13px;color:var(--g600);margin-bottom:14px;line-height:1.6;">Exporte a lista completa de números para realizar o sorteio de forma transparente e auditável.</p>
+              <button class="btn btn-teal" style="width:100%;justify-content:center;margin-bottom:8px;">Exportar CSV completo</button>
+              <button class="btn btn-outline" style="width:100%;justify-content:center;">Gerar PDF para notário</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- ═══ INTELIGÊNCIA / PERFIL DE CONSUMO ═══ -->
+    <div class="screen" id="page-inteligencia">
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FFF3E0"><svg fill="none" stroke="#F39C34" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-num" style="color:var(--orange)">R$187</div>
+          <div class="stat-label">Ticket médio por nota</div>
+          <div class="stat-delta up">↑ +R$12 vs mês anterior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--teal-lt)"><svg fill="none" stroke="#1AAFA8" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="stat-num">6,2x</div>
+          <div class="stat-label">Visitas médias por mês</div>
+          <div class="stat-delta up">↑ +0,8 vs mês anterior</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#E8F5E9"><svg fill="none" stroke="#4CAF50" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div class="stat-num">3</div>
+          <div class="stat-label">Lojas por visita (média)</div>
+          <div class="stat-delta up">Bistek + 2 outras</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FFEBEE"><svg fill="none" stroke="#E84B3C" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="stat-num">34 anos</div>
+          <div class="stat-label">Idade média dos clientes</div>
+          <div class="stat-delta">Faixa 28–42 predomina</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+
+        <!-- FAIXA ETÁRIA -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Faixa etária dos clientes</span></div>
+          <div style="padding:16px 20px;">
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                <span style="font-size:13px;font-weight:500;">18–24 anos</span>
+                <span style="font-size:12px;color:var(--g400);">187 clientes · 10%</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:10%;background:#1AAFA8"></div></div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                <span style="font-size:13px;font-weight:600;">25–34 anos</span>
+                <span style="font-size:12px;color:var(--g400);">554 clientes · 30%</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:30%;background:#1AAFA8"></div></div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                <span style="font-size:13px;font-weight:700;color:var(--teal);">35–44 anos ← maior grupo</span>
+                <span style="font-size:12px;color:var(--teal);font-weight:600;">628 clientes · 34%</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:34%;background:var(--orange)"></div></div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                <span style="font-size:13px;font-weight:500;">45–54 anos</span>
+                <span style="font-size:12px;color:var(--g400);">369 clientes · 20%</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:20%;background:#1AAFA8"></div></div>
+            </div>
+            <div style="margin-bottom:6px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                <span style="font-size:13px;font-weight:500;">55+ anos</span>
+                <span style="font-size:12px;color:var(--g400);">109 clientes · 6%</span>
+              </div>
+              <div class="progress-wrap"><div class="progress-bar" style="width:6%;background:#1AAFA8"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BAIRROS -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Bairros com mais clientes</span></div>
+          <table>
+            <thead><tr><th>Bairro</th><th>Clientes</th><th>Ticket médio</th><th>%</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Zona Sul</strong></td><td>487</td><td style="color:var(--orange);font-weight:600">R$214</td><td><span class="badge badge-teal">26%</span></td></tr>
+              <tr><td><strong>Restinga</strong></td><td>312</td><td style="color:var(--orange);font-weight:600">R$178</td><td><span class="badge badge-teal">17%</span></td></tr>
+              <tr><td><strong>Cavalhada</strong></td><td>276</td><td style="color:var(--orange);font-weight:600">R$192</td><td><span class="badge badge-teal">15%</span></td></tr>
+              <tr><td><strong>Camaquã</strong></td><td>198</td><td style="color:var(--orange);font-weight:600">R$201</td><td><span class="badge badge-green">11%</span></td></tr>
+              <tr><td><strong>Belém Novo</strong></td><td>167</td><td style="color:var(--orange);font-weight:600">R$165</td><td><span class="badge badge-green">9%</span></td></tr>
+              <tr><td><strong>Aberta dos Morros</strong></td><td>143</td><td style="color:var(--orange);font-weight:600">R$158</td><td><span class="badge badge-gray">8%</span></td></tr>
+              <tr><td><strong>Outros</strong></td><td>264</td><td style="color:var(--g400)">R$171</td><td><span class="badge badge-gray">14%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="grid-2">
+
+        <!-- TICKET MÉDIO POR LOJA -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Ticket médio por loja</span></div>
+          <div class="chart-wrap" style="align-items:flex-end;">
+            <div class="bar-col"><div class="bar-val">R$248</div><div class="bar" style="height:148px;background:var(--teal)"></div><div class="bar-label">Bistek</div></div>
+            <div class="bar-col"><div class="bar-val">R$198</div><div class="bar" style="height:118px;background:var(--orange)"></div><div class="bar-label">Farmácia SJ</div></div>
+            <div class="bar-col"><div class="bar-val">R$142</div><div class="bar" style="height:85px;background:var(--teal)"></div><div class="bar-label">Boticário</div></div>
+            <div class="bar-col"><div class="bar-val">R$118</div><div class="bar" style="height:70px;background:var(--orange)"></div><div class="bar-label">CacauShow</div></div>
+            <div class="bar-col"><div class="bar-val">R$86</div><div class="bar" style="height:51px;background:var(--teal)"></div><div class="bar-label">McDonald's</div></div>
+            <div class="bar-col"><div class="bar-val">R$62</div><div class="bar" style="height:37px;background:var(--orange)"></div><div class="bar-label">QuieroCafé</div></div>
+          </div>
+        </div>
+
+        <!-- PROFISSÕES -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Profissões mais comuns</span></div>
+          <div style="padding:16px 20px;">
+            <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;">Professora / Professor</span><span style="font-size:12px;font-weight:600;color:var(--teal);">18%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:18%"></div></div></div>
+            <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;">Autônomo / MEI</span><span style="font-size:12px;font-weight:600;color:var(--teal);">15%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:15%"></div></div></div>
+            <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;">Do lar</span><span style="font-size:12px;font-weight:600;color:var(--teal);">14%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:14%"></div></div></div>
+            <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;">Funcionário público</span><span style="font-size:12px;font-weight:600;color:var(--teal);">11%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:11%"></div></div></div>
+            <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;">Saúde (enfermagem, técnicos)</span><span style="font-size:12px;font-weight:600;color:var(--teal);">9%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:9%"></div></div></div>
+            <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;">Comércio / Vendas</span><span style="font-size:12px;font-weight:600;color:var(--teal);">8%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:8%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;">Outros</span><span style="font-size:12px;color:var(--g400);">25%</span></div><div class="progress-wrap"><div class="progress-bar" style="width:25%;background:var(--g300)"></div></div></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FREQUÊNCIA E HORÁRIOS -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Horários de maior movimento (por dia da semana)</span></div>
+        <div style="padding:16px 20px;">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center;">
+            <div><div style="font-size:11px;color:var(--g400);font-weight:600;margin-bottom:8px;">SEG</div><div style="background:var(--teal-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--teal);font-weight:600;">9h–11h</div><div style="margin-top:4px;background:var(--orange-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--orange);font-weight:600;">17h–19h</div></div>
+            <div><div style="font-size:11px;color:var(--g400);font-weight:600;margin-bottom:8px;">TER</div><div style="background:var(--teal-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--teal);font-weight:600;">10h–12h</div><div style="margin-top:4px;background:var(--orange-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--orange);font-weight:600;">18h–20h</div></div>
+            <div><div style="font-size:11px;color:var(--g400);font-weight:600;margin-bottom:8px;">QUA</div><div style="background:var(--teal-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--teal);font-weight:600;">11h–13h</div><div style="margin-top:4px;background:var(--orange-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--orange);font-weight:600;">17h–19h</div></div>
+            <div><div style="font-size:11px;color:var(--g400);font-weight:600;margin-bottom:8px;">QUI</div><div style="background:var(--teal-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--teal);font-weight:600;">9h–11h</div><div style="margin-top:4px;background:var(--orange-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--orange);font-weight:600;">16h–18h</div></div>
+            <div><div style="font-size:11px;color:var(--g400);font-weight:600;margin-bottom:8px;">SEX</div><div style="background:var(--teal-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--teal);font-weight:600;">11h–13h</div><div style="margin-top:4px;background:var(--orange-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--orange);font-weight:600;">17h–20h</div></div>
+            <div style="background:var(--g50);border-radius:8px;padding:4px;"><div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:8px;">SÁB ★</div><div style="background:var(--orange-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--orange);font-weight:700;">9h–13h</div><div style="margin-top:4px;background:var(--orange-lt);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--orange);font-weight:700;">15h–18h</div></div>
+            <div><div style="font-size:11px;color:var(--g400);font-weight:600;margin-bottom:8px;">DOM</div><div style="background:var(--g100);border-radius:6px;padding:6px 2px;font-size:11px;color:var(--g400);font-weight:600;">10h–13h</div><div style="margin-top:4px;font-size:10px;color:var(--g300);margin-top:8px;">fluxo baixo</div></div>
+          </div>
+          <div style="margin-top:14px;padding:10px 14px;background:var(--orange-lt);border-radius:8px;font-size:12px;color:#92650A;border-left:3px solid var(--orange);">
+            <strong>Insight:</strong> Sábado de manhã é o pico da semana. Campanhas enviadas às 8h30 de sábado têm 72% de abertura.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ MAILING ═══ -->
+    <div class="screen" id="page-mailing">
+
+      <div class="alert alert-info">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Exportações são registradas em log por obrigação LGPD. Uso restrito a comunicações autorizadas pelo cliente.
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Filtros de segmentação</span></div>
+            <div style="padding:16px 20px;">
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">Faixa etária</label>
+                <select class="form-input"><option>Todas as idades</option><option>18–24 anos</option><option>25–34 anos</option><option>35–44 anos</option><option>45–54 anos</option><option>55+ anos</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">Bairro / Região</label>
+                <select class="form-input"><option>Todos os bairros</option><option>Zona Sul</option><option>Restinga</option><option>Cavalhada</option><option>Camaquã</option><option>Belém Novo</option><option>Aberta dos Morros</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">Engajamento</label>
+                <select class="form-input"><option>Todos</option><option>Alto (1+ Guadi)</option><option>Em progressão (1–5 notas)</option><option>Inativos (30+ dias)</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">Loja favorita</label>
+                <select class="form-input"><option>Todas as lojas</option><option>Bistek</option><option>QuieroCafé</option><option>O Boticário</option><option>McDonald's</option><option>Farmácia São João</option></select>
+              </div>
+              <div class="form-group" style="margin-bottom:16px;">
+                <label class="form-label">Ticket médio</label>
+                <select class="form-input"><option>Qualquer valor</option><option>Acima de R$200</option><option>Entre R$100–R$200</option><option>Abaixo de R$100</option></select>
+              </div>
+              <div style="padding:12px 14px;background:var(--teal-lt);border-radius:8px;font-size:13px;color:#0D6A64;font-weight:600;margin-bottom:14px;text-align:center;">
+                1.847 clientes correspondem aos filtros
+              </div>
+              <button class="btn btn-teal" style="width:100%;justify-content:center;margin-bottom:8px;">Exportar lista (CSV)</button>
+              <button class="btn btn-outline" style="width:100%;justify-content:center;margin-bottom:8px;">Exportar e-mails</button>
+              <button class="btn btn-outline" style="width:100%;justify-content:center;">Exportar WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><span class="card-title">Aniversariantes do mês</span></div>
+            <table>
+              <thead><tr><th>Nome</th><th>Dia</th><th>WhatsApp</th><th>Pts</th></tr></thead>
+              <tbody>
+                <tr><td>Ana Lima</td><td><span class="badge badge-orange">02/07</span></td><td>(51) 96666-3333</td><td>6.420</td></tr>
+                <tr><td>Bruno Ferreira</td><td><span class="badge badge-orange">08/07</span></td><td>(51) 94444-5555</td><td>890</td></tr>
+                <tr><td>Cláudia Ramos</td><td><span class="badge badge-orange">15/07</span></td><td>(51) 93333-6666</td><td>2.100</td></tr>
+                <tr><td>Diego Souza</td><td><span class="badge badge-gray">22/07</span></td><td>(51) 92222-7777</td><td>450</td></tr>
+                <tr><td>Eliane Pinto</td><td><span class="badge badge-gray">28/07</span></td><td>(51) 91111-8888</td><td>1.680</td></tr>
+              </tbody>
+            </table>
+            <div style="padding:12px 16px;">
+              <button class="btn btn-teal" style="font-size:11px;padding:7px 14px;">Disparar parabéns automático</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Clientes de maior valor (top 5)</span></div>
+            <table>
+              <thead><tr><th>Nome</th><th>Pontos</th><th>Guadis</th><th>Ticket</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Ana Lima</strong></td><td style="color:var(--orange);font-weight:700">6.420</td><td>🦎🦎🦎</td><td>R$312</td></tr>
+                <tr><td><strong>Maria Oliveira</strong></td><td style="color:var(--orange);font-weight:700">3.870</td><td>🦎🦎</td><td>R$248</td></tr>
+                <tr><td><strong>Roberto Alves</strong></td><td style="color:var(--orange);font-weight:700">2.940</td><td>🦎🦎</td><td>R$220</td></tr>
+                <tr><td><strong>Cláudia Ramos</strong></td><td style="color:var(--orange);font-weight:700">2.100</td><td>🦎</td><td>R$198</td></tr>
+                <tr><td><strong>João Silva</strong></td><td style="color:var(--orange);font-weight:700">1.240</td><td>🦎</td><td>R$187</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Supabase config
+const SUPABASE_URL = 'https://nkfawcjautqgkyrvakpd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_03UmZhysJsqyMgubzVt9Cw_oi5W2h3N';
+
+function showPage(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  const titles = {
+    dashboard:'Dashboard',clientes:'Clientes',notas:'Notas Fiscais',
+    pontos:'Pontos & Resgates',campanhas:'Campanhas & Disparos',
+    ofertas:'Ofertas por Loja',sorteio:'Sorteio — Rio de Janeiro',
+    inteligencia:'Perfil de Consumo',mailing:'Mailing de Clientes'
+  };
+  document.getElementById('pageTitle').textContent = titles[id] || id;
+}
+
+function updatePreview() {
+  const t = document.getElementById('notifTitle');
+  const b = document.getElementById('notifBody');
+  if (t) document.getElementById('previewTitle').textContent = t.value || 'Título da notificação';
+  if (b) document.getElementById('previewBody').textContent = b.value || 'Mensagem da notificação...';
+}
+
+// Date
+const d = new Date();
+document.getElementById('topbarDate').textContent =
+  d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+</script>
+</body>
+</html>

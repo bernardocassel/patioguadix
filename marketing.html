@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing — Clube Guadix</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --teal:#1AAFA8;--teal-lt:#E8F7F6;--orange:#F39C34;--orange-lt:#FEF4E6;
+  --green:#4CAF50;--red:#E84B3C;--blue:#1EB8E5;
+  --g50:#F9F9F9;--g100:#F2F2F2;--g200:#E4E4E4;--g400:#A0A0A0;--g600:#5A5A5A;--g900:#181818;
+  --white:#fff;
+}
+body{font-family:'Inter',sans-serif;background:var(--g50);min-height:100vh;color:var(--g900);}
+.topbar{background:white;border-bottom:1px solid var(--g200);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-title{font-size:16px;font-weight:700;letter-spacing:-0.3px;}
+.badge-mk{background:var(--orange);color:white;font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;}
+.topbar-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--orange),#E8861A);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;}
+.nav-tabs{background:white;border-bottom:1px solid var(--g100);padding:0 28px;display:flex;gap:0;}
+.tab{padding:12px 18px;font-size:13px;font-weight:600;color:var(--g400);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+.content{padding:24px 28px;max-width:1100px;}
+.screen{display:none;} .screen.active{display:block;}
+.card{background:white;border-radius:14px;border:1px solid var(--g100);overflow:hidden;margin-bottom:16px;}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:14px;font-weight:700;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat{background:white;border-radius:12px;border:1px solid var(--g100);padding:16px 18px;}
+.stat-num{font-size:24px;font-weight:800;letter-spacing:-0.5px;line-height:1;}
+.stat-label{font-size:11px;color:var(--g400);font-weight:500;margin-top:4px;}
+.stat-delta{font-size:11px;font-weight:600;margin-top:5px;}
+.up{color:var(--green);}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:0.5px;background:var(--g50);border-bottom:1px solid var(--g100);}
+td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--g100);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--g50);}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-green{background:#E8F5E9;color:#2E7D32;}
+.badge-orange{background:var(--orange-lt);color:#B45309;}
+.badge-gray{background:var(--g100);color:var(--g600);}
+.badge-blue{background:#E3F2FD;color:#1565C0;}
+.badge-teal{background:var(--teal-lt);color:#0D8A84;}
+.form-label{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:5px;}
+.form-input{width:100%;padding:11px 13px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--g900);outline:none;}
+.form-input:focus{border-color:var(--orange);}
+.btn{padding:10px 18px;border:none;border-radius:8px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.btn-orange{background:var(--orange);color:white;}
+.btn-outline{background:white;color:var(--g600);border:1.5px solid var(--g200);}
+.btn-teal{background:var(--teal);color:white;}
+.btn-sm{padding:6px 12px;font-size:11px;}
+.progress-wrap{background:var(--g100);border-radius:4px;height:5px;overflow:hidden;}
+.progress-bar{height:100%;border-radius:4px;}
+.info-box{background:var(--orange-lt);border-radius:8px;padding:12px 14px;font-size:12px;color:#92650A;border-left:3px solid var(--orange);line-height:1.6;margin-bottom:16px;}
+
+/* NOTIF BUILDER */
+.builder-wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;}
+.canal-selector{display:flex;gap:8px;margin-bottom:16px;}
+.canal-btn{flex:1;padding:12px;border:1.5px solid var(--g200);border-radius:10px;text-align:center;cursor:pointer;transition:all .15s;}
+.canal-btn.active{border-color:var(--orange);background:var(--orange-lt);}
+.canal-btn .canal-icon{font-size:22px;margin-bottom:4px;}
+.canal-btn .canal-label{font-size:12px;font-weight:600;color:var(--g600);}
+.canal-btn.active .canal-label{color:var(--orange);}
+.seg-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.seg-chip{padding:6px 12px;border-radius:20px;border:1.5px solid var(--g200);font-size:11px;font-weight:600;cursor:pointer;color:var(--g600);background:white;}
+.seg-chip.sel{background:var(--teal);color:white;border-color:var(--teal);}
+
+/* PHONE PREVIEW */
+.phone-mock{
+  background:var(--g900);border-radius:24px;padding:16px;
+  max-width:260px;
+}
+.phone-mock-status{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px;}
+.notif-card-mk{background:rgba(255,255,255,0.1);border-radius:12px;padding:12px;backdrop-filter:blur(4px);}
+.notif-card-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.notif-card-icon{width:28px;height:28px;border-radius:7px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.notif-card-app{font-size:11px;color:rgba(255,255,255,0.5);}
+.notif-card-time{font-size:10px;color:rgba(255,255,255,0.3);margin-left:auto;}
+.notif-card-title{font-size:13px;font-weight:700;color:white;margin-bottom:4px;}
+.notif-card-body{font-size:11px;color:rgba(255,255,255,0.7);line-height:1.5;}
+
+/* AUTOMAÇÕES */
+.automation-card{background:white;border:1px solid var(--g100);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.auto-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.auto-title{font-size:13px;font-weight:700;}
+.auto-desc{font-size:12px;color:var(--g400);margin-top:2px;line-height:1.5;}
+.auto-status{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.toggle{position:relative;width:38px;height:22px;display:inline-block;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--g200);border-radius:22px;cursor:pointer;transition:.2s;}
+.toggle input:checked + .toggle-slider{background:var(--teal);}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s;}
+.toggle input:checked + .toggle-slider::before{transform:translateX(16px);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div>
+      <div style="font-size:11px;color:var(--g400)">Painel Marketing</div>
+      <div class="topbar-title">Clube Guadix</div>
+    </div>
+    <div class="badge-mk">Marketing</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div style="font-size:12px;color:var(--g400)" id="topDate"></div>
+    <div class="topbar-avatar">MK</div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <div class="tab active" onclick="showTab('disparos')">Nova Campanha</div>
+  <div class="tab" onclick="showTab('automacoes')">Automações</div>
+  <div class="tab" onclick="showTab('historico')">Histórico</div>
+  <div class="tab" onclick="showTab('segmentos')">Segmentos</div>
+</div>
+
+<div class="content">
+
+  <!-- ═══ NOVA CAMPANHA ═══ -->
+  <div class="screen active" id="tab-disparos">
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">1.847</div><div class="stat-label">Base total de clientes</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--green)">68%</div><div class="stat-label">Taxa média de abertura</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--orange)">312</div><div class="stat-label">Alto engajamento</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--red)">644</div><div class="stat-label">Inativos (reativar)</div></div>
+    </div>
+
+    <div class="builder-wrap">
+      <div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Construtor de campanha</span></div>
+          <div style="padding:20px;">
+
+            <!-- Canal -->
+            <div class="form-label" style="margin-bottom:10px;">Canal de envio</div>
+            <div class="canal-selector">
+              <div class="canal-btn active" onclick="selectCanal(this)">
+                <div class="canal-icon">📱</div>
+                <div class="canal-label">Push</div>
+              </div>
+              <div class="canal-btn" onclick="selectCanal(this)">
+                <div class="canal-icon">💬</div>
+                <div class="canal-label">WhatsApp</div>
+              </div>
+              <div class="canal-btn" onclick="selectCanal(this)">
+                <div class="canal-icon">✉️</div>
+                <div class="canal-label">E-mail</div>
+              </div>
+              <div class="canal-btn" onclick="selectCanal(this)">
+                <div class="canal-icon">🔀</div>
+                <div class="canal-label">Todos</div>
+              </div>
+            </div>
+
+            <!-- Título -->
+            <div style="margin-bottom:14px;">
+              <label class="form-label">Título</label>
+              <input class="form-input" type="text" id="mkTitulo" placeholder="Ex: Hora do almoço chegou!" oninput="updateMkPreview()">
+            </div>
+
+            <!-- Mensagem -->
+            <div style="margin-bottom:14px;">
+              <label class="form-label">Mensagem</label>
+              <textarea class="form-input" id="mkMensagem" rows="3" placeholder="Ex: QuieroCafé com combo 15% off das 11h às 15h. Só para membros do Clube!" oninput="updateMkPreview()" style="resize:none;"></textarea>
+            </div>
+
+            <!-- Loja -->
+            <div style="margin-bottom:14px;">
+              <label class="form-label">Loja associada (opcional)</label>
+              <select class="form-input">
+                <option>Sem loja específica</option>
+                <option>Bistek Supermercados</option>
+                <option>QuieroCafé</option>
+                <option>McDonald's</option>
+                <option>O Boticário</option>
+                <option>CacauShow</option>
+                <option>Farmácia São João</option>
+                <option>Natura</option>
+                <option>Bellafast Salão</option>
+                <option>Patas & Garras</option>
+              </select>
+            </div>
+
+            <!-- Segmento -->
+            <div style="margin-bottom:14px;">
+              <label class="form-label" style="margin-bottom:8px;">Segmento de envio</label>
+              <div class="seg-chips">
+                <div class="seg-chip sel" onclick="this.classList.toggle('sel')">Todos (1.847)</div>
+                <div class="seg-chip" onclick="this.classList.toggle('sel')">Alto engajamento (312)</div>
+                <div class="seg-chip" onclick="this.classList.toggle('sel')">Em progressão (891)</div>
+                <div class="seg-chip" onclick="this.classList.toggle('sel')">Inativos (644)</div>
+                <div class="seg-chip" onclick="this.classList.toggle('sel')">Aniversariantes</div>
+                <div class="seg-chip" onclick="this.classList.toggle('sel')">Zona Sul</div>
+                <div class="seg-chip" onclick="this.classList.toggle('sel')">Restinga</div>
+                <div class="seg-chip" onclick="this.classList.toggle('sel')">35–44 anos</div>
+              </div>
+            </div>
+
+            <!-- Agendamento -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+              <div>
+                <label class="form-label">Data de envio</label>
+                <input class="form-input" type="date">
+              </div>
+              <div>
+                <label class="form-label">Horário</label>
+                <input class="form-input" type="time" value="12:00">
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-orange" style="flex:1;justify-content:center;">Enviar agora</button>
+              <button class="btn btn-teal" style="flex:1;justify-content:center;">Agendar</button>
+              <button class="btn btn-outline">Salvar rascunho</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW -->
+      <div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;">Preview no celular</div>
+        <div class="phone-mock">
+          <div class="phone-mock-status"><span>9:41</span><span>●●● 🔋</span></div>
+          <div class="notif-card-mk">
+            <div class="notif-card-header">
+              <div class="notif-card-icon">🦎</div>
+              <span class="notif-card-app">Clube Guadix</span>
+              <span class="notif-card-time">agora</span>
+            </div>
+            <div class="notif-card-title" id="mkPrevTitulo">Hora do almoço chegou!</div>
+            <div class="notif-card-body" id="mkPrevMensagem">QuieroCafé com combo 15% off das 11h às 15h. Só para membros do Clube!</div>
+          </div>
+
+          <!-- WhatsApp preview -->
+          <div style="margin-top:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:12px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <div style="width:22px;height:22px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:11px;">💬</div>
+              <span style="font-size:10px;color:rgba(255,255,255,0.4);">WhatsApp · Clube Guadix</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:8px;font-size:11px;color:rgba(255,255,255,0.8);line-height:1.5;">
+              🦎 *Clube Guadix*<br>
+              <span id="mkPrevWpp">Hora do almoço chegou! QuieroCafé com combo 15% off das 11h às 15h.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estimativa de alcance -->
+        <div style="margin-top:14px;background:white;border-radius:12px;padding:14px;border:1px solid var(--g100);">
+          <div style="font-size:12px;font-weight:700;margin-bottom:10px;">Estimativa de alcance</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;">
+            <span>Destinatários</span><span style="font-weight:700;">1.847</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;">
+            <span>Abertura estimada (68%)</span><span style="font-weight:700;color:var(--green)">~1.256</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;">
+            <span>Custo WhatsApp</span><span style="font-weight:700;color:var(--orange)">~R$0,05/msg</span>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--g100);font-size:11px;color:var(--g400);">
+            Custo estimado: R$92,35 no WhatsApp · Push gratuito
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ AUTOMAÇÕES ═══ -->
+  <div class="screen" id="tab-automacoes">
+    <div class="info-box">
+      Automações são disparadas automaticamente pelo sistema com base em comportamento do cliente. Ative ou pause conforme necessário.
+    </div>
+
+    <div class="automation-card">
+      <div class="auto-icon" style="background:var(--orange-lt)">☀️</div>
+      <div style="flex:1">
+        <div class="auto-title">Lembrete de almoço — QuieroCafé</div>
+        <div class="auto-desc">Enviado todo dia às 11h45 para clientes que passaram pelo Pátio nos últimos 7 dias.<br>Canal: Push · Taxa de abertura: 72%</div>
+      </div>
+      <div class="auto-status">
+        <span class="badge badge-green">Ativa</span>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="automation-card">
+      <div class="auto-icon" style="background:var(--teal-lt)">🌅</div>
+      <div style="flex:1">
+        <div class="auto-title">Desconto da tarde — Bistek</div>
+        <div class="auto-desc">Enviado de segunda a sexta às 14h30, para clientes com frequência ≥ 2x/mês.<br>Canal: Push + WhatsApp · Taxa de abertura: 68%</div>
+      </div>
+      <div class="auto-status">
+        <span class="badge badge-green">Ativa</span>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="automation-card">
+      <div class="auto-icon" style="background:#FFF0F5)">🎂</div>
+      <div style="flex:1">
+        <div class="auto-title">Parabéns de aniversário</div>
+        <div class="auto-desc">Enviado no dia do aniversário às 8h com desconto especial do Clube.<br>Canal: WhatsApp · Taxa de abertura: 94%</div>
+      </div>
+      <div class="auto-status">
+        <span class="badge badge-green">Ativa</span>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="automation-card">
+      <div class="auto-icon" style="background:#FFEBEE">😴</div>
+      <div style="flex:1">
+        <div class="auto-title">Reativação de inativos</div>
+        <div class="auto-desc">Enviado para clientes sem visita há 30 dias. Oferta de pontos bônus para voltar.<br>Canal: WhatsApp · Taxa de abertura: 41%</div>
+      </div>
+      <div class="auto-status">
+        <span class="badge badge-orange">Pausada</span>
+        <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="automation-card">
+      <div class="auto-icon" style="background:#FFF5E6">🦎</div>
+      <div style="flex:1">
+        <div class="auto-title">Guadi quase desbloqueado!</div>
+        <div class="auto-desc">Enviado quando o cliente está a R$50 do próximo Guadi. Urgência suave.<br>Canal: Push · Taxa de abertura: 81%</div>
+      </div>
+      <div class="auto-status">
+        <span class="badge badge-green">Ativa</span>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="automation-card">
+      <div class="auto-icon" style="background:var(--g100)">✈️</div>
+      <div style="flex:1">
+        <div class="auto-title">Lembrete do sorteio — Rio de Janeiro</div>
+        <div class="auto-desc">Enviado mensalmente lembrando do sorteio e quantos números a pessoa tem.<br>Canal: Push + WhatsApp · Taxa de abertura: 76%</div>
+      </div>
+      <div class="auto-status">
+        <span class="badge badge-green">Ativa</span>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div style="margin-top:8px;">
+      <button class="btn btn-orange">+ Nova automação</button>
+    </div>
+  </div>
+
+  <!-- ═══ HISTÓRICO ═══ -->
+  <div class="screen" id="tab-historico">
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">47</div><div class="stat-label">Campanhas enviadas</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--green)">68%</div><div class="stat-label">Taxa média abertura</div></div>
+      <div class="stat"><div class="stat-num">86.809</div><div class="stat-label">Total de mensagens</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--orange)">R$412</div><div class="stat-label">Custo WhatsApp total</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Campanhas enviadas</span></div>
+      <table>
+        <thead><tr><th>Campanha</th><th>Canal</th><th>Loja</th><th>Segmento</th><th>Enviado</th><th>Aberto</th><th>Taxa</th><th>Data</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Almoço QuieroCafé</strong></td><td><span class="badge badge-blue">Push</span></td><td>QuieroCafé</td><td>Todos</td><td>1.847</td><td>1.256</td><td><strong style="color:var(--green)">68%</strong></td><td>27/06 12:01</td></tr>
+          <tr><td><strong>Terça do Açougue</strong></td><td><span class="badge badge-green">WhatsApp</span></td><td>Bistek</td><td>Todos</td><td>1.523</td><td>1.097</td><td><strong style="color:var(--green)">72%</strong></td><td>24/06 08:30</td></tr>
+          <tr><td><strong>Brinde Boticário</strong></td><td><span class="badge badge-blue">Push</span></td><td>O Boticário</td><td>Mulheres 25–44</td><td>890</td><td>481</td><td><strong style="color:var(--orange)">54%</strong></td><td>22/06 10:00</td></tr>
+          <tr><td><strong>Reativação inativos</strong></td><td><span class="badge badge-green">WhatsApp</span></td><td>Todos</td><td>Inativos</td><td>644</td><td>264</td><td><strong style="color:var(--orange)">41%</strong></td><td>20/06 18:00</td></tr>
+          <tr><td><strong>Guadi quase lá!</strong></td><td><span class="badge badge-blue">Push</span></td><td>—</td><td>Progressão</td><td>312</td><td>253</td><td><strong style="color:var(--green)">81%</strong></td><td>18/06 14:00</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SEGMENTOS ═══ -->
+  <div class="screen" id="tab-segmentos">
+    <div class="info-box">
+      Segmentos são grupos de clientes atualizados automaticamente toda noite. Use-os para disparar campanhas mais precisas e relevantes.
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Segmentos automáticos</span></div>
+        <table>
+          <thead><tr><th>Nome</th><th>Clientes</th><th>Critério</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Alto engajamento</strong></td><td><span style="font-weight:700;color:var(--teal)">312</span></td><td>1+ Guadi desbloqueado</td></tr>
+            <tr><td><strong>Em progressão</strong></td><td><span style="font-weight:700;color:var(--teal)">891</span></td><td>1–5 notas cadastradas</td></tr>
+            <tr><td><strong>Inativos 30 dias</strong></td><td><span style="font-weight:700;color:var(--red)">644</span></td><td>Sem nota há 30+ dias</td></tr>
+            <tr><td><strong>Novos (7 dias)</strong></td><td><span style="font-weight:700;color:var(--green)">124</span></td><td>Cadastro nos últimos 7 dias</td></tr>
+            <tr><td><strong>Próximos do Guadi</strong></td><td><span style="font-weight:700;color:var(--orange)">287</span></td><td>Faltam R$50 para desbloquear</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Segmentos por perfil</span></div>
+        <table>
+          <thead><tr><th>Nome</th><th>Clientes</th><th>Critério</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Zona Sul</strong></td><td>487</td><td>CEP 91700–91900</td></tr>
+            <tr><td><strong>Restinga</strong></td><td>312</td><td>CEP 91790–91799</td></tr>
+            <tr><td><strong>35–44 anos</strong></td><td>628</td><td>Faixa etária</td></tr>
+            <tr><td><strong>Professores</strong></td><td>332</td><td>Profissão</td></tr>
+            <tr><td><strong>Aniversariantes julho</strong></td><td>89</td><td>Aniversário em 07/2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <button class="btn btn-orange" style="margin-top:4px;">+ Criar segmento personalizado</button>
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = 'https://nkfawcjautqgkyrvakpd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_03UmZhysJsqyMgubzVt9Cw_oi5W2h3N';
+
+function showTab(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function selectCanal(el) {
+  document.querySelectorAll('.canal-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function updateMkPreview() {
+  const t = document.getElementById('mkTitulo')?.value;
+  const m = document.getElementById('mkMensagem')?.value;
+  if (t) {
+    document.getElementById('mkPrevTitulo').textContent = t;
+    document.getElementById('mkPrevWpp').textContent = t + (m ? ' ' + m : '');
+  }
+  if (m) document.getElementById('mkPrevMensagem').textContent = m;
+}
+
+document.getElementById('topDate').textContent =
+  new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+</script>
+</body>
+</html>
