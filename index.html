@@ -869,7 +869,7 @@ body {
         <div class="form-group"><label class="form-label">Profissão</label><input class="form-input" type="text" placeholder="Ex: Professora, Engenheiro..."></div>
         <div class="terms">Ao cadastrar você concorda com os <a>Termos de Uso</a> e a <a>Política de Privacidade</a>. Seus dados são protegidos pela LGPD.</div>
         <button class="btn-primary" onclick="showScreen('screen-home')"><svg style="display:inline-block;vertical-align:middle;"  width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/></svg> Criar minha conta grátis</button>
-        <button class="btn-secondary" onclick="showScreen('screen-home')">Já tenho conta — entrar</button>
+        <button class="btn-secondary" onclick="showScreen('screen-home')">Já sou cadastrado — entrar pelo CPF</button>
       </div>
     </div>
   </div>
@@ -1421,10 +1421,20 @@ function restaurarSessao() {
   try {
     const saved = localStorage.getItem('guadix_cliente');
     if (saved) {
-      currentCliente = JSON.parse(saved);
-      atualizarUI();
+      const c = JSON.parse(saved);
+      // Valida que tem dados reais (não o João Silva falso)
+      if (c && c.id && c.nome && c.nome !== 'João Silva') {
+        currentCliente = c;
+        atualizarUI();
+      } else {
+        // Limpa dados falsos
+        localStorage.removeItem('guadix_cliente');
+        localStorage.removeItem('guadix_token');
+      }
     }
-  } catch(e) {}
+  } catch(e) {
+    localStorage.removeItem('guadix_cliente');
+  }
 }
 
 // ── TOAST ──────────────────────────────────────────────
@@ -1452,8 +1462,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Botão criar conta
   document.querySelectorAll('button').forEach(btn => {
-    if (btn.textContent.includes('Criar minha conta')) {
+    if (btn.textContent.includes('Criar minha conta') || btn.textContent.includes('Criar sua conta')) {
       btn.onclick = cadastrarCliente;
+    }
+  });
+  
+  // Botão "Já tenho conta"
+  document.querySelectorAll('button').forEach(btn => {
+    if (btn.textContent.includes('Já tenho conta')) {
+      btn.onclick = buscarClientePorCPF;
     }
   });
 
@@ -1470,6 +1487,24 @@ document.addEventListener('DOMContentLoaded', function() {
   // Carregar ofertas reais
   carregarOfertas();
 });
+
+async function buscarClientePorCPF() {
+  const cpf = document.querySelector('input[placeholder="000.000.000-00"]')?.value?.replace(/\D/g,'');
+  if (!cpf || cpf.length < 11) {
+    toast('Digite seu CPF para entrar.', 'error');
+    return;
+  }
+  const data = await supa('/rest/v1/clientes?cpf=eq.' + cpf + '&select=*');
+  if (Array.isArray(data) && data[0]) {
+    currentCliente = data[0];
+    salvarLocal();
+    toast('Bem-vindo de volta, ' + data[0].nome.split(' ')[0] + '! 🦎', 'success');
+    showScreen('screen-home');
+    atualizarUI();
+  } else {
+    toast('CPF não encontrado. Preencha os dados para cadastrar.', 'error');
+  }
+}
 
 async function carregarOfertas() {
   try {
