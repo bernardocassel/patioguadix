@@ -580,9 +580,16 @@
       <span>Toque para abrir a câmera</span>
     </div>
     <div class="divider-text">— ou digite a chave —</div>
-    <div class="nota-input-row">
-      <input type="tel" id="chave-nfe" placeholder="Chave de acesso (44 dígitos)" maxlength="44" oninput="this.value=this.value.replace(/\D/g,'')">
-      <button class="btn btn-primary nota-input-row" style="width:auto" onclick="validarNFe()">Buscar</button>
+    <div style="padding:0 16px 8px">
+      <div class="field" style="margin-bottom:10px">
+        <label>Chave de acesso (44 dígitos)</label>
+        <input type="tel" id="chave-nfe" placeholder="Digite os 44 dígitos da chave" maxlength="44" oninput="this.value=this.value.replace(/\D/g,'')" style="font-family:'Courier New',monospace;font-size:13px;letter-spacing:.5px">
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>Valor da nota (R$)</label>
+        <input type="number" id="valor-nfe" placeholder="Ex: 87.50" step="0.01" min="0" style="font-size:15px">
+      </div>
+      <button class="btn btn-primary" onclick="validarNFe()">🔍 Validar nota fiscal</button>
     </div>
     <div class="section-title" style="padding-top:4px">Últimas notas</div>
     <div class="history-list" id="history-list"><div style="padding:16px 0;color:var(--gray-400);font-size:13px;text-align:center">Carregando...</div></div>
@@ -985,26 +992,38 @@ async function loadBeneficios() {
 async function validarNFe() {
   if(!currentUser){toast('Faça login primeiro','error');return;}
   const chave = document.getElementById('chave-nfe').value.replace(/\D/g,'');
+  const valorStr = document.getElementById('valor-nfe').value;
   if(chave.length!==44){toast('A chave deve ter 44 dígitos','error');return;}
+  if(!valorStr||parseFloat(valorStr)<=0){toast('Digite o valor da nota','error');return;}
+  const valor = parseFloat(valorStr);
+  // Detecta modelo
+  const modelo = chave.substring(20,22);
+  const modeloNome = modelo==='65'?'NFC-e':modelo==='55'?'NF-e':'desconhecido';
   loading(true);
   try {
-    const exists = await sb('notas_fiscais?chave_acesso=eq.'+chave+'&cliente_id=eq.'+currentUser.id+'&select=id');
-    if(exists&&exists.length){toast('Nota já cadastrada anteriormente','error');loading(false);return;}
+    // Checa duplicata
+    const exists = await sb('notas_fiscais?chave_acesso=eq.'+chave+'&select=id');
+    if(exists&&exists.length){toast('Nota já cadastrada por outro cliente','error');loading(false);return;}
+    const exists2 = await sb('notas_fiscais?chave_acesso=eq.'+chave+'&cliente_id=eq.'+currentUser.id+'&select=id');
+    if(exists2&&exists2.length){toast('Você já cadastrou esta nota','error');loading(false);return;}
+    // Chama Edge Function
     const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body:JSON.stringify({chave, cliente_id:currentUser.id})
+      body:JSON.stringify({chave, cliente_id:currentUser.id, valor})
     });
     const data = await res.json();
     if(!res.ok){toast(data.error||'Erro ao validar nota','error');loading(false);return;}
-    currentUser.pontos_total = (currentUser.pontos_total||0)+(data.pontos||0);
+    const pts = data.pontos||Math.floor(valor);
+    currentUser.pontos_total = (currentUser.pontos_total||0)+pts;
     saveSession();
     document.getElementById('home-pontos').textContent=currentUser.pontos_total.toLocaleString('pt-BR');
-    toast('✅ +'+data.pontos+' pontos! Nota de '+fmtMoney(data.valor)+' aprovada','success');
+    toast('✅ +'+pts+' pontos! Nota '+modeloNome+' de '+fmtMoney(valor)+' aprovada','success');
     document.getElementById('chave-nfe').value='';
+    document.getElementById('valor-nfe').value='';
     loadHistorico();
-    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi!','success'),2500);
-  } catch(e) { toast('Erro de conexão','error'); console.error(e); }
+    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi! Veja sua coleção','success'),2500);
+  } catch(e) { toast('Erro de conexão. Tente novamente.','error'); console.error(e); }
   finally { loading(false); }
 }
 
