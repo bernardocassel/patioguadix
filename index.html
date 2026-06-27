@@ -1021,65 +1021,8 @@ async function loadBeneficios() {
 
 // ─── NOTA FISCAL ───
 async function validarNFe() {
-  if(!currentUser){toast('Faça login primeiro','error');return;}
   const chave = document.getElementById('chave-nfe').value.replace(/\D/g,'');
-  if(chave.length!==44){toast('A chave deve ter 44 dígitos','error');return;}
-
-  // Se campo manual estiver visível, precisa do valor
-  const manualBox = document.getElementById('valor-manual-box');
-  const valorManualInput = document.getElementById('valor-nfe');
-  if(manualBox.style.display!=='none') {
-    const v = parseFloat(valorManualInput.value);
-    if(!v||v<=0){toast('Digite o valor da nota','error');return;}
-  }
-
-  const modelo = chave.substring(20,22);
-  const modeloNome = modelo==='65'?'NFC-e':modelo==='55'?'NF-e':'desconhecido';
-
-  loading(true);
-  toast('🔍 Consultando SEFAZ automaticamente...','');
-
-  try {
-    const valorManual = parseFloat(valorManualInput?.value||'0')||0;
-    const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body:JSON.stringify({chave, cliente_id:currentUser.id, valor: valorManual})
-    });
-    const data = await res.json();
-
-    if(!res.ok){
-      // Se não encontrou o valor automaticamente, pede pro usuário digitar
-      if(data.precisa_valor || res.status===422) {
-        manualBox.style.display='block';
-        valorManualInput.focus();
-        toast('Informe o valor da nota no campo abaixo','');
-        loading(false);
-        return;
-      }
-      toast(data.error||'Erro ao validar nota','error');
-      loading(false);
-      return;
-    }
-
-    // Sucesso
-    const pts = data.pontos||0;
-    currentUser.pontos_total = data.pontos_total||(currentUser.pontos_total||0)+pts;
-    saveSession();
-    document.getElementById('home-pontos').textContent=currentUser.pontos_total.toLocaleString('pt-BR');
-
-    const autoMsg = data.buscou_automatico ? ' (valor obtido automaticamente da SEFAZ)' : '';
-    toast('✅ +'+pts+' pontos! '+modeloNome+' de '+fmtMoney(data.valor)+' aprovada'+autoMsg,'success');
-
-    // Limpa campos
-    document.getElementById('chave-nfe').value='';
-    if(valorManualInput) valorManualInput.value='';
-    manualBox.style.display='none';
-
-    loadHistorico();
-    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi! Veja sua coleção','success'),2500);
-  } catch(e) { toast('Erro de conexão. Tente novamente.','error'); console.error(e); }
-  finally { loading(false); }
+  await validarNFeComValor(chave, 0);
 }
 
 async function loadHistorico() {
@@ -1090,7 +1033,9 @@ async function loadHistorico() {
     if(!notas||!notas.length){c.innerHTML='<div style="padding:20px 0;text-align:center;color:var(--gray-400);font-size:13px">Nenhuma nota cadastrada ainda</div>';return;}
     c.innerHTML=notas.map(n=>{
       const sn=n.lojas?.nome||'Loja parceira'; const em=getEmoji(sn);
-      return `<div class="history-item"><div class="history-icon">${em}</div><div class="history-info"><strong>${sn}</strong><span>${timeAgo(n.created_at)} · ${fmtMoney(n.valor)}</span></div><div class="history-pts"><div class="pts">+${n.pontos_gerados||0} pts</div><div class="status-ok">✅ Aprovado</div></div></div>`;
+      const val = n.valor_total || n.valor || 0;
+      const pts = n.pontos_gerados || 0;
+      return `<div class="history-item"><div class="history-icon">${em}</div><div class="history-info"><strong>${sn}</strong><span>${timeAgo(n.created_at)} · ${fmtMoney(val)}</span></div><div class="history-pts"><div class="pts">+${pts} pts</div><div class="status-ok">✅ Aprovado</div></div></div>`;
     }).join('');
   } catch(e) { document.getElementById('history-list').innerHTML='<div style="padding:16px 0;text-align:center;color:var(--gray-400);font-size:13px">Erro ao carregar</div>'; }
 }
@@ -1321,48 +1266,55 @@ function processarQRCode(url) {
 }
 
 async function validarNFeComValor(chave, valorHint) {
-  if(!currentUser) return;
-  if(chave.length !== 44) return;
+  if(!currentUser){toast('Faça login primeiro','error');return;}
+  const chaveNum = chave.replace(/\D/g,'').substring(0,44);
+  if(chaveNum.length!==44){toast('A chave deve ter 44 dígitos','error');return;}
+
+  const manualBox = document.getElementById('valor-manual-box');
+  const valorManualInput = document.getElementById('valor-nfe');
+  // Se box manual visível, exige valor digitado
+  if(manualBox && manualBox.style.display!=='none') {
+    const v = parseFloat(valorManualInput.value);
+    if(!v||v<=0){toast('Digite o valor da nota','error');return;}
+    valorHint = v;
+  }
 
   loading(true);
-  toast('🔍 Consultando SEFAZ...', '');
+  toast('🔍 Consultando SEFAZ...','');
 
   try {
     const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body: JSON.stringify({chave, cliente_id: currentUser.id, valor: valorHint || 0})
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
+      body:JSON.stringify({chave:chaveNum, cliente_id:currentUser.id, valor:valorHint||0})
     });
     const data = await res.json();
 
     if(!res.ok) {
-      // Valor não encontrado automaticamente
-      if(res.status === 422 || data.precisa_valor) {
-        document.getElementById('valor-manual-box').style.display = 'block';
-        document.getElementById('valor-nfe').focus();
-        toast('Digite o valor da nota no campo abaixo', '');
+      if(res.status===422 || data.precisa_valor) {
+        if(manualBox) manualBox.style.display='block';
+        if(valorManualInput) valorManualInput.focus();
+        toast('Valor não encontrado — digite o valor da nota abaixo','');
         loading(false);
         return;
       }
-      toast(data.error || 'Erro ao validar nota', 'error');
+      toast(data.error||'Erro ao validar nota','error');
       loading(false);
       return;
     }
 
-    const pts = data.pontos || 0;
-    currentUser.pontos_total = data.pontos_total || (currentUser.pontos_total||0) + pts;
+    const pts = data.pontos||0;
+    currentUser.pontos_total = data.pontos_total||(currentUser.pontos_total||0)+pts;
     saveSession();
-    document.getElementById('home-pontos').textContent = currentUser.pontos_total.toLocaleString('pt-BR');
-
-    const modeloNome = chave.substring(20,22)==='65'?'NFC-e':'NF-e';
-    toast('✅ +'+pts+' pontos! '+modeloNome+' de '+fmtMoney(data.valor)+' aprovada', 'success');
-    document.getElementById('chave-nfe').value = '';
-    document.getElementById('valor-manual-box').style.display = 'none';
+    document.getElementById('home-pontos').textContent=currentUser.pontos_total.toLocaleString('pt-BR');
+    const modeloNome = chaveNum.substring(20,22)==='65'?'NFC-e':'NF-e';
+    toast('✅ +'+pts+' pontos! '+modeloNome+' de '+fmtMoney(data.valor)+' aprovada','success');
+    document.getElementById('chave-nfe').value='';
+    if(valorManualInput) valorManualInput.value='';
+    if(manualBox) manualBox.style.display='none';
     loadHistorico();
-
-    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi!','success'), 2500);
-
-  } catch(e) { toast('Erro de conexão.', 'error'); console.error(e); }
+    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi!','success'),2500);
+  } catch(e){ toast('Erro de conexão. Tente novamente.','error'); console.error(e); }
   finally { loading(false); }
 }
 
