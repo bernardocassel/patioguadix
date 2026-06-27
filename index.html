@@ -585,9 +585,11 @@
         <label>Chave de acesso (44 dígitos)</label>
         <input type="tel" id="chave-nfe" placeholder="Digite os 44 dígitos da chave" maxlength="44" oninput="this.value=this.value.replace(/\D/g,'')" style="font-family:'Courier New',monospace;font-size:13px;letter-spacing:.5px">
       </div>
-      <div class="field" style="margin-bottom:10px">
-        <label>Valor da nota (R$)</label>
-        <input type="number" id="valor-nfe" placeholder="Ex: 87.50" step="0.01" min="0" style="font-size:15px">
+      <div id="valor-manual-box" style="display:none">
+        <div class="field" style="margin-bottom:10px">
+          <label>Valor não encontrado automaticamente — digite o valor da nota (R$)</label>
+          <input type="number" id="valor-nfe" placeholder="Ex: 87.50" step="0.01" min="0" style="font-size:15px">
+        </div>
       </div>
       <button class="btn btn-primary" onclick="validarNFe()">🔍 Validar nota fiscal</button>
     </div>
@@ -992,35 +994,59 @@ async function loadBeneficios() {
 async function validarNFe() {
   if(!currentUser){toast('Faça login primeiro','error');return;}
   const chave = document.getElementById('chave-nfe').value.replace(/\D/g,'');
-  const valorStr = document.getElementById('valor-nfe').value;
   if(chave.length!==44){toast('A chave deve ter 44 dígitos','error');return;}
-  if(!valorStr||parseFloat(valorStr)<=0){toast('Digite o valor da nota','error');return;}
-  const valor = parseFloat(valorStr);
-  // Detecta modelo
+
+  // Se campo manual estiver visível, precisa do valor
+  const manualBox = document.getElementById('valor-manual-box');
+  const valorManualInput = document.getElementById('valor-nfe');
+  if(manualBox.style.display!=='none') {
+    const v = parseFloat(valorManualInput.value);
+    if(!v||v<=0){toast('Digite o valor da nota','error');return;}
+  }
+
   const modelo = chave.substring(20,22);
   const modeloNome = modelo==='65'?'NFC-e':modelo==='55'?'NF-e':'desconhecido';
+
   loading(true);
+  toast('🔍 Consultando SEFAZ automaticamente...','');
+
   try {
-    // Checa duplicata
-    const exists = await sb('notas_fiscais?chave_acesso=eq.'+chave+'&select=id');
-    if(exists&&exists.length){toast('Nota já cadastrada por outro cliente','error');loading(false);return;}
-    const exists2 = await sb('notas_fiscais?chave_acesso=eq.'+chave+'&cliente_id=eq.'+currentUser.id+'&select=id');
-    if(exists2&&exists2.length){toast('Você já cadastrou esta nota','error');loading(false);return;}
-    // Chama Edge Function
+    const valorManual = parseFloat(valorManualInput?.value||'0')||0;
     const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body:JSON.stringify({chave, cliente_id:currentUser.id, valor})
+      body:JSON.stringify({chave, cliente_id:currentUser.id, valor: valorManual})
     });
     const data = await res.json();
-    if(!res.ok){toast(data.error||'Erro ao validar nota','error');loading(false);return;}
-    const pts = data.pontos||Math.floor(valor);
-    currentUser.pontos_total = (currentUser.pontos_total||0)+pts;
+
+    if(!res.ok){
+      // Se não encontrou o valor automaticamente, pede pro usuário digitar
+      if(data.precisa_valor || res.status===422) {
+        manualBox.style.display='block';
+        valorManualInput.focus();
+        toast('Informe o valor da nota no campo abaixo','');
+        loading(false);
+        return;
+      }
+      toast(data.error||'Erro ao validar nota','error');
+      loading(false);
+      return;
+    }
+
+    // Sucesso
+    const pts = data.pontos||0;
+    currentUser.pontos_total = data.pontos_total||(currentUser.pontos_total||0)+pts;
     saveSession();
     document.getElementById('home-pontos').textContent=currentUser.pontos_total.toLocaleString('pt-BR');
-    toast('✅ +'+pts+' pontos! Nota '+modeloNome+' de '+fmtMoney(valor)+' aprovada','success');
+
+    const autoMsg = data.buscou_automatico ? ' (valor obtido automaticamente da SEFAZ)' : '';
+    toast('✅ +'+pts+' pontos! '+modeloNome+' de '+fmtMoney(data.valor)+' aprovada'+autoMsg,'success');
+
+    // Limpa campos
     document.getElementById('chave-nfe').value='';
-    document.getElementById('valor-nfe').value='';
+    if(valorManualInput) valorManualInput.value='';
+    manualBox.style.display='none';
+
     loadHistorico();
     if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi! Veja sua coleção','success'),2500);
   } catch(e) { toast('Erro de conexão. Tente novamente.','error'); console.error(e); }
