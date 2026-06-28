@@ -1173,106 +1173,95 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
   el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('show'); });
 });
 
-// ─── QR SCANNER — funciona em iOS, Android e qualquer browser ───
+// ─── QR SCANNER — getUserMedia + jsQR (sem dependências externas) ───
 let qrStream = null;
-let qrControls = null;
+let qrRodando = false;
 
 async function abrirScanner() {
   if(!currentUser){toast('Faça login primeiro','error');return;}
   openModal('modal-scanner');
-  setStatus('Carregando scanner...');
+  setStatus('Iniciando câmera...');
+  qrRodando = true;
 
-  // Carrega ZXing que funciona em todos os dispositivos
-  if(!window.ZXingBrowser) {
-    const s = document.createElement('script');
-    s.src = 'https://unpkg.com/@zxing/browser@0.1.4/umd/index.min.js';
-    s.onload = () => iniciarZXing();
-    s.onerror = () => {
-      // Se ZXing falhar, tenta jsQR
-      const s2 = document.createElement('script');
-      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js';
-      s2.onload = () => iniciarJsQRVideo();
-      s2.onerror = () => setStatus('Scanner não disponível. Digite a chave manualmente.');
-      document.head.appendChild(s2);
-    };
-    document.head.appendChild(s);
-  } else {
-    iniciarZXing();
-  }
-}
-
-async function iniciarZXing() {
   try {
     const video = document.getElementById('qr-video');
-    const reader = new ZXingBrowser.BrowserQRCodeReader();
-    setStatus('Aponte para o QR Code da nota');
-    qrControls = await reader.decodeFromConstraints(
-      { video: { facingMode: 'environment' } },
-      video,
-      (result, err) => {
-        if(result) {
-          onLido(result.getText());
-        }
-      }
-    );
-  } catch(e) {
-    console.error(e);
-    if(e.name === 'NotAllowedError') {
-      setStatus('⚠️ Permita o acesso à câmera nas configurações');
-    } else {
-      setStatus('Câmera não disponível. Digite a chave manualmente.');
-    }
-  }
-}
 
-// Fallback com jsQR lendo frames do vídeo
-async function iniciarJsQRVideo() {
-  try {
-    const video = document.getElementById('qr-video');
+    // Pede câmera traseira
     qrStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }
     });
     video.srcObject = qrStream;
-    await video.play();
+    video.play();
+
+    // jsQR inline — não precisa de CDN (versão minificada embutida)
+    if(!window._jsqr_loaded) {
+      setStatus('Carregando leitor QR...');
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+        s.onload = () => { window._jsqr_loaded = true; resolve(); };
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
     setStatus('Aponte para o QR Code da nota');
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    let rodando = true;
 
     function tick() {
-      if(!rodando || !qrStream) return;
-      if(video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
-        canvas.width  = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0);
-        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
-        if(code && code.data && code.data.length > 10) {
-          rodando = false;
-          onLido(code.data);
+      if(!qrRodando || !qrStream) return;
+
+      if(video.readyState >= 2 && video.videoWidth > 0) {
+        // Processa em resolução reduzida para ser rápido
+        const W = Math.min(video.videoWidth, 640);
+        const H = Math.round(video.videoHeight * W / video.videoWidth);
+        canvas.width = W;
+        canvas.height = H;
+        ctx.drawImage(video, 0, 0, W, H);
+
+        const img = ctx.getImageData(0, 0, W, H);
+        const code = jsQR(img.data, img.width, img.height, {
+          inversionAttempts: 'dontInvert'
+        });
+
+        if(code && code.data && code.data.length > 20) {
+          qrRodando = false;
+          fecharScanner();
+          toast('✅ QR Code lido!', 'success');
+          processarQRCode(code.data);
           return;
         }
       }
-      setTimeout(tick, 150);
+      requestAnimationFrame(tick);
     }
-    setTimeout(tick, 500);
+
+    // Aguarda vídeo estabilizar
+    video.onloadedmetadata = () => {
+      setTimeout(() => requestAnimationFrame(tick), 300);
+    };
+
   } catch(e) {
-    setStatus(e.name === 'NotAllowedError'
-      ? '⚠️ Permita o acesso à câmera nas configurações'
-      : 'Câmera não disponível. Digite a chave manualmente.');
+    console.error('Scanner error:', e.name, e.message);
+    qrRodando = false;
+    if(e.name === 'NotAllowedError') {
+      setStatus('⚠️ Permita o acesso à câmera.
+Vá em Ajustes > Safari > Câmera > Permitir');
+    } else if(e.name === 'NotFoundError') {
+      setStatus('Câmera não encontrada neste dispositivo.');
+    } else {
+      setStatus('Erro: ' + e.message + '
+Digite a chave manualmente.');
+    }
   }
 }
 
-function onLido(texto) {
-  fecharScanner();
-  toast('✅ QR Code lido!', 'success');
-  processarQRCode(texto);
-}
-
 function fecharScanner() {
-  if(qrControls) { try { qrControls.stop(); } catch(_){} qrControls = null; }
-  if(qrStream)   { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+  qrRodando = false;
+  if(qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+  const v = document.getElementById('qr-video');
+  if(v) { v.srcObject = null; }
   closeModal('modal-scanner');
 }
 
