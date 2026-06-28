@@ -1171,39 +1171,43 @@ function lerImagemQR(input) {
   const file = input.files[0];
   if(!file) return;
 
-  loading(true);
-  toast('Lendo QR Code...','');
+  toast('Processando...','');
 
   carregarJsQR(() => {
     const img = new Image();
     img.onload = () => {
-      // Desenha em canvas e extrai pixels
-      const canvas = document.createElement('canvas');
-      // Reduz resolução para processar mais rápido
-      const MAX = 1024;
-      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-      canvas.width = Math.floor(img.width * scale);
-      canvas.height = Math.floor(img.height * scale);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      // Tenta tamanhos crescentes até achar o QR Code
+      const tamanhos = [300, 500, 800];
+      let resultado = null;
 
-      const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: 'attemptBoth'
-      });
+      for(const MAX of tamanhos) {
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        canvas.width = Math.floor(img.width * scale);
+        canvas.height = Math.floor(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'dontInvert'
+        });
+        if(code && code.data && code.data.length > 10) {
+          resultado = code.data;
+          break;
+        }
+      }
 
-      loading(false);
-      // Limpa o input para permitir escanear de novo
       input.value = '';
+      URL.revokeObjectURL(img.src);
 
-      if(code && code.data) {
+      if(resultado) {
         toast('✅ QR Code lido!','success');
-        processarQRCode(code.data);
+        processarQRCode(resultado);
       } else {
-        toast('QR Code não encontrado. Tente novamente com mais luz.','error');
+        toast('Não encontrei o QR Code. Tente de mais perto com boa iluminação.','error');
       }
     };
-    img.onerror = () => { loading(false); toast('Erro ao ler imagem','error'); };
+    img.onerror = () => toast('Erro ao ler imagem','error');
     img.src = URL.createObjectURL(file);
   });
 }
