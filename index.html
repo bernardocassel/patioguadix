@@ -462,14 +462,37 @@
   .menu-info span { font-size: 12px; color: var(--gray-500); }
   .menu-arrow { color: var(--gray-300); font-size: 18px; }
 </style>
-<!-- QR Scanner lib (lightweight, no dependencies) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <style>
 /* QR Scanner modal */
 #modal-scanner .modal-box { padding: 24px 16px; }
-#qr-reader { width: 100%; border-radius: 12px; overflow: hidden; }
-#qr-reader video { border-radius: 12px; }
-#qr-reader__scan_region { border-radius: 12px; }
+#qr-video-container { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
+#qr-video { width: 100%; display: block; border-radius: 12px; }
+#qr-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+#qr-frame {
+  width: 220px; height: 220px;
+  border: 3px solid var(--teal);
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+  position: relative;
+}
+#qr-frame::before, #qr-frame::after {
+  content: ''; position: absolute;
+  width: 32px; height: 32px;
+  border-color: var(--teal); border-style: solid;
+}
+#qr-frame::before { top: -3px; left: -3px; border-width: 4px 0 0 4px; border-radius: 4px 0 0 0; }
+#qr-frame::after { bottom: -3px; right: -3px; border-width: 0 4px 4px 0; border-radius: 0 0 4px 0; }
+.scan-line {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  animation: scanAnim 2s linear infinite;
+  top: 0;
+}
+@keyframes scanAnim { 0%{top:0} 100%{top:100%} }
 .scan-status {
   text-align: center; padding: 12px; font-size: 14px;
   color: var(--gray-500); margin-top: 8px;
@@ -718,7 +741,14 @@
     <p style="text-align:center;color:var(--gray-500);font-size:13px;margin-bottom:16px">
       Aponte para o QR Code impresso na nota
     </p>
-    <div id="qr-reader"></div>
+    <div id="qr-video-container">
+      <video id="qr-video" autoplay muted playsinline></video>
+      <div id="qr-overlay">
+        <div id="qr-frame">
+          <div class="scan-line"></div>
+        </div>
+      </div>
+    </div>
     <div class="scan-status" id="scan-status">Iniciando câmera...</div>
     <button class="btn btn-ghost" style="margin-top:12px" onclick="fecharScanner()">Cancelar</button>
   </div>
@@ -1141,48 +1171,154 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
   el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('show'); });
 });
 
-// ─── QR SCANNER ───
-let qrScanner = null;
+// ─── QR SCANNER NATIVO (funciona no Safari iOS) ───
+let qrStream = null;
+let qrAnimFrame = null;
+let qrCanvas = null;
+let qrCtx = null;
 
 function abrirScanner() {
   if(!currentUser){toast('Faça login primeiro','error');return;}
   openModal('modal-scanner');
-  document.getElementById('scan-status').textContent = 'Iniciando câmera...';
-  document.getElementById('scan-status').className = 'scan-status';
+  const status = document.getElementById('scan-status');
+  status.textContent = 'Iniciando câmera...';
+  status.className = 'scan-status';
 
-  // Pequeno delay para o modal aparecer antes de iniciar câmera
-  setTimeout(() => {
+  setTimeout(async () => {
     try {
-      qrScanner = new Html5Qrcode('qr-reader');
-      qrScanner.start(
-        { facingMode: 'environment' }, // câmera traseira
-        { fps: 10, qrbox: { width: 280, height: 280 } },
-        (decodedText) => {
-          // QR Code lido com sucesso!
-          qrScanner.stop().catch(() => {});
-          processarQRCode(decodedText);
-        },
-        () => {} // erro silencioso (frame sem QR)
-      ).catch(err => {
-        document.getElementById('scan-status').textContent = 'Permita o acesso à câmera nas configurações do navegador.';
-        document.getElementById('scan-status').className = 'scan-status error';
-        console.error(err);
-      });
+      const video = document.getElementById('qr-video');
+      const constraints = {
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+      qrStream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = qrStream;
+      await video.play();
 
-      document.getElementById('scan-status').textContent = 'Câmera ativa. Aponte para o QR Code da nota.';
+      // Canvas oculto para processar frames
+      qrCanvas = document.createElement('canvas');
+      qrCtx = qrCanvas.getContext('2d', { willReadFrequently: true });
+
+      status.textContent = 'Aponte para o QR Code da nota fiscal';
+      iniciarLeituraFrames(video);
     } catch(e) {
-      document.getElementById('scan-status').textContent = 'Câmera não disponível. Digite a chave manualmente.';
-      document.getElementById('scan-status').className = 'scan-status error';
+      console.error(e);
+      if(e.name === 'NotAllowedError') {
+        status.textContent = 'Permita o acesso à câmera nas configurações do Safari';
+      } else {
+        status.textContent = 'Câmera não disponível. Digite a chave manualmente.';
+      }
+      status.className = 'scan-status error';
     }
-  }, 400);
+  }, 300);
+}
+
+function iniciarLeituraFrames(video) {
+  // Usa BarcodeDetector nativo (iOS 17+ e Chrome)
+  if('BarcodeDetector' in window) {
+    const detector = new BarcodeDetector({ formats: ['qr_code'] });
+    
+    async function detectLoop() {
+      if(!qrStream) return;
+      try {
+        const barcodes = await detector.detect(video);
+        if(barcodes.length > 0) {
+          const resultado = barcodes[0].rawValue;
+          pararScanner();
+          document.getElementById('scan-status').textContent = '✅ QR Code lido!';
+          document.getElementById('scan-status').className = 'scan-status success';
+          setTimeout(() => {
+            fecharScanner();
+            processarQRCode(resultado);
+          }, 500);
+          return;
+        }
+      } catch(e) {}
+      qrAnimFrame = requestAnimationFrame(detectLoop);
+    }
+    qrAnimFrame = requestAnimationFrame(detectLoop);
+
+  } else {
+    // Fallback: usa jsQR via CDN
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js';
+    script.onload = () => iniciarJsQR(video);
+    script.onerror = () => {
+      // Último fallback: input de arquivo (abre câmera no iOS)
+      usarInputCamera();
+    };
+    document.head.appendChild(script);
+  }
+}
+
+function iniciarJsQR(video) {
+  function frameLoop() {
+    if(!qrStream || !qrCanvas) return;
+    if(video.readyState === video.HAVE_ENOUGH_DATA) {
+      qrCanvas.width = video.videoWidth;
+      qrCanvas.height = video.videoHeight;
+      qrCtx.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
+      const imageData = qrCtx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert'
+      });
+      if(code) {
+        pararScanner();
+        document.getElementById('scan-status').textContent = '✅ QR Code lido!';
+        document.getElementById('scan-status').className = 'scan-status success';
+        setTimeout(() => {
+          fecharScanner();
+          processarQRCode(code.data);
+        }, 500);
+        return;
+      }
+    }
+    qrAnimFrame = requestAnimationFrame(frameLoop);
+  }
+  qrAnimFrame = requestAnimationFrame(frameLoop);
+}
+
+function usarInputCamera() {
+  // iOS Safari fallback: input file com capture=environment
+  fecharScanner();
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.capture = 'environment';
+  input.style.display = 'none';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    // Tenta ler QR Code da imagem
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width; canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      if(window.jsQR) {
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if(code) { processarQRCode(code.data); return; }
+      }
+      toast('Não foi possível ler o QR Code. Digite a chave manualmente.', 'error');
+    };
+    img.src = URL.createObjectURL(file);
+  };
+  document.body.appendChild(input);
+  input.click();
+}
+
+function pararScanner() {
+  if(qrAnimFrame) { cancelAnimationFrame(qrAnimFrame); qrAnimFrame = null; }
+  if(qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
 }
 
 function fecharScanner() {
-  if(qrScanner) {
-    qrScanner.stop().catch(()=>{});
-    qrScanner.clear().catch(()=>{});
-    qrScanner = null;
-  }
+  pararScanner();
   closeModal('modal-scanner');
 }
 
