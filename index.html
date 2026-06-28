@@ -1193,54 +1193,61 @@ async function abrirScanner() {
     video.srcObject = qrStream;
     video.play();
 
-    // jsQR inline — não precisa de CDN (versão minificada embutida)
-    if(!window._jsqr_loaded) {
-      setStatus('Carregando leitor QR...');
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
-        s.onload = () => { window._jsqr_loaded = true; resolve(); };
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
-    }
-
     setStatus('Aponte para o QR Code da nota');
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-    function tick() {
-      if(!qrRodando || !qrStream) return;
-
-      if(video.readyState >= 2 && video.videoWidth > 0) {
-        // Processa em resolução reduzida para ser rápido
-        const W = Math.min(video.videoWidth, 640);
-        const H = Math.round(video.videoHeight * W / video.videoWidth);
-        canvas.width = W;
-        canvas.height = H;
-        ctx.drawImage(video, 0, 0, W, H);
-
-        const img = ctx.getImageData(0, 0, W, H);
-        const code = jsQR(img.data, img.width, img.height, {
-          inversionAttempts: 'dontInvert'
-        });
-
-        if(code && code.data && code.data.length > 20) {
-          qrRodando = false;
-          fecharScanner();
-          toast('✅ QR Code lido!', 'success');
-          processarQRCode(code.data);
-          return;
-        }
-      }
-      requestAnimationFrame(tick);
+    // Carrega jsQR como fallback (só se não tiver BarcodeDetector)
+    if (!('BarcodeDetector' in window) && !window._jsqr_loaded) {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+      s.onload = () => { window._jsqr_loaded = true; };
+      document.head.appendChild(s);
     }
 
-    // Aguarda vídeo estabilizar
-    video.onloadedmetadata = () => {
-      setTimeout(() => requestAnimationFrame(tick), 300);
-    };
+    // BarcodeDetector nativo = mesma engine da câmera do iPhone
+    if ('BarcodeDetector' in window) {
+      const detector = new BarcodeDetector({ formats: ['qr_code'] });
+      async function loopNativo() {
+        if (!qrRodando || !qrStream) return;
+        try {
+          const results = await detector.detect(video);
+          if (results.length > 0 && results[0].rawValue) {
+            qrRodando = false;
+            fecharScanner();
+            toast('✅ QR Code lido!', 'success');
+            processarQRCode(results[0].rawValue);
+            return;
+          }
+        } catch(_) {}
+        setTimeout(loopNativo, 200);
+      }
+      video.onloadedmetadata = () => setTimeout(loopNativo, 500);
+
+    } else {
+      // Fallback jsQR para dispositivos sem BarcodeDetector
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      function tick() {
+        if (!qrRodando || !qrStream) return;
+        if (video.readyState >= 2 && video.videoWidth > 0) {
+          const W = Math.min(video.videoWidth, 800);
+          const H = Math.round(video.videoHeight * W / video.videoWidth);
+          canvas.width = W; canvas.height = H;
+          ctx.drawImage(video, 0, 0, W, H);
+          const img = ctx.getImageData(0, 0, W, H);
+          let code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' });
+          if (code && code.data && code.data.length > 10) {
+            qrRodando = false;
+            fecharScanner();
+            toast('✅ QR Code lido!', 'success');
+            processarQRCode(code.data);
+            return;
+          }
+        }
+        setTimeout(tick, 150);
+      }
+      video.onloadedmetadata = () => setTimeout(tick, 800);
+    }
 
   } catch(e) {
     console.error('Scanner error:', e.name, e.message);
