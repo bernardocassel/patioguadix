@@ -600,13 +600,12 @@
         <label>Chave de acesso (44 dígitos)</label>
         <input type="tel" id="chave-nfe" placeholder="Digite os 44 dígitos da chave" maxlength="44" oninput="this.value=this.value.replace(/\D/g,'')" style="font-family:'Courier New',monospace;font-size:13px;letter-spacing:.5px">
       </div>
-      <div id="valor-manual-box" style="display:none">
-        <div class="field" style="margin-bottom:10px">
-          <label>Valor não encontrado automaticamente — digite o valor da nota (R$)</label>
-          <input type="number" id="valor-nfe" placeholder="Ex: 87.50" step="0.01" min="0" style="font-size:15px">
-        </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>Valor total da nota (R$) <span style="font-weight:400;color:var(--gray-500)">— conforme impresso na nota</span></label>
+        <input type="number" id="valor-nfe" placeholder="Ex: 33.67" step="0.01" min="0.01" style="font-size:16px;font-weight:600">
       </div>
-      <button class="btn btn-primary" onclick="validarNFe()">🔍 Validar nota fiscal</button>
+      <div id="valor-manual-box" style="display:none"></div>
+      <button class="btn btn-primary" onclick="validarNFe()">✅ Cadastrar nota e ganhar pontos</button>
     </div>
     <div class="section-title" style="padding-top:4px">Últimas notas</div>
     <div class="history-list" id="history-list"><div style="padding:16px 0;color:var(--gray-400);font-size:13px;text-align:center">Carregando...</div></div>
@@ -1270,34 +1269,29 @@ async function validarNFeComValor(chave, valorHint) {
   const chaveNum = chave.replace(/\D/g,'').substring(0,44);
   if(chaveNum.length!==44){toast('A chave deve ter 44 dígitos','error');return;}
 
-  const manualBox = document.getElementById('valor-manual-box');
-  const valorManualInput = document.getElementById('valor-nfe');
-  // Se box manual visível, exige valor digitado
-  if(manualBox && manualBox.style.display!=='none') {
-    const v = parseFloat(valorManualInput.value);
-    if(!v||v<=0){toast('Digite o valor da nota','error');return;}
-    valorHint = v;
+  // Valor: prioridade 1) campo na tela, 2) hint do QR Code
+  const valorInput = document.getElementById('valor-nfe');
+  const valorDigitado = parseFloat(valorInput?.value||'0');
+  const valor = valorDigitado > 0 ? valorDigitado : (parseFloat(String(valorHint))||0);
+
+  if(!valor || valor <= 0){
+    toast('Digite o valor total da nota','error');
+    if(valorInput) valorInput.focus();
+    return;
   }
 
   loading(true);
-  toast('🔍 Consultando SEFAZ...','');
+  toast('Cadastrando nota...','');
 
   try {
     const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe', {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body:JSON.stringify({chave:chaveNum, cliente_id:currentUser.id, valor:valorHint||0})
+      body:JSON.stringify({chave:chaveNum, cliente_id:currentUser.id, valor})
     });
     const data = await res.json();
 
-    if(!res.ok) {
-      if(res.status===422 || data.precisa_valor) {
-        if(manualBox) manualBox.style.display='block';
-        if(valorManualInput) valorManualInput.focus();
-        toast('Valor não encontrado — digite o valor da nota abaixo','');
-        loading(false);
-        return;
-      }
+    if(!res.ok){
       toast(data.error||'Erro ao validar nota','error');
       loading(false);
       return;
@@ -1310,8 +1304,7 @@ async function validarNFeComValor(chave, valorHint) {
     const modeloNome = chaveNum.substring(20,22)==='65'?'NFC-e':'NF-e';
     toast('✅ +'+pts+' pontos! '+modeloNome+' de '+fmtMoney(data.valor)+' aprovada','success');
     document.getElementById('chave-nfe').value='';
-    if(valorManualInput) valorManualInput.value='';
-    if(manualBox) manualBox.style.display='none';
+    if(valorInput) valorInput.value='';
     loadHistorico();
     if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi!','success'),2500);
   } catch(e){ toast('Erro de conexão. Tente novamente.','error'); console.error(e); }
