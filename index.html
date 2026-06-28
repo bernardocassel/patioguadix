@@ -612,13 +612,29 @@
         <div class="how-step"><div class="step-num">3</div><div class="step-text"><strong>Pontos creditados em segundos</strong><span>Consultamos a SEFAZ e os pontos são adicionados automaticamente</span></div></div>
       </div>
     </div>
-    <div class="scan-area" onclick="document.getElementById('qr-input').click()">
-      <div class="scan-icon">📷</div>
-      <strong>Escanear QR Code da nota</strong>
-      <span>Toque para abrir a câmera</span>
+    <!-- Opção 1: câmera nativa do iPhone -->
+    <div style="margin:16px 16px 0">
+      <div style="background:var(--teal-light);border-radius:var(--radius);padding:16px;border:1.5px solid var(--teal)">
+        <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:8px">📱 Opção 1 — Câmera do iPhone (mais fácil)</div>
+        <p style="font-size:12px;color:var(--gray-700);margin-bottom:12px;line-height:1.5">
+          1. Abra a <strong>câmera nativa</strong> do iPhone<br>
+          2. Aponte para o QR Code da nota<br>
+          3. Toque na notificação amarela que aparecer<br>
+          4. Copie os números da URL e cole abaixo
+        </p>
+        <button class="btn btn-primary" style="font-size:13px;padding:11px" onclick="mostrarColaCodigo()">
+          📋 Colar link do QR Code
+        </button>
+      </div>
     </div>
-    <input type="file" id="qr-input" accept="image/*" capture="environment"
-      style="display:none" onchange="lerImagemQR(this)">
+    <div id="box-cola-codigo" style="display:none;padding:0 16px;margin-top:12px">
+      <div class="field">
+        <label>Cole aqui o link que abriu ao escanear</label>
+        <textarea id="url-qrcode" rows="3" placeholder="https://dfe-portal.svrs.rs.gov.br/Nfce/QrCodeNFCe?chQRCode=4326..."
+          style="width:100%;padding:12px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);font-size:12px;resize:none;font-family:monospace"
+          oninput="extrairChaveDeURL(this.value)"></textarea>
+      </div>
+    </div>
     <div class="divider-text">— ou digite a chave —</div>
     <div style="padding:0 16px 8px">
       <div class="field" style="margin-bottom:10px">
@@ -1154,62 +1170,57 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
   el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('show'); });
 });
 
-// ─── QR SCANNER — lê foto da câmera (funciona no iOS Safari) ───
+// ─── QR CODE — extrai chave da URL colada pelo usuário ───
 
-// Carrega jsQR uma vez
-function carregarJsQR(callback) {
-  if(window.jsQR) { callback(); return; }
-  const s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js';
-  s.onload = callback;
-  s.onerror = () => toast('Erro ao carregar leitor de QR Code','error');
-  document.head.appendChild(s);
+function mostrarColaCodigo() {
+  const box = document.getElementById('box-cola-codigo');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  if(box.style.display === 'block') {
+    setTimeout(() => document.getElementById('url-qrcode').focus(), 100);
+  }
 }
 
-function lerImagemQR(input) {
-  if(!currentUser){toast('Faça login primeiro','error');return;}
-  const file = input.files[0];
-  if(!file) return;
-
-  toast('Processando...','');
-
-  carregarJsQR(() => {
-    const img = new Image();
-    img.onload = () => {
-      // Tenta tamanhos crescentes até achar o QR Code
-      const tamanhos = [300, 500, 800];
-      let resultado = null;
-
-      for(const MAX of tamanhos) {
-        const canvas = document.createElement('canvas');
-        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-        canvas.width = Math.floor(img.width * scale);
-        canvas.height = Math.floor(img.height * scale);
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: 'dontInvert'
-        });
-        if(code && code.data && code.data.length > 10) {
-          resultado = code.data;
-          break;
-        }
+function extrairChaveDeURL(texto) {
+  if(!texto || texto.length < 10) return;
+  
+  let chave = '';
+  
+  // Tenta extrair de URL com parâmetro chQRCode
+  if(texto.includes('chQRCode=')) {
+    const match = texto.match(/chQRCode=(\d{44})/);
+    if(match) chave = match[1];
+    // Formato com pipe: chQRCode=CHAVE|versao|...
+    if(!chave) {
+      const match2 = texto.match(/chQRCode=([^|&\s]+)/);
+      if(match2) chave = match2[1].replace(/\D/g,'').substring(0,44);
+    }
+  }
+  
+  // Tenta outros parâmetros
+  if(!chave || chave.length !== 44) {
+    const params = ['chNFe','chaveNFe','chave','p'];
+    for(const p of params) {
+      const match = texto.match(new RegExp(p + '=([^&\s|]+)'));
+      if(match) {
+        const candidate = match[1].replace(/\D/g,'').substring(0,44);
+        if(candidate.length === 44) { chave = candidate; break; }
       }
+    }
+  }
+  
+  // Tenta extrair 44 dígitos direto do texto
+  if(!chave || chave.length !== 44) {
+    const match = texto.replace(/\s/g,'').match(/\d{44}/);
+    if(match) chave = match[0];
+  }
 
-      input.value = '';
-      URL.revokeObjectURL(img.src);
-
-      if(resultado) {
-        toast('✅ QR Code lido!','success');
-        processarQRCode(resultado);
-      } else {
-        toast('Não encontrei o QR Code. Tente de mais perto com boa iluminação.','error');
-      }
-    };
-    img.onerror = () => toast('Erro ao ler imagem','error');
-    img.src = URL.createObjectURL(file);
-  });
+  if(chave && chave.length === 44) {
+    document.getElementById('chave-nfe').value = chave;
+    document.getElementById('url-qrcode').value = '';
+    document.getElementById('box-cola-codigo').style.display = 'none';
+    toast('✅ Chave extraída! Digite o valor da nota.','success');
+    document.getElementById('valor-nfe').focus();
+  }
 }
 
 function processarQRCode(url) {
