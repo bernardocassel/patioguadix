@@ -1246,13 +1246,11 @@ async function abrirScanner() {
     console.error('Scanner error:', e.name, e.message);
     qrRodando = false;
     if(e.name === 'NotAllowedError') {
-      setStatus('⚠️ Permita o acesso à câmera.
-Vá em Ajustes > Safari > Câmera > Permitir');
+      setStatus('⚠️ Permita o acesso à câmera. Vá em Ajustes > Safari > Câmera > Permitir');
     } else if(e.name === 'NotFoundError') {
       setStatus('Câmera não encontrada neste dispositivo.');
     } else {
-      setStatus('Erro: ' + e.message + '
-Digite a chave manualmente.');
+      setStatus('Erro ao abrir câmera. Digite a chave manualmente.');
     }
   }
 }
