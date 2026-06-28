@@ -1202,7 +1202,7 @@ function abrirScanner() {
       qrCanvas = document.createElement('canvas');
       qrCtx = qrCanvas.getContext('2d', { willReadFrequently: true });
 
-      status.textContent = 'Aponte para o QR Code da nota fiscal';
+      status.textContent = 'Aponte para o QR Code — mantenha firme';
       iniciarLeituraFrames(video);
     } catch(e) {
       console.error(e);
@@ -1217,68 +1217,68 @@ function abrirScanner() {
 }
 
 function iniciarLeituraFrames(video) {
-  // Usa BarcodeDetector nativo (iOS 17+ e Chrome)
-  if('BarcodeDetector' in window) {
-    const detector = new BarcodeDetector({ formats: ['qr_code'] });
-    
-    async function detectLoop() {
-      if(!qrStream) return;
-      try {
-        const barcodes = await detector.detect(video);
-        if(barcodes.length > 0) {
-          const resultado = barcodes[0].rawValue;
-          pararScanner();
-          document.getElementById('scan-status').textContent = '✅ QR Code lido!';
-          document.getElementById('scan-status').className = 'scan-status success';
-          setTimeout(() => {
-            fecharScanner();
-            processarQRCode(resultado);
-          }, 500);
-          return;
-        }
-      } catch(e) {}
-      qrAnimFrame = requestAnimationFrame(detectLoop);
-    }
-    qrAnimFrame = requestAnimationFrame(detectLoop);
-
-  } else {
-    // Fallback: usa jsQR via CDN
+  // Carrega jsQR primeiro (mais compatível com Safari iOS)
+  if(!window.jsQR) {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js';
-    script.onload = () => iniciarJsQR(video);
-    script.onerror = () => {
-      // Último fallback: input de arquivo (abre câmera no iOS)
-      usarInputCamera();
+    script.onload = () => {
+      document.getElementById('scan-status').textContent = 'Aponte para o QR Code da nota';
+      iniciarJsQR(video);
     };
+    script.onerror = () => usarInputCamera();
     document.head.appendChild(script);
+  } else {
+    iniciarJsQR(video);
   }
 }
 
 function iniciarJsQR(video) {
+  let lendo = false;
+  let ultimaLeitura = 0;
+
   function frameLoop() {
-    if(!qrStream || !qrCanvas) return;
-    if(video.readyState === video.HAVE_ENOUGH_DATA) {
+    if(!qrStream || !qrCanvas || lendo) return;
+
+    // Processa 8 frames por segundo (não sobrecarrega)
+    const agora = Date.now();
+    if(agora - ultimaLeitura < 120) {
+      qrAnimFrame = requestAnimationFrame(frameLoop);
+      return;
+    }
+    ultimaLeitura = agora;
+
+    if(video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
       qrCanvas.width = video.videoWidth;
       qrCanvas.height = video.videoHeight;
       qrCtx.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
-      const imageData = qrCtx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: 'dontInvert'
-      });
-      if(code) {
-        pararScanner();
-        document.getElementById('scan-status').textContent = '✅ QR Code lido!';
-        document.getElementById('scan-status').className = 'scan-status success';
-        setTimeout(() => {
-          fecharScanner();
-          processarQRCode(code.data);
-        }, 500);
-        return;
-      }
+      
+      try {
+        const imageData = qrCtx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'attemptBoth'
+        });
+
+        if(code && code.data && code.data.length > 10) {
+          lendo = true;
+          pararScanner();
+          const status = document.getElementById('scan-status');
+          status.textContent = '✅ QR Code lido! Processando...';
+          status.className = 'scan-status success';
+          // Fecha o modal e processa após 1 segundo (tempo para o usuário ver)
+          setTimeout(() => {
+            fecharScanner();
+            processarQRCode(code.data);
+          }, 1000);
+          return;
+        }
+      } catch(e) { console.log('frame error', e); }
     }
     qrAnimFrame = requestAnimationFrame(frameLoop);
   }
-  qrAnimFrame = requestAnimationFrame(frameLoop);
+  // Pequeno delay para câmera estabilizar antes de começar a ler
+  setTimeout(() => {
+    qrAnimFrame = requestAnimationFrame(frameLoop);
+  }, 800);
 }
 
 function usarInputCamera() {
