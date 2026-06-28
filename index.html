@@ -612,11 +612,13 @@
         <div class="how-step"><div class="step-num">3</div><div class="step-text"><strong>Pontos creditados em segundos</strong><span>Consultamos a SEFAZ e os pontos são adicionados automaticamente</span></div></div>
       </div>
     </div>
-    <div class="scan-area" onclick="abrirScanner()">
+    <div class="scan-area" onclick="document.getElementById('qr-input').click()">
       <div class="scan-icon">📷</div>
       <strong>Escanear QR Code da nota</strong>
       <span>Toque para abrir a câmera</span>
     </div>
+    <input type="file" id="qr-input" accept="image/*" capture="environment"
+      style="display:none" onchange="lerImagemQR(this)">
     <div class="divider-text">— ou digite a chave —</div>
     <div style="padding:0 16px 8px">
       <div class="field" style="margin-bottom:10px">
@@ -733,26 +735,7 @@
   </nav>
 </div>
 
-<!-- MODAL SCANNER QR NF-e -->
-<div class="modal-overlay" id="modal-scanner">
-  <div class="modal-box">
-    <div class="modal-handle"></div>
-    <h3 style="text-align:center;margin-bottom:4px">Escanear Nota Fiscal</h3>
-    <p style="text-align:center;color:var(--gray-500);font-size:13px;margin-bottom:16px">
-      Aponte para o QR Code impresso na nota
-    </p>
-    <div id="qr-video-container">
-      <video id="qr-video" autoplay muted playsinline></video>
-      <div id="qr-overlay">
-        <div id="qr-frame">
-          <div class="scan-line"></div>
-        </div>
-      </div>
-    </div>
-    <div class="scan-status" id="scan-status">Iniciando câmera...</div>
-    <button class="btn btn-ghost" style="margin-top:12px" onclick="fecharScanner()">Cancelar</button>
-  </div>
-</div>
+
 
 <!-- MODAL QR -->
 <div class="modal-overlay" id="modal-qr">
@@ -1171,155 +1154,58 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
   el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('show'); });
 });
 
-// ─── QR SCANNER NATIVO (funciona no Safari iOS) ───
-let qrStream = null;
-let qrAnimFrame = null;
-let qrCanvas = null;
-let qrCtx = null;
+// ─── QR SCANNER — lê foto da câmera (funciona no iOS Safari) ───
 
-function abrirScanner() {
+// Carrega jsQR uma vez
+function carregarJsQR(callback) {
+  if(window.jsQR) { callback(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js';
+  s.onload = callback;
+  s.onerror = () => toast('Erro ao carregar leitor de QR Code','error');
+  document.head.appendChild(s);
+}
+
+function lerImagemQR(input) {
   if(!currentUser){toast('Faça login primeiro','error');return;}
-  openModal('modal-scanner');
-  const status = document.getElementById('scan-status');
-  status.textContent = 'Iniciando câmera...';
-  status.className = 'scan-status';
+  const file = input.files[0];
+  if(!file) return;
 
-  setTimeout(async () => {
-    try {
-      const video = document.getElementById('qr-video');
-      const constraints = {
-        video: {
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
-      };
-      qrStream = await navigator.mediaDevices.getUserMedia(constraints);
-      video.srcObject = qrStream;
-      await video.play();
+  loading(true);
+  toast('Lendo QR Code...','');
 
-      // Canvas oculto para processar frames
-      qrCanvas = document.createElement('canvas');
-      qrCtx = qrCanvas.getContext('2d', { willReadFrequently: true });
-
-      status.textContent = 'Aponte para o QR Code — mantenha firme';
-      iniciarLeituraFrames(video);
-    } catch(e) {
-      console.error(e);
-      if(e.name === 'NotAllowedError') {
-        status.textContent = 'Permita o acesso à câmera nas configurações do Safari';
-      } else {
-        status.textContent = 'Câmera não disponível. Digite a chave manualmente.';
-      }
-      status.className = 'scan-status error';
-    }
-  }, 300);
-}
-
-function iniciarLeituraFrames(video) {
-  // Carrega jsQR primeiro (mais compatível com Safari iOS)
-  if(!window.jsQR) {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js';
-    script.onload = () => {
-      document.getElementById('scan-status').textContent = 'Aponte para o QR Code da nota';
-      iniciarJsQR(video);
-    };
-    script.onerror = () => usarInputCamera();
-    document.head.appendChild(script);
-  } else {
-    iniciarJsQR(video);
-  }
-}
-
-function iniciarJsQR(video) {
-  let lendo = false;
-  let ultimaLeitura = 0;
-
-  function frameLoop() {
-    if(!qrStream || !qrCanvas || lendo) return;
-
-    // Processa 8 frames por segundo (não sobrecarrega)
-    const agora = Date.now();
-    if(agora - ultimaLeitura < 120) {
-      qrAnimFrame = requestAnimationFrame(frameLoop);
-      return;
-    }
-    ultimaLeitura = agora;
-
-    if(video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
-      qrCanvas.width = video.videoWidth;
-      qrCanvas.height = video.videoHeight;
-      qrCtx.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
-      
-      try {
-        const imageData = qrCtx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: 'attemptBoth'
-        });
-
-        if(code && code.data && code.data.length > 10) {
-          lendo = true;
-          pararScanner();
-          const status = document.getElementById('scan-status');
-          status.textContent = '✅ QR Code lido! Processando...';
-          status.className = 'scan-status success';
-          // Fecha o modal e processa após 1 segundo (tempo para o usuário ver)
-          setTimeout(() => {
-            fecharScanner();
-            processarQRCode(code.data);
-          }, 1000);
-          return;
-        }
-      } catch(e) { console.log('frame error', e); }
-    }
-    qrAnimFrame = requestAnimationFrame(frameLoop);
-  }
-  // Pequeno delay para câmera estabilizar antes de começar a ler
-  setTimeout(() => {
-    qrAnimFrame = requestAnimationFrame(frameLoop);
-  }, 800);
-}
-
-function usarInputCamera() {
-  // iOS Safari fallback: input file com capture=environment
-  fecharScanner();
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.capture = 'environment';
-  input.style.display = 'none';
-  input.onchange = async (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    // Tenta ler QR Code da imagem
+  carregarJsQR(() => {
     const img = new Image();
     img.onload = () => {
+      // Desenha em canvas e extrai pixels
       const canvas = document.createElement('canvas');
-      canvas.width = img.width; canvas.height = img.height;
+      // Reduz resolução para processar mais rápido
+      const MAX = 1024;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      canvas.width = Math.floor(img.width * scale);
+      canvas.height = Math.floor(img.height * scale);
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      if(window.jsQR) {
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-        if(code) { processarQRCode(code.data); return; }
+
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'attemptBoth'
+      });
+
+      loading(false);
+      // Limpa o input para permitir escanear de novo
+      input.value = '';
+
+      if(code && code.data) {
+        toast('✅ QR Code lido!','success');
+        processarQRCode(code.data);
+      } else {
+        toast('QR Code não encontrado. Tente novamente com mais luz.','error');
       }
-      toast('Não foi possível ler o QR Code. Digite a chave manualmente.', 'error');
     };
+    img.onerror = () => { loading(false); toast('Erro ao ler imagem','error'); };
     img.src = URL.createObjectURL(file);
-  };
-  document.body.appendChild(input);
-  input.click();
-}
-
-function pararScanner() {
-  if(qrAnimFrame) { cancelAnimationFrame(qrAnimFrame); qrAnimFrame = null; }
-  if(qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
-}
-
-function fecharScanner() {
-  pararScanner();
-  closeModal('modal-scanner');
+  });
 }
 
 function processarQRCode(url) {
