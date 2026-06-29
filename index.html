@@ -622,20 +622,29 @@
     <div class="modal-overlay" id="modal-scanner">
       <div class="modal-box" style="padding:20px 16px">
         <div class="modal-handle"></div>
-        <h3 style="text-align:center;margin-bottom:4px">Escanear Nota Fiscal</h3>
-        <p style="text-align:center;color:var(--gray-500);font-size:13px;margin-bottom:12px">Aponte para o QR Code da nota</p>
-        <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;width:100%;aspect-ratio:1">
+        <h3 style="text-align:center;margin-bottom:4px">Escanear QR Code</h3>
+        <p style="text-align:center;color:var(--gray-500);font-size:13px;margin-bottom:12px">
+          Enquadre o QR Code na mira e tire a foto
+        </p>
+        <!-- Câmera -->
+        <div style="position:relative;background:#111;border-radius:12px;overflow:hidden;width:100%;aspect-ratio:1">
           <video id="qr-video" autoplay muted playsinline
             style="width:100%;height:100%;object-fit:cover;display:block"></video>
-          <!-- Mira -->
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
-            <div style="width:200px;height:200px;border:3px solid var(--teal);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.5)">
-              <div id="scan-line" style="height:2px;background:var(--teal);animation:scanAnim 1.5s linear infinite"></div>
-            </div>
+            <div style="width:220px;height:220px;border:3px solid var(--teal);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.5)"></div>
           </div>
         </div>
-        <p id="scan-status" style="text-align:center;font-size:13px;color:var(--gray-500);margin:12px 0">Iniciando câmera...</p>
-        <button class="btn btn-ghost" onclick="fecharScanner()">Cancelar</button>
+        <!-- Canvas oculto -->
+        <canvas id="qr-canvas" style="display:none"></canvas>
+        <p id="scan-status" style="text-align:center;font-size:13px;color:var(--gray-500);margin:12px 0">
+          Aguardando câmera...
+        </p>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost" style="flex:1" onclick="fecharScanner()">Cancelar</button>
+          <button id="btn-foto" class="btn btn-primary" style="flex:2" onclick="tirarFoto()">
+            📷 Tirar Foto
+          </button>
+        </div>
       </div>
     </div>
     <div class="divider-text">— ou digite a chave —</div>
@@ -1173,231 +1182,116 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
   el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('show'); });
 });
 
-// ─── QR SCANNER — getUserMedia + jsQR (sem dependências externas) ───
+// ─── QR SCANNER — câmera ao vivo + tirar foto + processar ───
 let qrStream = null;
-let qrRodando = false;
 
 async function abrirScanner() {
   if(!currentUser){toast('Faça login primeiro','error');return;}
   openModal('modal-scanner');
-  setStatus('Iniciando câmera...');
-  qrRodando = true;
-
+  setStatus('Abrindo câmera...');
+  const btnFoto = document.getElementById('btn-foto');
+  btnFoto.disabled = true;
+  btnFoto.textContent = '⏳ Aguarde...';
   try {
     const video = document.getElementById('qr-video');
-
-    // Pede câmera traseira
     qrStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }
+      video: { facingMode: { ideal: 'environment' } }
     });
     video.srcObject = qrStream;
-    video.play();
-
-    setStatus('Aponte para o QR Code da nota');
-
-    // Carrega jsQR como fallback (só se não tiver BarcodeDetector)
-    if (!('BarcodeDetector' in window) && !window._jsqr_loaded) {
-      const s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
-      s.onload = () => { window._jsqr_loaded = true; };
-      document.head.appendChild(s);
-    }
-
-    // BarcodeDetector nativo = mesma engine da câmera do iPhone
-    if ('BarcodeDetector' in window) {
-      const detector = new BarcodeDetector({ formats: ['qr_code'] });
-      async function loopNativo() {
-        if (!qrRodando || !qrStream) return;
-        try {
-          const results = await detector.detect(video);
-          if (results.length > 0 && results[0].rawValue) {
-            qrRodando = false;
-            fecharScanner();
-            toast('✅ QR Code lido!', 'success');
-            processarQRCode(results[0].rawValue);
-            return;
-          }
-        } catch(_) {}
-        setTimeout(loopNativo, 200);
-      }
-      video.onloadedmetadata = () => setTimeout(loopNativo, 500);
-
-    } else {
-      // Fallback jsQR para dispositivos sem BarcodeDetector
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-      function tick() {
-        if (!qrRodando || !qrStream) return;
-        if (video.readyState >= 2 && video.videoWidth > 0) {
-          const W = Math.min(video.videoWidth, 800);
-          const H = Math.round(video.videoHeight * W / video.videoWidth);
-          canvas.width = W; canvas.height = H;
-          ctx.drawImage(video, 0, 0, W, H);
-          const img = ctx.getImageData(0, 0, W, H);
-          let code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' });
-          if (code && code.data && code.data.length > 10) {
-            qrRodando = false;
-            fecharScanner();
-            toast('✅ QR Code lido!', 'success');
-            processarQRCode(code.data);
-            return;
-          }
-        }
-        setTimeout(tick, 150);
-      }
-      video.onloadedmetadata = () => setTimeout(tick, 800);
-    }
-
+    await video.play();
+    setStatus('✅ Câmera pronta — enquadre o QR Code e tire a foto');
+    btnFoto.disabled = false;
+    btnFoto.textContent = '📷 Tirar Foto';
   } catch(e) {
-    console.error('Scanner error:', e.name, e.message);
-    qrRodando = false;
-    if(e.name === 'NotAllowedError') {
-      setStatus('⚠️ Permita o acesso à câmera. Vá em Ajustes > Safari > Câmera > Permitir');
-    } else if(e.name === 'NotFoundError') {
-      setStatus('Câmera não encontrada neste dispositivo.');
-    } else {
-      setStatus('Erro ao abrir câmera. Digite a chave manualmente.');
-    }
+    btnFoto.textContent = '📷 Tirar Foto';
+    setStatus(e.name === 'NotAllowedError'
+      ? '⚠️ Permita a câmera: Ajustes > Safari > Câmera > Permitir'
+      : 'Câmera não disponível. Digite a chave manualmente.');
   }
 }
 
+function tirarFoto() {
+  const video = document.getElementById('qr-video');
+  const canvas = document.getElementById('qr-canvas');
+  if(!video || !video.videoWidth || video.videoWidth === 0) {
+    toast('Câmera ainda não está pronta. Aguarde.','error'); return;
+  }
+  const btn = document.getElementById('btn-foto');
+  btn.disabled = true;
+  btn.textContent = '🔍 Lendo...';
+  setStatus('Processando QR Code...');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0);
+  if(qrStream){ qrStream.getTracks().forEach(t=>t.stop()); qrStream=null; }
+  setTimeout(() => processarFoto(canvas), 100);
+}
+
+async function processarFoto(canvas) {
+  // Tenta BarcodeDetector nativo (iOS 17+, Chrome)
+  if('BarcodeDetector' in window) {
+    try {
+      const detector = new BarcodeDetector({ formats: ['qr_code'] });
+      const blob = await new Promise(r => canvas.toBlob(r,'image/jpeg',0.95));
+      const bmp = await createImageBitmap(blob);
+      const results = await detector.detect(bmp);
+      if(results.length && results[0].rawValue){ sucessoQR(results[0].rawValue); return; }
+    } catch(e){ console.log('BarcodeDetector erro:', e); }
+  }
+
+  // jsQR fallback
+  if(!window.jsQR) {
+    try {
+      await new Promise((res,rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+        s.onload=res; s.onerror=rej;
+        document.head.appendChild(s);
+      });
+    } catch(e){ erroQR(); return; }
+  }
+
+  const tamanhos = [canvas.width, 1024, 512];
+  for(const W of tamanhos) {
+    const H = Math.round(canvas.height * W / canvas.width);
+    const tmp = document.createElement('canvas');
+    tmp.width=W; tmp.height=H;
+    const tCtx = tmp.getContext('2d');
+    tCtx.filter = 'contrast(1.5) brightness(1.1)';
+    tCtx.drawImage(canvas, 0, 0, W, H);
+    const d = tCtx.getImageData(0,0,W,H);
+    const code = jsQR(d.data, W, H, { inversionAttempts: 'attemptBoth' });
+    if(code && code.data && code.data.length > 10){ sucessoQR(code.data); return; }
+  }
+  erroQR();
+}
+
+function sucessoQR(texto) {
+  fecharScanner();
+  toast('✅ QR Code lido!','success');
+  processarQRCode(texto);
+}
+
+function erroQR() {
+  setStatus('Não consegui ler. Tente de mais perto com boa iluminação.');
+  const btn = document.getElementById('btn-foto');
+  btn.disabled = false;
+  btn.textContent = '📷 Tirar Foto';
+  // Reabre câmera
+  abrirScanner();
+}
+
 function fecharScanner() {
-  qrRodando = false;
-  if(qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+  if(qrStream){ qrStream.getTracks().forEach(t=>t.stop()); qrStream=null; }
   const v = document.getElementById('qr-video');
-  if(v) { v.srcObject = null; }
+  if(v) v.srcObject = null;
   closeModal('modal-scanner');
 }
 
 function setStatus(msg) {
   const el = document.getElementById('scan-status');
   if(el) el.textContent = msg;
-}
-
-function processarQRCode(url) {
-  document.getElementById('scan-status').textContent = '✅ QR Code lido! Processando...';
-  document.getElementById('scan-status').className = 'scan-status success';
-
-  setTimeout(() => fecharScanner(), 800);
-
-  try {
-    // URL do QR Code NFC-e tem a chave como parâmetro
-    // Ex: https://dfe-portal.svrs.rs.gov.br/Nfce/QrCodeNFCe?chQRCode=4326...
-    // Ou: https://nfce.sefaz.xxx.gov.br/?chNFe=4326...
-    // Ou a própria chave de 44 dígitos diretamente
-
-    let chave = '';
-    let valorUrl = 0;
-
-    // Tenta extrair de URL
-    if(url.startsWith('http')) {
-      // Extrai chave da URL (parâmetro chQRCode, chNFe, chaveNFe ou p=)
-      const urlParams = new URL(url);
-      
-      // Formato SVRS RS: chQRCode=chave|nVersao|tpAmb|cIdToken|cHashQRCode
-      const chQRCode = urlParams.searchParams.get('chQRCode') || 
-                       urlParams.searchParams.get('p') || '';
-      
-      if(chQRCode) {
-        // Chave está nos primeiros 44 caracteres antes do pipe "|"
-        const partes = chQRCode.split('|');
-        chave = partes[0].replace(/\D/g,'').substring(0,44);
-        // Alguns formatos incluem valor: |vNF=25.48|
-        const vNF = partes.find(p => p.startsWith('vNF='));
-        if(vNF) valorUrl = parseFloat(vNF.replace('vNF=','')) || 0;
-      } else {
-        // Tenta outros parâmetros
-        const possivel = urlParams.searchParams.get('chNFe') ||
-                         urlParams.searchParams.get('chaveNFe') ||
-                         urlParams.searchParams.get('chave') || '';
-        chave = possivel.replace(/\D/g,'').substring(0,44);
-      }
-
-      // Se não achou na querystring, procura na URL toda (44 dígitos consecutivos)
-      if(chave.length !== 44) {
-        const match = url.match(/(\d{44})/);
-        if(match) chave = match[1];
-      }
-
-    } else {
-      // QR Code é a própria chave (44 dígitos)
-      chave = url.replace(/\D/g,'').substring(0,44);
-    }
-
-    if(chave.length !== 44) {
-      toast('QR Code inválido. Digite a chave manualmente.', 'error');
-      return;
-    }
-
-    // Preenche o campo da chave
-    document.getElementById('chave-nfe').value = chave;
-    navTo('nota');
-    toast('✅ Chave capturada! Verificando nota...', 'success');
-
-    // Chama a validação automaticamente após pequeno delay
-    setTimeout(() => validarNFeComValor(chave, valorUrl), 600);
-
-  } catch(e) {
-    console.error(e);
-    // Tenta extrair 44 dígitos da string
-    const match = url.replace(/\D/g,'');
-    if(match.length >= 44) {
-      const chave = match.substring(0,44);
-      document.getElementById('chave-nfe').value = chave;
-      navTo('nota');
-      toast('Chave capturada! Clique em Validar.', 'success');
-    } else {
-      toast('Não foi possível ler a chave. Tente digitar manualmente.', 'error');
-    }
-  }
-}
-
-async function validarNFeComValor(chave, valorHint) {
-  if(!currentUser){toast('Faça login primeiro','error');return;}
-  const chaveNum = chave.replace(/\D/g,'').substring(0,44);
-  if(chaveNum.length!==44){toast('A chave deve ter 44 dígitos','error');return;}
-
-  // Valor: prioridade 1) campo na tela, 2) hint do QR Code
-  const valorInput = document.getElementById('valor-nfe');
-  const valorDigitado = parseFloat(valorInput?.value||'0');
-  const valor = valorDigitado > 0 ? valorDigitado : (parseFloat(String(valorHint))||0);
-
-  if(!valor || valor <= 0){
-    toast('Digite o valor total da nota','error');
-    if(valorInput) valorInput.focus();
-    return;
-  }
-
-  loading(true);
-  toast('Cadastrando nota...','');
-
-  try {
-    const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body:JSON.stringify({chave:chaveNum, cliente_id:currentUser.id, valor})
-    });
-    const data = await res.json();
-
-    if(!res.ok){
-      toast(data.error||'Erro ao validar nota','error');
-      loading(false);
-      return;
-    }
-
-    const pts = data.pontos||0;
-    currentUser.pontos_total = data.pontos_total||(currentUser.pontos_total||0)+pts;
-    saveSession();
-    document.getElementById('home-pontos').textContent=currentUser.pontos_total.toLocaleString('pt-BR');
-    const modeloNome = chaveNum.substring(20,22)==='65'?'NFC-e':'NF-e';
-    toast('✅ +'+pts+' pontos! '+modeloNome+' de '+fmtMoney(data.valor)+' aprovada','success');
-    document.getElementById('chave-nfe').value='';
-    if(valorInput) valorInput.value='';
-    loadHistorico();
-    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi!','success'),2500);
-  } catch(e){ toast('Erro de conexão. Tente novamente.','error'); console.error(e); }
-  finally { loading(false); }
 }
 
 // ─── SESSION RESTORE ───
