@@ -1164,80 +1164,80 @@ function processarArquivoQR(input) {
   if(!file) return;
   input.value = '';
   loading(true);
-  setStatus('Lendo QR Code...');
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      lerQRdaImagem(img);
-    };
-    img.src = e.target.result;
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = function() {
+    URL.revokeObjectURL(url);
+
+    // Tenta BarcodeDetector (nativo iOS/Android)
+    if('BarcodeDetector' in window) {
+      const detector = new BarcodeDetector({ formats: ['qr_code'] });
+      detector.detect(img)
+        .then(results => {
+          loading(false);
+          if(results && results.length > 0 && results[0].rawValue) {
+            toast('✅ QR Code lido!','success');
+            processarQRCode(results[0].rawValue);
+          } else {
+            processarComCanvas(img);
+          }
+        })
+        .catch(() => processarComCanvas(img));
+      return;
+    }
+    processarComCanvas(img);
   };
-  reader.readAsDataURL(file);
+  img.onerror = () => { loading(false); toast('Erro ao ler imagem','error'); };
+  img.src = url;
 }
 
-function lerQRdaImagem(img) {
+function processarComCanvas(img) {
+  // Usa canvas + getImageData e tenta decodificar manualmente
+  // Como não temos jsQR disponível offline, vamos tentar extrair
+  // a chave via BarcodeDetector no canvas
   const canvas = document.getElementById('qr-canvas');
-
-  // Tenta BarcodeDetector primeiro (nativo iOS/Android)
+  const tamanhos = [img.width, 1024, 512];
+  
   if('BarcodeDetector' in window) {
     const detector = new BarcodeDetector({ formats: ['qr_code'] });
-    detector.detect(img).then(results => {
-      loading(false);
-      if(results && results.length > 0) {
-        toast('✅ QR Code lido!','success');
-        processarQRCode(results[0].rawValue);
-      } else {
-        tentarJsQR(img, canvas);
-      }
-    }).catch(() => tentarJsQR(img, canvas));
-    return;
-  }
-  tentarJsQR(img, canvas);
-}
+    let tentativa = 0;
 
-function tentarJsQR(img, canvas) {
-  // Carrega jsQR se necessário
-  const carregar = window.jsQR
-    ? Promise.resolve()
-    : new Promise((res, rej) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
-        s.onload = res; s.onerror = rej;
-        document.head.appendChild(s);
-      });
-
-  carregar.then(() => {
-    // Tenta 3 resoluções: original, 800px, 400px
-    const tamanhos = [
-      Math.min(img.width, 1200),
-      800,
-      400
-    ];
-
-    for(const W of tamanhos) {
-      const scale = W / img.width;
-      const H = Math.round(img.height * scale);
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, W, H);
-      const data = ctx.getImageData(0, 0, W, H);
-      const result = jsQR(data.data, W, H, { inversionAttempts: 'attemptBoth' });
-      if(result && result.data) {
+    function tentarTamanho() {
+      if(tentativa >= tamanhos.length) {
         loading(false);
-        toast('✅ QR Code lido!','success');
-        processarQRCode(result.data);
+        toast('Não consegui ler. Tente com mais luz e QR Code centralizado.','error');
         return;
       }
+      const W = tamanhos[tentativa++];
+      const H = Math.round(img.height * W / img.width);
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      // Tenta com contraste aumentado
+      ctx.filter = 'contrast(2) brightness(1.2) grayscale(1)';
+      ctx.drawImage(img, 0, 0, W, H);
+      ctx.filter = 'none';
+
+      // Converte canvas para blob e detecta
+      canvas.toBlob(blob => {
+        createImageBitmap(blob).then(bmp => {
+          detector.detect(bmp).then(results => {
+            if(results && results.length > 0 && results[0].rawValue) {
+              loading(false);
+              toast('✅ QR Code lido!','success');
+              processarQRCode(results[0].rawValue);
+            } else {
+              tentarTamanho();
+            }
+          }).catch(tentarTamanho);
+        }).catch(tentarTamanho);
+      }, 'image/png');
     }
+    tentarTamanho();
+  } else {
     loading(false);
-    toast('Não consegui ler o QR Code. Tente tirar a foto mais de perto.','error');
-  }).catch(() => {
-    loading(false);
-    toast('Erro ao carregar leitor. Verifique sua conexão.','error');
-  });
+    toast('Seu navegador não suporta leitura de QR Code. Digite a chave manualmente.','error');
+  }
 }
 
 function fecharScanner() {}
