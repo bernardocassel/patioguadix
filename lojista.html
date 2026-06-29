@@ -5,515 +5,494 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel Lojista — Clube Guadix</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --teal:#1AAFA8;--teal-lt:#E8F7F6;--orange:#F39C34;--orange-lt:#FEF4E6;
-  --green:#4CAF50;--red:#E84B3C;
-  --g50:#F9F9F9;--g100:#F2F2F2;--g200:#E4E4E4;--g400:#A0A0A0;--g600:#5A5A5A;--g900:#181818;
-  --white:#fff;
-}
-body{font-family:'Inter',sans-serif;background:var(--g50);min-height:100vh;color:var(--g900);}
+  :root {
+    --teal: #1AAFA8; --teal-light: #e8f7f7; --teal-dark: #148f89;
+    --orange: #F39C34; --red: #E84B3C; --green: #4CAF50;
+    --gray-900: #1a1a1a; --gray-700: #444; --gray-500: #888;
+    --gray-300: #ccc; --gray-100: #f5f5f5; --white: #fff;
+    --radius: 12px; --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-900); }
 
-.topbar{background:white;border-bottom:1px solid var(--g200);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.topbar-left{display:flex;align-items:center;gap:12px;}
-.loja-nome{font-size:16px;font-weight:700;letter-spacing:-0.3px;}
-.loja-sub{font-size:11px;color:var(--g400);margin-top:1px;}
-.badge-loja{background:var(--teal);color:white;font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;}
-.topbar-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--green));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;}
+  /* LOGIN */
+  .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--teal-light), var(--white)); }
+  .login-box { background: var(--white); border-radius: 16px; padding: 40px; width: 360px; box-shadow: var(--shadow); }
+  .login-box img { height: 40px; margin-bottom: 20px; }
+  .login-box h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .login-box p { color: var(--gray-500); font-size: 14px; margin-bottom: 24px; }
 
-.nav-tabs{background:white;border-bottom:1px solid var(--g100);padding:0 28px;display:flex;}
-.tab{padding:12px 20px;font-size:13px;font-weight:600;color:var(--g400);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
-.tab.active{color:var(--teal);border-bottom-color:var(--teal);}
-.tab:hover{color:var(--g600);}
+  /* APP */
+  .topbar {
+    background: var(--white); padding: 14px 24px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar img { height: 32px; }
+  .topbar-info { display: flex; align-items: center; gap: 12px; }
+  .loja-badge { background: var(--teal-light); color: var(--teal); padding: 4px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; }
 
-.content{padding:24px 28px;max-width:960px;}
-.screen{display:none;} .screen.active{display:block;}
+  .content { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
 
-.card{background:white;border-radius:14px;border:1px solid var(--g100);overflow:hidden;margin-bottom:16px;}
-.card-header{padding:16px 20px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between;}
-.card-title{font-size:14px;font-weight:700;}
+  /* CARDS */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+  .stat-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); text-align: center; }
+  .stat-num { font-size: 32px; font-weight: 800; color: var(--teal); }
+  .stat-label { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
 
-table{width:100%;border-collapse:collapse;}
-th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:0.5px;background:var(--g50);border-bottom:1px solid var(--g100);}
-td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--g100);vertical-align:middle;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:var(--g50);}
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; }
+  .card-header { padding: 18px 24px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+  .card-header h2 { font-size: 16px; font-weight: 700; }
+  .card-body { padding: 24px; }
 
-.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;}
-.badge-green{background:#E8F5E9;color:#2E7D32;}
-.badge-orange{background:var(--orange-lt);color:#B45309;}
-.badge-gray{background:var(--g100);color:var(--g600);}
-.badge-red{background:#FFEBEE;color:#C62828;}
+  /* FORMS */
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--gray-700); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .3px; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid var(--gray-300); border-radius: 8px;
+    font-size: 14px; outline: none; transition: border-color .2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--teal); }
+  .field textarea { resize: vertical; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-.form-label{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:5px;}
-.form-input{width:100%;padding:12px 14px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--g900);outline:none;transition:border-color .2s;}
-.form-input:focus{border-color:var(--teal);}
-select.form-input{cursor:pointer;}
-textarea.form-input{resize:vertical;min-height:80px;}
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .2s; }
+  .btn-primary { background: var(--teal); color: var(--white); }
+  .btn-primary:hover { background: var(--teal-dark); }
+  .btn-ghost { background: var(--gray-100); color: var(--gray-700); }
+  .btn-danger { background: #fff0f0; color: var(--red); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-full { width: 100%; justify-content: center; padding: 13px; }
 
-.btn{padding:11px 20px;border:none;border-radius:8px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:opacity .15s;}
-.btn:hover{opacity:.88;}
-.btn-teal{background:var(--teal);color:white;}
-.btn-outline{background:white;color:var(--g600);border:1.5px solid var(--g200);}
-.btn-red{background:var(--red);color:white;}
-.btn-sm{padding:6px 13px;font-size:11px;}
+  /* OFERTAS GRID */
+  .ofertas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; padding: 20px; }
+  .oferta-card { border: 1.5px solid var(--gray-100); border-radius: var(--radius); overflow: hidden; transition: box-shadow .2s; }
+  .oferta-card:hover { box-shadow: var(--shadow); }
+  .oferta-img { width: 100%; height: 140px; object-fit: cover; display: block; background: var(--teal-light); }
+  .oferta-img-ph { width: 100%; height: 140px; background: var(--teal-light); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  .oferta-info { padding: 14px; }
+  .oferta-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .oferta-desc { font-size: 13px; color: var(--gray-500); margin-bottom: 10px; }
+  .oferta-footer { display: flex; align-items: center; justify-content: space-between; }
+  .oferta-pts { font-size: 12px; color: var(--orange); font-weight: 700; }
+  .oferta-actions { display: flex; gap: 6px; }
+  .status-badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: 11px; font-weight: 700; }
+  .badge-on { background: #f0fff0; color: var(--green); }
+  .badge-off { background: var(--gray-100); color: var(--gray-500); }
 
-.toggle{position:relative;width:40px;height:22px;display:inline-block;}
-.toggle input{opacity:0;width:0;height:0;}
-.toggle-slider{position:absolute;inset:0;background:var(--g200);border-radius:22px;cursor:pointer;transition:.2s;}
-.toggle input:checked+.toggle-slider{background:var(--teal);}
-.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s;}
-.toggle input:checked+.toggle-slider::before{transform:translateX(18px);}
+  /* UPLOAD */
+  .upload-area {
+    border: 2px dashed var(--gray-300); border-radius: 10px;
+    padding: 24px; text-align: center; cursor: pointer;
+    transition: all .2s; position: relative;
+  }
+  .upload-area:hover { border-color: var(--teal); background: var(--teal-light); }
+  .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-area-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-area strong { display: block; font-size: 14px; margin-bottom: 4px; }
+  .upload-area span { font-size: 12px; color: var(--gray-500); }
+  .foto-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; display: block; margin-bottom: 8px; }
 
-.dia-chip{padding:7px 13px;border-radius:20px;border:1.5px solid var(--g200);font-size:11px;font-weight:600;cursor:pointer;color:var(--g600);background:white;display:inline-block;margin:3px;user-select:none;}
-.dia-chip.sel{background:var(--teal);color:white;border-color:var(--teal);}
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal-box { background: var(--white); border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; }
 
-.preview-card{background:white;border:1px solid var(--g100);border-radius:14px;overflow:hidden;max-width:300px;box-shadow:0 2px 16px rgba(0,0,0,0.06);}
-.preview-img{height:100px;background:linear-gradient(135deg,var(--teal-lt),#c8f0ed);display:flex;align-items:center;justify-content:center;font-size:40px;}
-.preview-body{padding:14px;}
-.preview-loja{font-size:9px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.5px;}
-.preview-titulo{font-size:14px;font-weight:700;margin-top:3px;color:var(--g900);line-height:1.3;}
-.preview-desc{font-size:12px;color:var(--g400);margin-top:4px;line-height:1.4;}
-.preview-pill{display:inline-block;margin-top:9px;background:var(--orange-lt);color:var(--orange);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;}
+  /* TOAST */
+  #toast { position: fixed; bottom: 24px; right: 24px; background: var(--gray-900); color: var(--white); padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; z-index: 9999; opacity: 0; transition: all .3s; pointer-events: none; max-width: 320px; }
+  #toast.show { opacity: 1; }
+  #toast.success { background: var(--green); }
+  #toast.error { background: var(--red); }
 
-.empty-state{text-align:center;padding:48px 20px;color:var(--g400);}
-.empty-icon{font-size:40px;margin-bottom:12px;}
-.empty-title{font-size:15px;font-weight:600;color:var(--g600);margin-bottom:6px;}
-.empty-desc{font-size:13px;line-height:1.6;}
+  #loading { position: fixed; inset: 0; background: rgba(255,255,255,.85); display: none; align-items: center; justify-content: center; z-index: 9998; flex-direction: column; gap: 12px; }
+  #loading.show { display: flex; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--gray-100); border-top-color: var(--teal); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-.info-tip{background:var(--teal-lt);border-radius:8px;padding:12px 14px;font-size:12px;color:#0D6A64;border-left:3px solid var(--teal);line-height:1.6;margin-bottom:20px;}
+  .empty { text-align: center; padding: 48px 24px; color: var(--gray-500); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
 
-.form-section-title{font-size:13px;font-weight:700;color:var(--g900);margin:20px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--g100);}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.form-group{margin-bottom:14px;}
-.form-full{grid-column:1/-1;}
+  @media(max-width: 600px) {
+    .stats { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .content { padding: 16px; }
+  }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-left">
-    <div>
-      <div class="loja-nome" id="lojaNome">Bistek Supermercados</div>
-      <div class="loja-sub">Painel de Ofertas — Clube Guadix</div>
+<div id="toast"></div>
+<div id="loading"><div class="spinner"></div><span style="font-size:14px;color:var(--gray-500)">Aguarde...</span></div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <img src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" onerror="this.style.display='none'">
+    <h1>Painel do Lojista</h1>
+    <p>Gerencie as ofertas da sua loja no Clube Guadix</p>
+    <div class="field">
+      <label>Selecione sua loja</label>
+      <select id="login-loja"><option value="">Carregando lojas...</option></select>
     </div>
-    <div class="badge-loja">Lojista</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <div style="font-size:12px;color:var(--g400)" id="topDate"></div>
-    <div class="topbar-avatar" id="lojistaAvatar">BS</div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Entrar</button>
   </div>
 </div>
 
-<div class="nav-tabs">
-  <div class="tab active" onclick="showTab('ofertas', this)">Minhas Ofertas</div>
-  <div class="tab" onclick="showTab('nova', this)">+ Nova Oferta</div>
-</div>
+<!-- APP -->
+<div id="app" style="display:none">
+  <div class="topbar">
+    <img src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" onerror="this.style.display='none'">
+    <div class="topbar-info">
+      <span class="loja-badge" id="loja-nome-badge">Loja</span>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
 
-<div class="content">
-
-  <!-- ═══ MINHAS OFERTAS ═══ -->
-  <div class="screen active" id="tab-ofertas">
-
-    <div class="info-tip">
-      As ofertas publicadas aqui aparecem automaticamente no app do Clube Guadix para todos os membros. Você pode ativar, pausar ou encerrar a qualquer momento.
+  <div class="content">
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card"><div class="stat-num" id="s-ofertas-ativas">0</div><div class="stat-label">Ofertas ativas</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-ofertas-total">0</div><div class="stat-label">Total de ofertas</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-pts-bonus">0</div><div class="stat-label">Pts bônus oferecidos</div></div>
     </div>
 
+    <!-- Ofertas -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Ofertas cadastradas</span>
-        <button class="btn btn-teal btn-sm" onclick="showTab('nova', document.querySelectorAll('.tab')[1])">+ Nova oferta</button>
+        <h2>Minhas Ofertas</h2>
+        <button class="btn btn-primary" onclick="abrirModal()">+ Nova oferta</button>
       </div>
-      <div id="listaOfertas">
-        <table>
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th>Tipo</th>
-              <th>Horário</th>
-              <th>Dias</th>
-              <th>Validade</th>
-              <th>Pontos</th>
-              <th>Status</th>
-              <th>Ativo</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaOfertas">
-            <tr>
-              <td colspan="9" style="text-align:center;padding:32px;color:var(--g400);">
-                Carregando ofertas...
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div id="ofertas-container">
+        <div class="empty"><div class="empty-icon">🎁</div><p>Nenhuma oferta cadastrada ainda.</p><p style="margin-top:8px">Crie sua primeira oferta!</p></div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ═══ NOVA OFERTA ═══ -->
-  <div class="screen" id="tab-nova">
-    <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:start;">
+<!-- MODAL OFERTA -->
+<div class="modal-overlay" id="modal-oferta">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Nova Oferta</div>
+    <input type="hidden" id="oferta-id">
 
-      <!-- FORMULÁRIO -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title" id="formTitle">Criar nova oferta</span>
-        </div>
-        <div style="padding:20px;">
-
-          <div class="form-group">
-            <label class="form-label">Título da oferta *</label>
-            <input class="form-input" type="text" id="ofTitulo" placeholder="Ex: Terça do Açougue" oninput="updatePreview()">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Descrição</label>
-            <textarea class="form-input" id="ofDesc" placeholder="Ex: Cortes especiais com até 20% de desconto" oninput="updatePreview()"></textarea>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Tipo de oferta *</label>
-              <select class="form-input" id="ofTipo" onchange="updatePreview()">
-                <option value="desconto">Desconto percentual</option>
-                <option value="brinde">Brinde para membros</option>
-                <option value="resgate_pontos">Resgate por pontos</option>
-                <option value="especial">Oferta especial</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Pontos necessários</label>
-              <input class="form-input" type="number" id="ofPontos" placeholder="0 = grátis para membros" min="0">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Horário início</label>
-              <input class="form-input" type="time" id="ofHoraInicio" value="08:00">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Horário fim</label>
-              <input class="form-input" type="time" id="ofHoraFim" value="20:00">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Válida a partir de</label>
-              <input class="form-input" type="date" id="ofDataInicio">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Válida até</label>
-              <input class="form-input" type="date" id="ofDataFim">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" style="margin-bottom:10px;">Dias da semana</label>
-            <div id="diasWrap">
-              <span class="dia-chip" data-dia="seg" onclick="toggleDia(this)">Seg</span>
-              <span class="dia-chip" data-dia="ter" onclick="toggleDia(this)">Ter</span>
-              <span class="dia-chip" data-dia="qua" onclick="toggleDia(this)">Qua</span>
-              <span class="dia-chip" data-dia="qui" onclick="toggleDia(this)">Qui</span>
-              <span class="dia-chip" data-dia="sex" onclick="toggleDia(this)">Sex</span>
-              <span class="dia-chip" data-dia="sab" onclick="toggleDia(this)">Sáb</span>
-              <span class="dia-chip" data-dia="dom" onclick="toggleDia(this)">Dom</span>
-            </div>
-          </div>
-
-          <div id="erroMsg" style="display:none;background:#FFEBEE;color:#C62828;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;margin-bottom:14px;"></div>
-
-          <div style="display:flex;gap:8px;margin-top:8px;">
-            <button class="btn btn-teal" onclick="salvarOferta()" id="btnSalvar">Publicar oferta</button>
-            <button class="btn btn-outline" onclick="limparForm()">Cancelar</button>
-          </div>
-        </div>
+    <!-- Upload de foto -->
+    <div class="field">
+      <label>Foto da oferta</label>
+      <img id="foto-preview" class="foto-preview" style="display:none">
+      <div class="upload-area" id="upload-area">
+        <input type="file" accept="image/*" onchange="uploadFoto(this)">
+        <div class="upload-area-icon">📷</div>
+        <strong>Toque para adicionar foto</strong>
+        <span>JPG, PNG ou WebP — máx 5MB</span>
       </div>
+      <div id="upload-status" style="font-size:12px;margin-top:6px"></div>
+      <input type="hidden" id="oferta-img">
+    </div>
 
-      <!-- PREVIEW -->
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--g900);margin-bottom:12px;">Preview no app</div>
-        <div class="preview-card">
-          <div class="preview-img" id="prevEmoji">🛒</div>
-          <div class="preview-body">
-            <div class="preview-loja" id="prevLoja">Bistek Supermercados</div>
-            <div class="preview-titulo" id="prevTitulo">Título da oferta</div>
-            <div class="preview-desc" id="prevDesc">Descrição da oferta aparece aqui</div>
-            <div class="preview-pill" id="prevPill">Clube Guadix</div>
-          </div>
-        </div>
-
-        <div style="margin-top:16px;padding:14px;background:var(--orange-lt);border-radius:10px;font-size:12px;color:#92650A;line-height:1.6;border-left:3px solid var(--orange);">
-          <strong>Atenção:</strong> Após publicar, a oferta aparece imediatamente no app para todos os membros do Clube. O time de marketing pode incluí-la em campanhas de notificação.
-        </div>
+    <div class="field">
+      <label>Título da oferta</label>
+      <input type="text" id="oferta-titulo" placeholder="Ex: Promoção de terça">
+    </div>
+    <div class="field">
+      <label>Descrição</label>
+      <textarea id="oferta-desc" rows="2" placeholder="Detalhe a oferta para o cliente"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Pontos bônus</label>
+        <input type="number" id="oferta-pts" value="0" min="0" placeholder="0">
       </div>
+      <div class="field">
+        <label>Válido até</label>
+        <input type="date" id="oferta-validade">
+      </div>
+    </div>
+    <div class="field">
+      <label>Status</label>
+      <select id="oferta-ativa">
+        <option value="true">✅ Ativa — aparece no app</option>
+        <option value="false">⛔ Inativa — não aparece</option>
+      </select>
+    </div>
 
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="salvarOferta()">💾 Salvar oferta</button>
     </div>
   </div>
-
 </div>
 
 <script>
 const SUPABASE_URL = 'https://nkfawcjautqgkyrvakpd.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_03UmZhysJsqyMgubzVt9Cw_oi5W2h3N';
+const ASSETS = 'https://bernardocassel.github.io/patioguadix/assets';
 
-// Loja logada (em produção viria do login)
-const LOJA_ID = null; // será preenchido via auth
-const LOJA_NOME = 'Bistek Supermercados';
-
-let editandoId = null;
-
-// ── TABS ───────────────────────────────────────────────────────
-function showTab(id, el) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  if (el) el.classList.add('active');
-}
-
-// ── DIAS ───────────────────────────────────────────────────────
-function toggleDia(el) {
-  el.classList.toggle('sel');
-}
-function getDiasSelecionados() {
-  return [...document.querySelectorAll('.dia-chip.sel')].map(d => d.dataset.dia);
-}
-
-// ── PREVIEW ────────────────────────────────────────────────────
-const emojis = {
-  desconto: '🏷️', brinde: '🎁', resgate_pontos: '⭐', especial: '✨'
+// Senha padrão por loja — pode customizar por loja
+// No futuro pode virar tabela no banco
+const SENHAS_LOJAS = {
+  'default': 'lojista2025'
+  // Para senha por loja: 'nome_da_loja': 'senha_especifica'
 };
-function updatePreview() {
-  const t = document.getElementById('ofTitulo')?.value;
-  const d = document.getElementById('ofDesc')?.value;
-  const tipo = document.getElementById('ofTipo')?.value;
-  if (t) document.getElementById('prevTitulo').textContent = t;
-  if (d) document.getElementById('prevDesc').textContent = d;
-  if (tipo) document.getElementById('prevEmoji').textContent = emojis[tipo] || '🛒';
-  document.getElementById('prevLoja').textContent = LOJA_NOME;
-  const pontos = document.getElementById('ofPontos')?.value;
-  document.getElementById('prevPill').textContent = pontos > 0 ? pontos + ' pontos' : 'Grátis · Clube';
+
+let lojaAtual = null;
+
+// ─── UTILS ───
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show '+(type||'');
+  clearTimeout(t._t); t._t = setTimeout(()=>t.className='', 3500);
+}
+function loading(on) { document.getElementById('loading').classList.toggle('show', on); }
+function openModal(id) { document.getElementById(id||'modal-oferta').classList.add('show'); }
+function fecharModal() { document.getElementById('modal-oferta').classList.remove('show'); }
+document.querySelector('.modal-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) fecharModal(); });
+
+async function sb(path, method, body) {
+  const r = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    method: method||'GET',
+    headers: {
+      'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': (method==='POST'||method==='PATCH')?'return=representation':''
+    },
+    body: body?JSON.stringify(body):undefined
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.status===204?null:r.json();
 }
 
-// ── CARREGAR OFERTAS ───────────────────────────────────────────
-async function carregarOfertas() {
+// ─── LOGIN ───
+async function carregarLojas() {
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/ofertas?select=*,lojas(nome)&order=created_at.desc', {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    });
-    const data = await res.json();
+    const lojas = await sb('lojas?select=id,nome&eq.ativo=true&order=nome');
+    const sel = document.getElementById('login-loja');
+    sel.innerHTML = '<option value="">Selecione sua loja</option>' +
+      lojas.map(l=>`<option value="${l.id}" data-nome="${l.nome}">${l.nome}</option>`).join('');
+  } catch(e) { console.error(e); }
+}
 
-    if (!data || !data.length) {
-      document.getElementById('tabelaOfertas').innerHTML = `
-        <tr><td colspan="9">
-          <div class="empty-state">
-            <div class="empty-icon">🏷️</div>
-            <div class="empty-title">Nenhuma oferta cadastrada</div>
-            <div class="empty-desc">Clique em <strong>+ Nova oferta</strong> para criar a primeira promoção da sua loja.</div>
-          </div>
-        </td></tr>`;
+function doLogin() {
+  const sel = document.getElementById('login-loja');
+  const lojaId = sel.value;
+  const lojaNome = sel.options[sel.selectedIndex]?.dataset.nome || '';
+  const senha = document.getElementById('login-senha').value;
+
+  if(!lojaId) { toast('Selecione sua loja','error'); return; }
+  if(!senha) { toast('Digite a senha','error'); return; }
+
+  // Verifica senha (por loja ou padrão)
+  const senhaCorreta = SENHAS_LOJAS[lojaNome] || SENHAS_LOJAS['default'];
+  if(senha !== senhaCorreta) { toast('Senha incorreta','error'); return; }
+
+  lojaAtual = { id: lojaId, nome: lojaNome };
+  try { localStorage.setItem('lojista_session', JSON.stringify(lojaAtual)); } catch(e){}
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('loja-nome-badge').textContent = lojaNome;
+  carregarOfertas();
+}
+
+function doLogout() {
+  lojaAtual = null;
+  try { localStorage.removeItem('lojista_session'); } catch(e){}
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-senha').value = '';
+}
+
+// ─── OFERTAS ───
+async function carregarOfertas() {
+  if(!lojaAtual) return;
+  loading(true);
+  try {
+    const ofertas = await sb('ofertas?loja_id=eq.'+lojaAtual.id+'&select=*&order=created_at.desc');
+
+    // Stats
+    const ativas = ofertas.filter(o=>o.ativa).length;
+    const totalPts = ofertas.reduce((a,o)=>a+(o.pontos_bonus||0),0);
+    document.getElementById('s-ofertas-ativas').textContent = ativas;
+    document.getElementById('s-ofertas-total').textContent = ofertas.length;
+    document.getElementById('s-pts-bonus').textContent = totalPts;
+
+    const container = document.getElementById('ofertas-container');
+    if(!ofertas.length) {
+      container.innerHTML = '<div class="empty"><div class="empty-icon">🎁</div><p>Nenhuma oferta ainda.</p><p style="margin-top:8px">Crie sua primeira oferta!</p></div>';
       return;
     }
 
-    document.getElementById('tabelaOfertas').innerHTML = data.map(o => `
-      <tr>
-        <td>
-          <strong>${o.titulo}</strong>
-          ${o.descricao ? `<br><span style="font-size:11px;color:var(--g400)">${o.descricao.substring(0,50)}${o.descricao.length>50?'...':''}</span>` : ''}
-        </td>
-        <td><span class="badge badge-orange">${tipoLabel(o.tipo)}</span></td>
-        <td style="font-size:12px;">${o.horario_inicio || '—'} ${o.horario_fim ? '→ '+o.horario_fim : ''}</td>
-        <td style="font-size:12px;">${o.dias_semana?.join(', ') || 'Todos'}</td>
-        <td style="font-size:12px;">${o.validade_fim ? new Date(o.validade_fim).toLocaleDateString('pt-BR') : '—'}</td>
-        <td style="font-size:12px;">${o.pontos_necessarios > 0 ? o.pontos_necessarios + ' pts' : 'Grátis'}</td>
-        <td><span class="badge ${statusClass(o.status)}">${statusLabel(o.status)}</span></td>
-        <td>
-          <label class="toggle">
-            <input type="checkbox" ${o.status === 'ativa' ? 'checked' : ''} onchange="toggleStatus('${o.id}', this.checked)">
-            <span class="toggle-slider"></span>
-          </label>
-        </td>
-        <td>
-          <button class="btn btn-outline btn-sm" onclick="editarOferta(${JSON.stringify(o).replace(/"/g,'&quot;')})">Editar</button>
-          <button class="btn btn-red btn-sm" style="margin-left:4px" onclick="excluirOferta('${o.id}')">Excluir</button>
-        </td>
-      </tr>
-    `).join('');
+    container.innerHTML = '<div class="ofertas-grid">' + ofertas.map(o=>`
+      <div class="oferta-card">
+        ${o.imagem_url
+          ? `<img class="oferta-img" src="${o.imagem_url}" alt="${o.titulo}" loading="lazy" onerror="this.outerHTML='<div class=oferta-img-ph>🎁</div>'">`
+          : '<div class="oferta-img-ph">🎁</div>'
+        }
+        <div class="oferta-info">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span class="status-badge ${o.ativa?'badge-on':'badge-off'}">${o.ativa?'✅ Ativa':'⛔ Inativa'}</span>
+            ${o.validade ? `<span style="font-size:11px;color:var(--gray-500)">até ${new Date(o.validade).toLocaleDateString('pt-BR')}</span>` : ''}
+          </div>
+          <div class="oferta-title">${o.titulo}</div>
+          <div class="oferta-desc">${o.descricao||''}</div>
+          <div class="oferta-footer">
+            <span class="oferta-pts">${o.pontos_bonus?'+'+o.pontos_bonus+' pts bônus':''}</span>
+            <div class="oferta-actions">
+              <button class="btn btn-ghost btn-sm" onclick='editarOferta(${JSON.stringify(o).replace(/'/g,"&#39;")})'>✏️ Editar</button>
+              <button class="btn btn-sm ${o.ativa?'btn-danger':'btn-primary'}" onclick="toggleAtiva('${o.id}',${!o.ativa})">
+                ${o.ativa?'Pausar':'Ativar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>`).join('') + '</div>';
 
-  } catch(err) {
-    console.error(err);
-    document.getElementById('tabelaOfertas').innerHTML =
-      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--red)">Erro ao carregar ofertas. Verifique sua conexão.</td></tr>';
-  }
+  } catch(e) { toast('Erro ao carregar ofertas','error'); console.error(e); }
+  finally { loading(false); }
 }
 
-// ── SALVAR OFERTA ──────────────────────────────────────────────
-async function salvarOferta() {
-  const titulo = document.getElementById('ofTitulo').value.trim();
-  if (!titulo) {
-    mostrarErro('O título da oferta é obrigatório.');
-    return;
-  }
+// ─── UPLOAD FOTO ───
+async function uploadFoto(input) {
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024) { toast('Foto muito grande. Máximo 5MB.','error'); return; }
 
-  const oferta = {
+  const status = document.getElementById('upload-status');
+  const preview = document.getElementById('foto-preview');
+  const area = document.getElementById('upload-area');
+
+  // Preview local imediato
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  area.style.display = 'none';
+  status.innerHTML = '<span style="color:var(--gray-500)">⏳ Enviando foto...</span>';
+
+  try {
+    const ext = file.name.split('.').pop().toLowerCase();
+    const nome = 'oferta_' + lojaAtual.id.substring(0,8) + '_' + Date.now() + '.' + ext;
+
+    const res = await fetch(SUPABASE_URL+'/storage/v1/object/imagens/'+nome, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer '+SUPABASE_KEY,
+        'Content-Type': file.type,
+        'x-upsert': 'true'
+      },
+      body: file
+    });
+
+    if(!res.ok) throw new Error(await res.text());
+
+    const url = SUPABASE_URL+'/storage/v1/object/public/imagens/'+nome;
+    document.getElementById('oferta-img').value = url;
+    preview.src = url;
+    status.innerHTML = '<span style="color:var(--green)">✅ Foto enviada!</span>';
+  } catch(e) {
+    console.error(e);
+    status.innerHTML = '<span style="color:var(--red)">❌ Erro ao enviar. Tente novamente.</span>';
+    preview.style.display = 'none';
+    area.style.display = 'block';
+  }
+  input.value = '';
+}
+
+// ─── MODAL ───
+function abrirModal() {
+  document.getElementById('modal-title').textContent = 'Nova Oferta';
+  document.getElementById('oferta-id').value = '';
+  document.getElementById('oferta-titulo').value = '';
+  document.getElementById('oferta-desc').value = '';
+  document.getElementById('oferta-pts').value = '0';
+  document.getElementById('oferta-validade').value = '';
+  document.getElementById('oferta-ativa').value = 'true';
+  document.getElementById('oferta-img').value = '';
+  document.getElementById('foto-preview').style.display = 'none';
+  document.getElementById('upload-area').style.display = 'block';
+  document.getElementById('upload-status').innerHTML = '';
+  openModal();
+}
+
+function editarOferta(o) {
+  document.getElementById('modal-title').textContent = 'Editar Oferta';
+  document.getElementById('oferta-id').value = o.id;
+  document.getElementById('oferta-titulo').value = o.titulo||'';
+  document.getElementById('oferta-desc').value = o.descricao||'';
+  document.getElementById('oferta-pts').value = o.pontos_bonus||0;
+  document.getElementById('oferta-validade').value = o.validade||'';
+  document.getElementById('oferta-ativa').value = String(o.ativa!==false);
+  document.getElementById('oferta-img').value = o.imagem_url||'';
+  document.getElementById('upload-status').innerHTML = '';
+
+  if(o.imagem_url) {
+    document.getElementById('foto-preview').src = o.imagem_url;
+    document.getElementById('foto-preview').style.display = 'block';
+    document.getElementById('upload-area').style.display = 'none';
+  } else {
+    document.getElementById('foto-preview').style.display = 'none';
+    document.getElementById('upload-area').style.display = 'block';
+  }
+  openModal();
+}
+
+async function salvarOferta() {
+  const id = document.getElementById('oferta-id').value;
+  const titulo = document.getElementById('oferta-titulo').value.trim();
+  if(!titulo) { toast('Digite o título da oferta','error'); return; }
+
+  const dados = {
+    loja_id: lojaAtual.id,
     titulo,
-    descricao:          document.getElementById('ofDesc').value.trim() || null,
-    tipo:               document.getElementById('ofTipo').value,
-    pontos_necessarios: parseInt(document.getElementById('ofPontos').value) || 0,
-    horario_inicio:     document.getElementById('ofHoraInicio').value || null,
-    horario_fim:        document.getElementById('ofHoraFim').value || null,
-    validade_inicio:    document.getElementById('ofDataInicio').value || null,
-    validade_fim:       document.getElementById('ofDataFim').value || null,
-    dias_semana:        getDiasSelecionados(),
-    status:             'ativa',
+    descricao: document.getElementById('oferta-desc').value.trim()||null,
+    imagem_url: document.getElementById('oferta-img').value||null,
+    pontos_bonus: parseInt(document.getElementById('oferta-pts').value)||0,
+    validade: document.getElementById('oferta-validade').value||null,
+    ativa: document.getElementById('oferta-ativa').value==='true'
   };
 
-  const btn = document.getElementById('btnSalvar');
-  btn.textContent = 'Salvando...';
-  btn.disabled = true;
-
+  loading(true);
   try {
-    const method = editandoId ? 'PATCH' : 'POST';
-    const url = SUPABASE_URL + '/rest/v1/ofertas' + (editandoId ? '?id=eq.' + editandoId : '');
-
-    const res = await fetch(url, {
-      method,
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(oferta)
-    });
-
-    if (!res.ok) throw new Error(await res.text());
-
-    mostrarToast(editandoId ? 'Oferta atualizada!' : 'Oferta publicada com sucesso!', 'success');
-    limparForm();
-    showTab('ofertas', document.querySelectorAll('.tab')[0]);
+    if(id) {
+      await sb('ofertas?id=eq.'+id, 'PATCH', dados);
+      toast('✅ Oferta atualizada!','success');
+    } else {
+      await sb('ofertas', 'POST', dados);
+      toast('✅ Oferta criada!','success');
+    }
+    fecharModal();
     carregarOfertas();
-
-  } catch(err) {
-    console.error(err);
-    mostrarErro('Erro ao salvar: ' + err.message);
-  } finally {
-    btn.textContent = editandoId ? 'Salvar alterações' : 'Publicar oferta';
-    btn.disabled = false;
-  }
+  } catch(e) { toast('Erro ao salvar: '+e.message,'error'); }
+  finally { loading(false); }
 }
 
-// ── EDITAR OFERTA ──────────────────────────────────────────────
-function editarOferta(o) {
-  editandoId = o.id;
-  document.getElementById('formTitle').textContent = 'Editar oferta';
-  document.getElementById('btnSalvar').textContent = 'Salvar alterações';
-  document.getElementById('ofTitulo').value   = o.titulo || '';
-  document.getElementById('ofDesc').value     = o.descricao || '';
-  document.getElementById('ofTipo').value     = o.tipo || 'desconto';
-  document.getElementById('ofPontos').value   = o.pontos_necessarios || 0;
-  document.getElementById('ofHoraInicio').value = o.horario_inicio || '08:00';
-  document.getElementById('ofHoraFim').value  = o.horario_fim || '20:00';
-  document.getElementById('ofDataInicio').value = o.validade_inicio || '';
-  document.getElementById('ofDataFim').value  = o.validade_fim || '';
-
-  document.querySelectorAll('.dia-chip').forEach(chip => {
-    chip.classList.toggle('sel', (o.dias_semana || []).includes(chip.dataset.dia));
-  });
-
-  updatePreview();
-  showTab('nova', document.querySelectorAll('.tab')[1]);
-}
-
-// ── TOGGLE STATUS ──────────────────────────────────────────────
-async function toggleStatus(id, ativo) {
+async function toggleAtiva(id, ativa) {
+  loading(true);
   try {
-    await fetch(SUPABASE_URL + '/rest/v1/ofertas?id=eq.' + id, {
-      method: 'PATCH',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ status: ativo ? 'ativa' : 'pausada' })
-    });
-    mostrarToast(ativo ? 'Oferta ativada!' : 'Oferta pausada.', 'success');
-  } catch(err) {
-    mostrarToast('Erro ao alterar status.', 'error');
-  }
-}
-
-// ── EXCLUIR OFERTA ─────────────────────────────────────────────
-async function excluirOferta(id) {
-  if (!confirm('Tem certeza que deseja excluir esta oferta?')) return;
-  try {
-    await fetch(SUPABASE_URL + '/rest/v1/ofertas?id=eq.' + id, {
-      method: 'DELETE',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    });
-    mostrarToast('Oferta excluída.', 'success');
+    await sb('ofertas?id=eq.'+id, 'PATCH', {ativa});
+    toast(ativa?'Oferta ativada ✅':'Oferta pausada','success');
     carregarOfertas();
-  } catch(err) {
-    mostrarToast('Erro ao excluir.', 'error');
+  } catch(e) { toast('Erro','error'); }
+  finally { loading(false); }
+}
+
+// ─── INIT ───
+carregarLojas();
+try {
+  const s = localStorage.getItem('lojista_session');
+  if(s) {
+    lojaAtual = JSON.parse(s);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('loja-nome-badge').textContent = lojaAtual.nome;
+    carregarOfertas();
   }
-}
-
-// ── LIMPAR FORM ────────────────────────────────────────────────
-function limparForm() {
-  editandoId = null;
-  document.getElementById('formTitle').textContent = 'Criar nova oferta';
-  document.getElementById('btnSalvar').textContent = 'Publicar oferta';
-  ['ofTitulo','ofDesc','ofPontos','ofDataInicio','ofDataFim'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('ofTipo').value = 'desconto';
-  document.getElementById('ofHoraInicio').value = '08:00';
-  document.getElementById('ofHoraFim').value = '20:00';
-  document.querySelectorAll('.dia-chip').forEach(c => c.classList.remove('sel'));
-  document.getElementById('erroMsg').style.display = 'none';
-  document.getElementById('prevTitulo').textContent = 'Título da oferta';
-  document.getElementById('prevDesc').textContent = 'Descrição da oferta aparece aqui';
-  document.getElementById('prevPill').textContent = 'Clube Guadix';
-  document.getElementById('prevEmoji').textContent = '🛒';
-}
-
-// ── HELPERS ────────────────────────────────────────────────────
-function tipoLabel(t) {
-  return {desconto:'Desconto', brinde:'Brinde', resgate_pontos:'Pontos', especial:'Especial'}[t] || t;
-}
-function statusLabel(s) {
-  return {ativa:'Ativa', pausada:'Pausada', encerrada:'Encerrada'}[s] || s;
-}
-function statusClass(s) {
-  return {ativa:'badge-green', pausada:'badge-orange', encerrada:'badge-gray'}[s] || 'badge-gray';
-}
-
-function mostrarErro(msg) {
-  const el = document.getElementById('erroMsg');
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 4000);
-}
-
-function mostrarToast(msg, tipo) {
-  const cores = {success:'#1AAFA8', error:'#E84B3C', info:'#F39C34'};
-  const t = document.createElement('div');
-  t.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);background:${cores[tipo]};color:white;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:600;font-family:Inter,sans-serif;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.15);`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
-
-// ── INIT ───────────────────────────────────────────────────────
-document.getElementById('topDate').textContent =
-  new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
-document.getElementById('prevLoja').textContent = LOJA_NOME;
-
-carregarOfertas();
+} catch(e){}
 </script>
 </body>
 </html>
