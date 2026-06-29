@@ -88,7 +88,7 @@
     transition: color .2s;
   }
   .nav-item.active { color: var(--teal); }
-  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-icon { font-size: 20px; line-height: 1; display:flex; align-items:center; justify-content:center; }
 
   /* BUTTONS */
   .btn {
@@ -10424,8 +10424,7 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
 
 <!-- ══════ SCREEN LOGIN ══════ -->
 <div id="screen-login" class="screen active" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;background:linear-gradient(160deg,var(--teal-light) 0%,var(--white) 50%)">
-  <img id="login-logo" class="logo-big" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" alt="Pátio Guadix" onerror="this.style.display='none';document.getElementById('login-logo-text').style.display='block'">
-  <div id="login-logo-text" style="display:none;font-size:28px;font-weight:800;color:var(--teal);margin-bottom:8px">🦎 Clube Guadix</div>
+  <img id="login-logo" class="logo-big" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" alt="Pátio Guadix" style="width:220px;object-fit:contain;margin-bottom:4px" onerror="this.style.display='none'">
   <img id="login-mascot" class="mascot" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:80px;margin-bottom:24px>🦎</div>'">
   <h1>Clube Guadix</h1>
   <p>Acumule pontos, ganhe Guadis e concorra a uma viagem ao Rio!</p>
@@ -10456,7 +10455,7 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
   <!-- HOME -->
   <div id="screen-home" class="screen active">
     <div class="topbar">
-      <img class="topbar-logo" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" alt="Pátio Guadix" onerror="this.outerHTML='<span class=topbar-logo-text>🦎 Guadix</span>'">
+      <img class="topbar-logo" src="https://nkfawcjautqgkyrvakpd.supabase.co/storage/v1/object/public/imagens/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
       <div class="topbar-right">
         <button class="btn-notif">🔔<span class="notif-dot" id="notif-dot"></span></button>
         <div class="avatar" id="home-avatar" onclick="navTo('perfil')">?</div>
@@ -10504,10 +10503,10 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
       </div>
     </div>
     <div class="quick-actions">
-      <button class="qa-item" onclick="navTo('nota')"><span class="qa-icon">📄</span><span class="qa-label">Cadastrar nota</span></button>
-      <button class="qa-item" onclick="navTo('beneficios')"><span class="qa-icon">🎁</span><span class="qa-label">Benefícios</span></button>
-      <button class="qa-item" onclick="navTo('colecao')"><span class="qa-icon">🏆</span><span class="qa-label">Coleção Guadi</span></button>
-      <button class="qa-item" onclick="showQR()"><span class="qa-icon">📱</span><span class="qa-label">Meu QR Code</span></button>
+      <button class="qa-item" onclick="navTo('nota')"><span class="qa-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span class="qa-label">Cadastrar nota</span></button>
+      <button class="qa-item" onclick="navTo('beneficios')"><span class="qa-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></span><span class="qa-label">Benefícios</span></button>
+      <button class="qa-item" onclick="navTo('colecao')"><span class="qa-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 21 12 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 4H4a2 2 0 0 0 0 4c0 5 3.5 7 8 7s8-2 8-7a2 2 0 0 0 0-4h-3"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg></span><span class="qa-label">Coleção Guadi</span></button>
+      <button class="qa-item" onclick="showQR()"><span class="qa-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="qa-label">Meu QR Code</span></button>
     </div>
     <div class="section-title">Ofertas de Hoje <a href="#" onclick="navTo('beneficios');return false">Ver todas</a></div>
     <div class="offers-scroll" id="offers-container"><div style="padding:8px 4px 16px;color:var(--gray-400);font-size:13px">Carregando...</div></div>
@@ -10534,7 +10533,7 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
     <canvas id="qr-canvas" style="display:none"></canvas>
 
     <div class="scan-area" onclick="document.getElementById('qr-input-camera').click()">
-      <div class="scan-icon">📷</div>
+      <div class="scan-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
       <strong>Fotografar QR Code da nota</strong>
       <span>Toque para abrir a câmera e tirar foto</span>
     </div>
@@ -10611,32 +10610,32 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
     </div>
     <div class="menu-list">
       <div class="menu-item" onclick="showMeusDados()">
-        <div class="menu-icon" style="background:var(--teal-light)">👤</div>
+        <div class="menu-icon" style="background:var(--teal-light)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="menu-info"><strong>Meus dados</strong><span>CPF, endereço, contato</span></div>
         <span class="menu-arrow">›</span>
       </div>
       <div class="menu-item" onclick="navTo('nota')">
-        <div class="menu-icon" style="background:var(--orange-light)">📄</div>
+        <div class="menu-icon" style="background:var(--orange-light)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
         <div class="menu-info"><strong>Histórico de notas</strong><span id="hist-notas-label">0 notas cadastradas</span></div>
         <span class="menu-arrow">›</span>
       </div>
       <div class="menu-item" onclick="navTo('beneficios')">
-        <div class="menu-icon" style="background:#fff0f0">🏪</div>
+        <div class="menu-icon" style="background:#fff0f0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
         <div class="menu-info"><strong>Lojas favoritas</strong><span>Bistek, Boticário, QuieroCafé</span></div>
         <span class="menu-arrow">›</span>
       </div>
       <div class="menu-item">
-        <div class="menu-icon" style="background:#f0fff0">🔔</div>
+        <div class="menu-icon" style="background:#f0fff0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
         <div class="menu-info"><strong>Notificações</strong><span>Push, WhatsApp, e-mail</span></div>
         <span class="menu-arrow">›</span>
       </div>
       <div class="menu-item">
-        <div class="menu-icon" style="background:#f5f0ff">🛡️</div>
+        <div class="menu-icon" style="background:#f5f0ff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <div class="menu-info"><strong>Privacidade e LGPD</strong><span>Gerenciar consentimentos</span></div>
         <span class="menu-arrow">›</span>
       </div>
       <div class="menu-item" onclick="doLogout()">
-        <div class="menu-icon" style="background:#fff0f0">🚪</div>
+        <div class="menu-icon" style="background:#fff0f0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
         <div class="menu-info"><strong style="color:var(--red)">Sair</strong><span>Encerrar sessão</span></div>
         <span class="menu-arrow">›</span>
       </div>
@@ -10646,11 +10645,11 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
 
   <!-- BOTTOM NAV -->
   <nav class="bottomnav">
-    <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="nav-icon">🏠</span>Início</button>
-    <button class="nav-item" id="nav-beneficios" onclick="navTo('beneficios')"><span class="nav-icon">🎁</span>Benefícios</button>
-    <button class="nav-item" id="nav-nota" onclick="navTo('nota')"><span class="nav-icon">📄</span>Nota</button>
-    <button class="nav-item" id="nav-colecao" onclick="navTo('colecao')"><span class="nav-icon">🏆</span>Coleção</button>
-    <button class="nav-item" id="nav-perfil" onclick="navTo('perfil')"><span class="nav-icon">👤</span>Perfil</button>
+    <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>Início</button>
+    <button class="nav-item" id="nav-beneficios" onclick="navTo('beneficios')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></span>Benefícios</button>
+    <button class="nav-item" id="nav-nota" onclick="navTo('nota')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>Nota</button>
+    <button class="nav-item" id="nav-colecao" onclick="navTo('colecao')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 21 12 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 4H4a2 2 0 0 0 0 4c0 5 3.5 7 8 7s8-2 8-7a2 2 0 0 0 0-4h-3"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg></span>Coleção</button>
+    <button class="nav-item" id="nav-perfil" onclick="navTo('perfil')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Perfil</button>
   </nav>
 </div>
 
