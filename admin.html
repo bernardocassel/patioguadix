@@ -366,7 +366,20 @@
     <div class="field"><label>Loja</label><select id="oferta-loja"></select></div>
     <div class="field"><label>Título</label><input type="text" id="oferta-titulo" placeholder="Ex: Terça do Açougue"></div>
     <div class="field"><label>Descrição</label><textarea id="oferta-desc" rows="2" placeholder="Detalhe da oferta"></textarea></div>
-    <div class="field"><label>URL da imagem (Supabase Storage)</label><input type="url" id="oferta-img" placeholder="https://...supabase.co/storage/..."></div>
+    <div class="field">
+      <label>Foto da oferta</label>
+      <div id="foto-preview-box" style="display:none;margin-bottom:8px">
+        <img id="foto-preview" style="width:100%;height:140px;object-fit:cover;border-radius:8px;display:block">
+      </div>
+      <div style="display:flex;gap:8px">
+        <input type="url" id="oferta-img" placeholder="URL da imagem" style="flex:1;padding:10px 14px;border:1.5px solid var(--gray-300);border-radius:8px;font-size:13px;outline:none">
+        <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--teal);color:#fff;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap">
+          📤 Upload
+          <input type="file" id="foto-upload" accept="image/*" style="display:none" onchange="uploadFotoOferta(this)">
+        </label>
+      </div>
+      <div id="foto-upload-status" style="font-size:12px;color:var(--gray-500);margin-top:6px"></div>
+    </div>
     <div class="form-row">
       <div class="field"><label>Pontos bônus</label><input type="number" id="oferta-pts" value="0" min="0"></div>
       <div class="field"><label>Válido até</label><input type="date" id="oferta-validade"></div>
@@ -657,6 +670,8 @@ function abrirModalOferta() {
   document.getElementById('oferta-titulo').value = '';
   document.getElementById('oferta-desc').value = '';
   document.getElementById('oferta-img').value = '';
+  document.getElementById('foto-preview-box').style.display = 'none';
+  document.getElementById('foto-upload-status').textContent = '';
   document.getElementById('oferta-pts').value = '0';
   document.getElementById('oferta-validade').value = '';
   document.getElementById('oferta-ativa').value = 'true';
@@ -670,6 +685,12 @@ function editarOferta(o) {
   document.getElementById('oferta-titulo').value = o.titulo||'';
   document.getElementById('oferta-desc').value = o.descricao||'';
   document.getElementById('oferta-img').value = o.imagem_url||'';
+  if(o.imagem_url) {
+    document.getElementById('foto-preview').src = o.imagem_url;
+    document.getElementById('foto-preview-box').style.display = 'block';
+  } else {
+    document.getElementById('foto-preview-box').style.display = 'none';
+  }
   document.getElementById('oferta-pts').value = o.pontos_bonus||0;
   document.getElementById('oferta-validade').value = o.validade||'';
   document.getElementById('oferta-ativa').value = String(o.ativa !== false);
@@ -720,6 +741,83 @@ async function carregarGuadis() {
   } catch(e){ toast('Erro','error'); }
   finally { loading(false); }
 }
+
+// ─── UPLOAD FOTO OFERTA ───
+async function uploadFotoOferta(input) {
+  const file = input.files[0];
+  if(!file) return;
+
+  const status = document.getElementById('foto-upload-status');
+  const preview = document.getElementById('foto-preview');
+  const previewBox = document.getElementById('foto-preview-box');
+
+  // Mostra preview local imediatamente
+  const localUrl = URL.createObjectURL(file);
+  preview.src = localUrl;
+  previewBox.style.display = 'block';
+  status.textContent = '⏳ Fazendo upload...';
+  status.style.color = 'var(--gray-500)';
+
+  try {
+    // Gera nome único para o arquivo
+    const ext = file.name.split('.').pop().toLowerCase();
+    const nome = 'oferta_' + Date.now() + '.' + ext;
+
+    // Upload para Supabase Storage
+    const res = await fetch(
+      SUPABASE_URL + '/storage/v1/object/imagens/' + nome,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': file.type,
+          'x-upsert': 'true'
+        },
+        body: file
+      }
+    );
+
+    if(!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
+
+    // URL pública da imagem
+    const url = SUPABASE_URL + '/storage/v1/object/public/imagens/' + nome;
+    document.getElementById('oferta-img').value = url;
+
+    // Atualiza preview com URL do Supabase
+    preview.src = url;
+    status.textContent = '✅ Upload concluído!';
+    status.style.color = 'var(--green)';
+
+  } catch(e) {
+    console.error(e);
+    status.textContent = '❌ Erro no upload: ' + e.message;
+    status.style.color = 'var(--red)';
+    previewBox.style.display = 'none';
+  }
+
+  input.value = '';
+}
+
+// Atualiza preview quando URL é digitada manualmente
+document.addEventListener('DOMContentLoaded', () => {
+  const imgInput = document.getElementById('oferta-img');
+  if(imgInput) {
+    imgInput.addEventListener('input', function() {
+      const url = this.value.trim();
+      const preview = document.getElementById('foto-preview');
+      const previewBox = document.getElementById('foto-preview-box');
+      if(url.startsWith('http')) {
+        preview.src = url;
+        previewBox.style.display = 'block';
+      } else {
+        previewBox.style.display = 'none';
+      }
+    });
+  }
+});
 
 // ─── CSV EXPORT ───
 function downloadCSV(rows, filename) {
