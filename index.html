@@ -10956,6 +10956,60 @@ async function validarNFe() {
   await validarNFeComValor(chave, 0);
 }
 
+async function validarNFeComValor(chave, valorHint) {
+  if(!currentUser){toast('Faça login primeiro','error');return;}
+  const chaveNum = chave.replace(/\D/g,'').substring(0,44);
+  if(chaveNum.length!==44){toast('A chave deve ter 44 dígitos','error');return;}
+
+  const valorInput = document.getElementById('valor-nfe');
+  const valorDigitado = parseFloat(valorInput?.value||'0');
+  const valor = valorDigitado > 0 ? valorDigitado : (parseFloat(String(valorHint))||0);
+
+  if(!valor || valor <= 0){
+    toast('Digite o valor total da nota','error');
+    if(valorInput) valorInput.focus();
+    return;
+  }
+
+  loading(true);
+  toast('Cadastrando nota...','');
+
+  try {
+    const res = await fetch(SUPABASE_URL+'/functions/v1/validar-nfe', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+SUPABASE_KEY
+      },
+      body:JSON.stringify({chave:chaveNum, cliente_id:currentUser.id, valor})
+    });
+    const data = await res.json();
+
+    if(!res.ok){
+      toast(data.error||'Erro ao validar nota','error');
+      loading(false);
+      return;
+    }
+
+    const pts = data.pontos||0;
+    currentUser.pontos_total = data.pontos_total||(currentUser.pontos_total||0)+pts;
+    saveSession();
+    document.getElementById('home-pontos').textContent = currentUser.pontos_total.toLocaleString('pt-BR');
+    const modeloNome = chaveNum.substring(20,22)==='65'?'NFC-e':'NF-e';
+    toast('✅ +'+pts+' pontos! '+modeloNome+' de R$'+valor.toFixed(2)+' aprovada','success');
+    document.getElementById('chave-nfe').value='';
+    if(valorInput) valorInput.value='';
+    loadHistorico();
+    if(data.guadi_desbloqueado) setTimeout(()=>toast('🦎 Você desbloqueou um Guadi!','success'),2500);
+
+  } catch(e){
+    toast('Erro de conexão. Tente novamente.','error');
+    console.error(e);
+  } finally {
+    loading(false);
+  }
+}
+
 async function loadHistorico() {
   if(!currentUser) return;
   try {
