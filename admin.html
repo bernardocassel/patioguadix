@@ -195,6 +195,7 @@
     <button class="nav-item" id="nav-notas" onclick="goTo('notas')"><span class="nav-icon">📄</span>Notas Fiscais</button>
     <button class="nav-item" id="nav-lojas" onclick="goTo('lojas')"><span class="nav-icon">🏪</span>Lojas & CNPJs</button>
     <button class="nav-item" id="nav-ofertas" onclick="goTo('ofertas')"><span class="nav-icon">🎁</span>Ofertas</button>
+    <button class="nav-item" id="nav-lojistas" onclick="goTo('lojistas')"><span class="nav-icon">🔑</span>Lojistas</button>
     <button class="nav-item" id="nav-guadis" onclick="goTo('guadis')"><span class="nav-icon">🏆</span>Coleção Guadi</button>
     <div style="flex:1"></div>
     <button class="nav-item" onclick="doLogout()"><span class="nav-icon">🚪</span>Sair</button>
@@ -309,6 +310,22 @@
         </div>
       </div>
 
+      <!-- LOJISTAS -->
+      <div id="section-lojistas" class="section">
+        <div class="card">
+          <div class="card-header">
+            <h2>🔑 Usuários Lojistas</h2>
+            <button class="btn btn-primary btn-sm" onclick="abrirModalLojista()">+ Novo lojista</button>
+          </div>
+          <div style="padding:0">
+            <table>
+              <thead><tr><th>Nome</th><th>Loja</th><th>E-mail</th><th>Status</th><th>Criado em</th><th>Ações</th></tr></thead>
+              <tbody id="tb-lojistas"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- GUADIS -->
       <div id="section-guadis" class="section">
         <div class="card">
@@ -354,6 +371,32 @@
     <div style="display:flex;gap:10px;margin-top:8px">
       <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-loja')">Cancelar</button>
       <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="salvarLoja()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOJISTA -->
+<div class="modal-overlay" id="modal-lojista">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-lojista-title">Novo Lojista</div>
+    <input type="hidden" id="lojista-id">
+    <div class="field"><label>Nome</label><input type="text" id="lojista-nome" placeholder="Nome do responsável"></div>
+    <div class="field"><label>Loja</label><select id="lojista-loja-sel"></select></div>
+    <div class="field"><label>E-mail (opcional)</label><input type="email" id="lojista-email" placeholder="email@loja.com"></div>
+    <div class="field">
+      <label>Senha de acesso</label>
+      <input type="text" id="lojista-senha" placeholder="Defina uma senha">
+      <div style="font-size:11px;color:var(--gray-500);margin-top:4px">O lojista usará essa senha para entrar no painel</div>
+    </div>
+    <div class="field"><label>Status</label>
+      <select id="lojista-ativo">
+        <option value="true">✅ Ativo</option>
+        <option value="false">⛔ Inativo</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-lojista')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="salvarLojista()">💾 Salvar</button>
     </div>
   </div>
 </div>
@@ -456,13 +499,14 @@ function goTo(section) {
   document.getElementById('section-'+section).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('nav-'+section).classList.add('active');
-  const titles = {dashboard:'Dashboard',clientes:'Clientes',notas:'Notas Fiscais',lojas:'Lojas & CNPJs',ofertas:'Ofertas',guadis:'Coleção Guadi'};
+  const titles = {dashboard:'Dashboard',clientes:'Clientes',notas:'Notas Fiscais',lojas:'Lojas & CNPJs',ofertas:'Ofertas',lojistas:'Lojistas',guadis:'Coleção Guadi'};
   document.getElementById('page-title').textContent = titles[section]||section;
   if(section==='dashboard') carregarDashboard();
   if(section==='clientes') carregarClientes();
   if(section==='notas') carregarNotas();
   if(section==='lojas') carregarLojas();
   if(section==='ofertas') carregarOfertas();
+  if(section==='lojistas') carregarLojistas();
   if(section==='guadis') carregarGuadis();
 }
 
@@ -818,6 +862,117 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// ─── LOJISTAS ───
+async function hashSenha(senha) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(senha + '_guadix_salt');
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function carregarLojistas() {
+  loading(true);
+  try {
+    const [lojistas, lojas] = await Promise.all([
+      sb('lojistas?select=*,lojas(nome)&order=created_at.desc'),
+      sb('lojas?select=id,nome&order=nome')
+    ]);
+
+    // Popula select de lojas no modal
+    document.getElementById('lojista-loja-sel').innerHTML =
+      lojas.map(l=>`<option value="${l.id}">${l.nome}</option>`).join('');
+
+    document.getElementById('tb-lojistas').innerHTML = lojistas.map(l=>`
+      <tr>
+        <td><strong>${l.nome}</strong></td>
+        <td>${l.lojas?.nome||'—'}</td>
+        <td>${l.email||'—'}</td>
+        <td><span class="status-badge ${l.ativo?'status-ok':'status-off'}">${l.ativo?'✅ Ativo':'⛔ Inativo'}</span></td>
+        <td>${fmtDate(l.created_at)}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick='editarLojista(${JSON.stringify(l)})'>✏️ Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="excluirLojista('${l.id}')">🗑️</button>
+        </td>
+      </tr>`).join('') || '<tr><td colspan="6" class="empty">Nenhum lojista cadastrado</td></tr>';
+  } catch(e){ toast('Erro','error'); console.error(e); }
+  finally { loading(false); }
+}
+
+async function abrirModalLojista() {
+  // Carrega lojas no select
+  const lojas = await sb('lojas?select=id,nome&order=nome');
+  document.getElementById('lojista-loja-sel').innerHTML =
+    lojas.map(l=>`<option value="${l.id}">${l.nome}</option>`).join('');
+
+  document.getElementById('modal-lojista-title').textContent = 'Novo Lojista';
+  document.getElementById('lojista-id').value = '';
+  document.getElementById('lojista-nome').value = '';
+  document.getElementById('lojista-email').value = '';
+  document.getElementById('lojista-senha').value = '';
+  document.getElementById('lojista-ativo').value = 'true';
+  openModal('modal-lojista');
+}
+
+async function editarLojista(l) {
+  const lojas = await sb('lojas?select=id,nome&order=nome');
+  document.getElementById('lojista-loja-sel').innerHTML =
+    lojas.map(lo=>`<option value="${lo.id}" ${lo.id===l.loja_id?'selected':''}>${lo.nome}</option>`).join('');
+
+  document.getElementById('modal-lojista-title').textContent = 'Editar Lojista — '+l.nome;
+  document.getElementById('lojista-id').value = l.id;
+  document.getElementById('lojista-nome').value = l.nome||'';
+  document.getElementById('lojista-email').value = l.email||'';
+  document.getElementById('lojista-senha').value = '';
+  document.getElementById('lojista-senha').placeholder = 'Deixe em branco para manter a senha atual';
+  document.getElementById('lojista-ativo').value = String(l.ativo!==false);
+  openModal('modal-lojista');
+}
+
+async function salvarLojista() {
+  const id = document.getElementById('lojista-id').value;
+  const nome = document.getElementById('lojista-nome').value.trim();
+  const lojaId = document.getElementById('lojista-loja-sel').value;
+  const email = document.getElementById('lojista-email').value.trim();
+  const senha = document.getElementById('lojista-senha').value;
+  const ativo = document.getElementById('lojista-ativo').value === 'true';
+
+  if(!nome){ toast('Digite o nome','error'); return; }
+  if(!lojaId){ toast('Selecione a loja','error'); return; }
+  if(!id && !senha){ toast('Defina uma senha','error'); return; }
+
+  loading(true);
+  try {
+    const dados = { nome, loja_id: lojaId, email: email||null, ativo };
+
+    // Só atualiza senha se foi preenchida
+    if(senha) {
+      dados.senha_hash = await hashSenha(senha);
+    }
+
+    if(id) {
+      await sb('lojistas?id=eq.'+id, 'PATCH', dados);
+      toast('✅ Lojista atualizado!','success');
+    } else {
+      await sb('lojistas', 'POST', dados);
+      toast('✅ Lojista criado! Senha: '+senha,'success');
+    }
+    closeModal('modal-lojista');
+    carregarLojistas();
+  } catch(e){ toast('Erro: '+e.message,'error'); }
+  finally { loading(false); }
+}
+
+async function excluirLojista(id) {
+  if(!confirm('Excluir este lojista?')) return;
+  loading(true);
+  try {
+    await sb('lojistas?id=eq.'+id, 'DELETE');
+    toast('Lojista removido','success');
+    carregarLojistas();
+  } catch(e){ toast('Erro','error'); }
+  finally { loading(false); }
+}
 
 // ─── CSV EXPORT ───
 function downloadCSV(rows, filename) {
