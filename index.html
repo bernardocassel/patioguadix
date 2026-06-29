@@ -11172,6 +11172,45 @@ function processarComCanvas(img) {
 function fecharScanner() {}
 function setStatus(msg) {}
 
+function processarQRCode(url) {
+  let chave = '';
+
+  // Extrai chave de 44 dígitos da URL ou do texto
+  if(url && url.startsWith('http')) {
+    // URL do QR Code NFC-e: chQRCode=CHAVE|versao|...
+    const m1 = url.match(/chQRCode=([^|&\s]+)/);
+    if(m1) chave = m1[1].replace(/\D/g,'').substring(0,44);
+    // Outros formatos
+    if(chave.length !== 44) {
+      const m2 = url.match(/[?&](?:chNFe|chaveNFe|p)=([^&\s|]+)/);
+      if(m2) chave = m2[1].replace(/\D/g,'').substring(0,44);
+    }
+    // Extrai 44 dígitos seguidos da URL
+    if(chave.length !== 44) {
+      const m3 = url.replace(/\D/g,'').match(/\d{44}/);
+      if(m3) chave = m3[0];
+    }
+  } else {
+    // Texto puro — extrai 44 dígitos
+    chave = url.replace(/\D/g,'').substring(0,44);
+  }
+
+  if(chave.length === 44) {
+    // Preenche campo da chave
+    document.getElementById('chave-nfe').value = chave;
+    // Rola até o campo do valor e foca
+    const valorInput = document.getElementById('valor-nfe');
+    if(valorInput) {
+      valorInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => valorInput.focus(), 400);
+    }
+    toast('✅ Chave preenchida! Digite o valor da nota.','success');
+  } else {
+    toast('QR Code lido mas chave inválida. Digite manualmente.','error');
+    console.log('QR Code content:', url);
+  }
+}
+
 // ─── SESSION RESTORE ───
 (function(){
   try{
