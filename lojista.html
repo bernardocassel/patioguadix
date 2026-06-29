@@ -235,14 +235,14 @@ const SUPABASE_URL = 'https://nkfawcjautqgkyrvakpd.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_03UmZhysJsqyMgubzVt9Cw_oi5W2h3N';
 const ASSETS = 'https://bernardocassel.github.io/patioguadix/assets';
 
-// Senha padrão por loja — pode customizar por loja
-// No futuro pode virar tabela no banco
-const SENHAS_LOJAS = {
-  'default': 'lojista2025'
-  // Para senha por loja: 'nome_da_loja': 'senha_especifica'
-};
-
 let lojaAtual = null;
+
+async function hashSenha(senha) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(senha + '_guadix_salt');
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
 
 // ─── UTILS ───
 function toast(msg, type) {
@@ -272,14 +272,33 @@ async function sb(path, method, body) {
 // ─── LOGIN ───
 async function carregarLojas() {
   try {
-    const lojas = await sb('lojas?select=id,nome&eq.ativo=true&order=nome');
+    // Só mostra lojas que têm lojistas cadastrados
+    const lojistas = await sb('lojistas?select=loja_id,lojas(id,nome)&ativo=eq.true');
+    const lojasUnicas = [];
+    const ids = new Set();
+    lojistas.forEach(l => {
+      if(l.lojas && !ids.has(l.lojas.id)) {
+        ids.add(l.lojas.id);
+        lojasUnicas.push(l.lojas);
+      }
+    });
+    lojasUnicas.sort((a,b) => a.nome.localeCompare(b.nome));
     const sel = document.getElementById('login-loja');
     sel.innerHTML = '<option value="">Selecione sua loja</option>' +
-      lojas.map(l=>`<option value="${l.id}" data-nome="${l.nome}">${l.nome}</option>`).join('');
-  } catch(e) { console.error(e); }
+      lojasUnicas.map(l=>`<option value="${l.id}" data-nome="${l.nome}">${l.nome}</option>`).join('');
+  } catch(e) {
+    console.error(e);
+    // Fallback: carrega todas as lojas
+    try {
+      const lojas = await sb('lojas?select=id,nome&ativo=eq.true&order=nome');
+      const sel = document.getElementById('login-loja');
+      sel.innerHTML = '<option value="">Selecione sua loja</option>' +
+        lojas.map(l=>`<option value="${l.id}" data-nome="${l.nome}">${l.nome}</option>`).join('');
+    } catch(e2) { console.error(e2); }
+  }
 }
 
-function doLogin() {
+async function doLogin() {
   const sel = document.getElementById('login-loja');
   const lojaId = sel.value;
   const lojaNome = sel.options[sel.selectedIndex]?.dataset.nome || '';
@@ -288,17 +307,31 @@ function doLogin() {
   if(!lojaId) { toast('Selecione sua loja','error'); return; }
   if(!senha) { toast('Digite a senha','error'); return; }
 
-  // Verifica senha (por loja ou padrão)
-  const senhaCorreta = SENHAS_LOJAS[lojaNome] || SENHAS_LOJAS['default'];
-  if(senha !== senhaCorreta) { toast('Senha incorreta','error'); return; }
+  loading(true);
+  try {
+    // Busca lojista pelo loja_id e verifica senha
+    const hash = await hashSenha(senha);
+    const lojistas = await sb(
+      'lojistas?loja_id=eq.'+lojaId+'&senha_hash=eq.'+hash+'&ativo=eq.true&select=id,nome,loja_id'
+    );
 
-  lojaAtual = { id: lojaId, nome: lojaNome };
-  try { localStorage.setItem('lojista_session', JSON.stringify(lojaAtual)); } catch(e){}
+    if(!lojistas || lojistas.length === 0) {
+      toast('Senha incorreta ou usuário inativo','error');
+      loading(false);
+      return;
+    }
 
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('loja-nome-badge').textContent = lojaNome;
-  carregarOfertas();
+    lojaAtual = { id: lojaId, nome: lojaNome, lojista_id: lojistas[0].id };
+    try { localStorage.setItem('lojista_session', JSON.stringify(lojaAtual)); } catch(e){}
+
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('loja-nome-badge').textContent = lojaNome;
+    carregarOfertas();
+  } catch(e) {
+    toast('Erro ao verificar login','error');
+    console.error(e);
+  } finally { loading(false); }
 }
 
 function doLogout() {
