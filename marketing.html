@@ -14,10 +14,21 @@
   --white:#fff;
 }
 body{font-family:'Inter',sans-serif;background:var(--g50);min-height:100vh;color:var(--g900);}
+
+/* LOGIN */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--orange-lt),var(--white));}
+.login-box{background:white;border-radius:16px;padding:40px;width:360px;box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.login-box h1{font-size:22px;font-weight:800;margin-bottom:4px;}
+.login-box p{color:var(--g400);font-size:14px;margin-bottom:24px;}
+.login-box .field{margin-bottom:16px;}
+.login-box label{display:block;font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+.login-box input{width:100%;padding:11px 14px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;}
+.login-box input:focus{border-color:var(--orange);}
+
 .topbar{background:white;border-bottom:1px solid var(--g200);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .topbar-title{font-size:16px;font-weight:700;letter-spacing:-0.3px;}
 .badge-mk{background:var(--orange);color:white;font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;}
-.topbar-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--orange),#E8861A);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;}
+.topbar-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--orange),#E8861A);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;cursor:pointer;}
 .nav-tabs{background:white;border-bottom:1px solid var(--g100);padding:0 28px;display:flex;gap:0;}
 .tab{padding:12px 18px;font-size:13px;font-weight:600;color:var(--g400);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
 .tab.active{color:var(--orange);border-bottom-color:var(--orange);}
@@ -68,10 +79,7 @@ tr:hover td{background:var(--g50);}
 .seg-chip.sel{background:var(--teal);color:white;border-color:var(--teal);}
 
 /* PHONE PREVIEW */
-.phone-mock{
-  background:var(--g900);border-radius:24px;padding:16px;
-  max-width:260px;
-}
+.phone-mock{background:var(--g900);border-radius:24px;padding:16px;max-width:260px;}
 .phone-mock-status{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px;}
 .notif-card-mk{background:rgba(255,255,255,0.1);border-radius:12px;padding:12px;backdrop-filter:blur(4px);}
 .notif-card-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
@@ -97,6 +105,20 @@ tr:hover td{background:var(--g50);}
 </head>
 <body>
 
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <h1>📣 Marketing Guadix</h1>
+    <p>Painel de campanhas e automações do Clube Guadix</p>
+    <div class="field"><label>Senha de acesso</label><input type="password" id="mk-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')doMkLogin()"></div>
+    <button class="btn btn-orange" style="width:100%;justify-content:center;padding:12px" onclick="doMkLogin()">Entrar</button>
+    <p style="text-align:center;margin-top:16px"><a href="painel.html" style="font-size:12px;color:var(--g400)">← Voltar ao painel único</a></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="marketing-app" style="display:none">
+
 <div class="topbar">
   <div style="display:flex;align-items:center;gap:12px;">
     <div>
@@ -107,7 +129,7 @@ tr:hover td{background:var(--g50);}
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <div style="font-size:12px;color:var(--g400)" id="topDate"></div>
-    <div class="topbar-avatar">MK</div>
+    <div class="topbar-avatar" onclick="doMkLogout()" title="Sair">MK</div>
   </div>
 </div>
 
@@ -135,57 +157,31 @@ tr:hover td{background:var(--g50);}
           <div class="card-header"><span class="card-title">Construtor de campanha</span></div>
           <div style="padding:20px;">
 
-            <!-- Canal -->
             <div class="form-label" style="margin-bottom:10px;">Canal de envio</div>
             <div class="canal-selector">
-              <div class="canal-btn active" onclick="selectCanal(this)">
-                <div class="canal-icon">📱</div>
-                <div class="canal-label">Push</div>
-              </div>
-              <div class="canal-btn" onclick="selectCanal(this)">
-                <div class="canal-icon">💬</div>
-                <div class="canal-label">WhatsApp</div>
-              </div>
-              <div class="canal-btn" onclick="selectCanal(this)">
-                <div class="canal-icon">✉️</div>
-                <div class="canal-label">E-mail</div>
-              </div>
-              <div class="canal-btn" onclick="selectCanal(this)">
-                <div class="canal-icon">🔀</div>
-                <div class="canal-label">Todos</div>
-              </div>
+              <div class="canal-btn active" onclick="selectCanal(this)"><div class="canal-icon">📱</div><div class="canal-label">Push</div></div>
+              <div class="canal-btn" onclick="selectCanal(this)"><div class="canal-icon">💬</div><div class="canal-label">WhatsApp</div></div>
+              <div class="canal-btn" onclick="selectCanal(this)"><div class="canal-icon">✉️</div><div class="canal-label">E-mail</div></div>
+              <div class="canal-btn" onclick="selectCanal(this)"><div class="canal-icon">🔀</div><div class="canal-label">Todos</div></div>
             </div>
 
-            <!-- Título -->
             <div style="margin-bottom:14px;">
               <label class="form-label">Título</label>
               <input class="form-input" type="text" id="mkTitulo" placeholder="Ex: Hora do almoço chegou!" oninput="updateMkPreview()">
             </div>
 
-            <!-- Mensagem -->
             <div style="margin-bottom:14px;">
               <label class="form-label">Mensagem</label>
               <textarea class="form-input" id="mkMensagem" rows="3" placeholder="Ex: QuieroCafé com combo 15% off das 11h às 15h. Só para membros do Clube!" oninput="updateMkPreview()" style="resize:none;"></textarea>
             </div>
 
-            <!-- Loja -->
             <div style="margin-bottom:14px;">
               <label class="form-label">Loja associada (opcional)</label>
-              <select class="form-input">
+              <select class="form-input" id="mkLoja">
                 <option>Sem loja específica</option>
-                <option>Bistek Supermercados</option>
-                <option>QuieroCafé</option>
-                <option>McDonald's</option>
-                <option>O Boticário</option>
-                <option>CacauShow</option>
-                <option>Farmácia São João</option>
-                <option>Natura</option>
-                <option>Bellafast Salão</option>
-                <option>Patas & Garras</option>
               </select>
             </div>
 
-            <!-- Segmento -->
             <div style="margin-bottom:14px;">
               <label class="form-label" style="margin-bottom:8px;">Segmento de envio</label>
               <div class="seg-chips">
@@ -200,16 +196,9 @@ tr:hover td{background:var(--g50);}
               </div>
             </div>
 
-            <!-- Agendamento -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-              <div>
-                <label class="form-label">Data de envio</label>
-                <input class="form-input" type="date">
-              </div>
-              <div>
-                <label class="form-label">Horário</label>
-                <input class="form-input" type="time" value="12:00">
-              </div>
+              <div><label class="form-label">Data de envio</label><input class="form-input" type="date"></div>
+              <div><label class="form-label">Horário</label><input class="form-input" type="time" value="12:00"></div>
             </div>
 
             <div style="display:flex;gap:8px;">
@@ -221,7 +210,6 @@ tr:hover td{background:var(--g50);}
         </div>
       </div>
 
-      <!-- PREVIEW -->
       <div>
         <div style="font-size:13px;font-weight:700;margin-bottom:12px;">Preview no celular</div>
         <div class="phone-mock">
@@ -235,35 +223,23 @@ tr:hover td{background:var(--g50);}
             <div class="notif-card-title" id="mkPrevTitulo">Hora do almoço chegou!</div>
             <div class="notif-card-body" id="mkPrevMensagem">QuieroCafé com combo 15% off das 11h às 15h. Só para membros do Clube!</div>
           </div>
-
-          <!-- WhatsApp preview -->
           <div style="margin-top:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:12px;">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
               <div style="width:22px;height:22px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:11px;">💬</div>
               <span style="font-size:10px;color:rgba(255,255,255,0.4);">WhatsApp · Clube Guadix</span>
             </div>
             <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:8px;font-size:11px;color:rgba(255,255,255,0.8);line-height:1.5;">
-              🦎 *Clube Guadix*<br>
-              <span id="mkPrevWpp">Hora do almoço chegou! QuieroCafé com combo 15% off das 11h às 15h.</span>
+              🦎 *Clube Guadix*<br><span id="mkPrevWpp">Hora do almoço chegou! QuieroCafé com combo 15% off das 11h às 15h.</span>
             </div>
           </div>
         </div>
 
-        <!-- Estimativa de alcance -->
         <div style="margin-top:14px;background:white;border-radius:12px;padding:14px;border:1px solid var(--g100);">
           <div style="font-size:12px;font-weight:700;margin-bottom:10px;">Estimativa de alcance</div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;">
-            <span>Destinatários</span><span style="font-weight:700;">1.847</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;">
-            <span>Abertura estimada (68%)</span><span style="font-weight:700;color:var(--green)">~1.256</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;">
-            <span>Custo WhatsApp</span><span style="font-weight:700;color:var(--orange)">~R$0,05/msg</span>
-          </div>
-          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--g100);font-size:11px;color:var(--g400);">
-            Custo estimado: R$92,35 no WhatsApp · Push gratuito
-          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;"><span>Destinatários</span><span style="font-weight:700;">1.847</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;"><span>Abertura estimada (68%)</span><span style="font-weight:700;color:var(--green)">~1.256</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Custo WhatsApp</span><span style="font-weight:700;color:var(--orange)">~R$0,05/msg</span></div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--g100);font-size:11px;color:var(--g400);">Custo estimado: R$92,35 no WhatsApp · Push gratuito</div>
         </div>
       </div>
     </div>
@@ -271,85 +247,45 @@ tr:hover td{background:var(--g50);}
 
   <!-- ═══ AUTOMAÇÕES ═══ -->
   <div class="screen" id="tab-automacoes">
-    <div class="info-box">
-      Automações são disparadas automaticamente pelo sistema com base em comportamento do cliente. Ative ou pause conforme necessário.
-    </div>
+    <div class="info-box">Automações são disparadas automaticamente pelo sistema com base em comportamento do cliente. Ative ou pause conforme necessário.</div>
 
     <div class="automation-card">
       <div class="auto-icon" style="background:var(--orange-lt)">☀️</div>
-      <div style="flex:1">
-        <div class="auto-title">Lembrete de almoço — QuieroCafé</div>
-        <div class="auto-desc">Enviado todo dia às 11h45 para clientes que passaram pelo Pátio nos últimos 7 dias.<br>Canal: Push · Taxa de abertura: 72%</div>
-      </div>
-      <div class="auto-status">
-        <span class="badge badge-green">Ativa</span>
-        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-      </div>
+      <div style="flex:1"><div class="auto-title">Lembrete de almoço — QuieroCafé</div><div class="auto-desc">Enviado todo dia às 11h45 para clientes que passaram pelo Pátio nos últimos 7 dias.<br>Canal: Push · Taxa de abertura: 72%</div></div>
+      <div class="auto-status"><span class="badge badge-green">Ativa</span><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
     </div>
 
     <div class="automation-card">
       <div class="auto-icon" style="background:var(--teal-lt)">🌅</div>
-      <div style="flex:1">
-        <div class="auto-title">Desconto da tarde — Bistek</div>
-        <div class="auto-desc">Enviado de segunda a sexta às 14h30, para clientes com frequência ≥ 2x/mês.<br>Canal: Push + WhatsApp · Taxa de abertura: 68%</div>
-      </div>
-      <div class="auto-status">
-        <span class="badge badge-green">Ativa</span>
-        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-      </div>
+      <div style="flex:1"><div class="auto-title">Desconto da tarde — Bistek</div><div class="auto-desc">Enviado de segunda a sexta às 14h30, para clientes com frequência ≥ 2x/mês.<br>Canal: Push + WhatsApp · Taxa de abertura: 68%</div></div>
+      <div class="auto-status"><span class="badge badge-green">Ativa</span><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
     </div>
 
     <div class="automation-card">
-      <div class="auto-icon" style="background:#FFF0F5)">🎂</div>
-      <div style="flex:1">
-        <div class="auto-title">Parabéns de aniversário</div>
-        <div class="auto-desc">Enviado no dia do aniversário às 8h com desconto especial do Clube.<br>Canal: WhatsApp · Taxa de abertura: 94%</div>
-      </div>
-      <div class="auto-status">
-        <span class="badge badge-green">Ativa</span>
-        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-      </div>
+      <div class="auto-icon" style="background:#FFF0F5">🎂</div>
+      <div style="flex:1"><div class="auto-title">Parabéns de aniversário</div><div class="auto-desc">Enviado no dia do aniversário às 8h com desconto especial do Clube.<br>Canal: WhatsApp · Taxa de abertura: 94%</div></div>
+      <div class="auto-status"><span class="badge badge-green">Ativa</span><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
     </div>
 
     <div class="automation-card">
       <div class="auto-icon" style="background:#FFEBEE">😴</div>
-      <div style="flex:1">
-        <div class="auto-title">Reativação de inativos</div>
-        <div class="auto-desc">Enviado para clientes sem visita há 30 dias. Oferta de pontos bônus para voltar.<br>Canal: WhatsApp · Taxa de abertura: 41%</div>
-      </div>
-      <div class="auto-status">
-        <span class="badge badge-orange">Pausada</span>
-        <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-      </div>
+      <div style="flex:1"><div class="auto-title">Reativação de inativos</div><div class="auto-desc">Enviado para clientes sem visita há 30 dias. Oferta de pontos bônus para voltar.<br>Canal: WhatsApp · Taxa de abertura: 41%</div></div>
+      <div class="auto-status"><span class="badge badge-orange">Pausada</span><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
     </div>
 
     <div class="automation-card">
       <div class="auto-icon" style="background:#FFF5E6">🦎</div>
-      <div style="flex:1">
-        <div class="auto-title">Guadi quase desbloqueado!</div>
-        <div class="auto-desc">Enviado quando o cliente está a R$50 do próximo Guadi. Urgência suave.<br>Canal: Push · Taxa de abertura: 81%</div>
-      </div>
-      <div class="auto-status">
-        <span class="badge badge-green">Ativa</span>
-        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-      </div>
+      <div style="flex:1"><div class="auto-title">Guadi quase desbloqueado!</div><div class="auto-desc">Enviado quando o cliente está a R$50 do próximo Guadi. Urgência suave.<br>Canal: Push · Taxa de abertura: 81%</div></div>
+      <div class="auto-status"><span class="badge badge-green">Ativa</span><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
     </div>
 
     <div class="automation-card">
       <div class="auto-icon" style="background:var(--g100)">✈️</div>
-      <div style="flex:1">
-        <div class="auto-title">Lembrete do sorteio — Rio de Janeiro</div>
-        <div class="auto-desc">Enviado mensalmente lembrando do sorteio e quantos números a pessoa tem.<br>Canal: Push + WhatsApp · Taxa de abertura: 76%</div>
-      </div>
-      <div class="auto-status">
-        <span class="badge badge-green">Ativa</span>
-        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-      </div>
+      <div style="flex:1"><div class="auto-title">Lembrete do sorteio — Rio de Janeiro</div><div class="auto-desc">Enviado mensalmente lembrando do sorteio e quantos números a pessoa tem.<br>Canal: Push + WhatsApp · Taxa de abertura: 76%</div></div>
+      <div class="auto-status"><span class="badge badge-green">Ativa</span><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
     </div>
 
-    <div style="margin-top:8px;">
-      <button class="btn btn-orange">+ Nova automação</button>
-    </div>
+    <div style="margin-top:8px;"><button class="btn btn-orange">+ Nova automação</button></div>
   </div>
 
   <!-- ═══ HISTÓRICO ═══ -->
@@ -377,11 +313,8 @@ tr:hover td{background:var(--g50);}
 
   <!-- ═══ SEGMENTOS ═══ -->
   <div class="screen" id="tab-segmentos">
-    <div class="info-box">
-      Segmentos são grupos de clientes atualizados automaticamente toda noite. Use-os para disparar campanhas mais precisas e relevantes.
-    </div>
+    <div class="info-box">Segmentos são grupos de clientes atualizados automaticamente toda noite. Use-os para disparar campanhas mais precisas e relevantes.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-
       <div class="card">
         <div class="card-header"><span class="card-title">Segmentos automáticos</span></div>
         <table>
@@ -395,7 +328,6 @@ tr:hover td{background:var(--g50);}
           </tbody>
         </table>
       </div>
-
       <div class="card">
         <div class="card-header"><span class="card-title">Segmentos por perfil</span></div>
         <table>
@@ -409,16 +341,68 @@ tr:hover td{background:var(--g50);}
           </tbody>
         </table>
       </div>
-
     </div>
     <button class="btn btn-orange" style="margin-top:4px;">+ Criar segmento personalizado</button>
   </div>
 
 </div>
+</div><!-- fim #marketing-app -->
 
 <script>
 const SUPABASE_URL = 'https://nkfawcjautqgkyrvakpd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_03UmZhysJsqyMgubzVt9Cw_oi5W2h3N';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rZmF3Y2phdXRxZ2t5cnZha3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NjUwMTMsImV4cCI6MjA5ODE0MTAxM30.WNEwvxpgVbid9vx05S9k8bRI6JWeLHXBU0WFW0EuV68';
+const MARKETING_SENHA = 'marketing2025guadix'; // Troque por uma senha forte
+
+// ─── AUTH ───
+function doMkLogin() {
+  const s = document.getElementById('mk-senha').value;
+  if(s === MARKETING_SENHA) {
+    entrarMkApp();
+  } else {
+    alert('Senha incorreta');
+  }
+}
+function entrarMkApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('marketing-app').style.display = 'block';
+  carregarLojasSelect();
+}
+function doMkLogout() {
+  if(!confirm('Sair do painel de marketing?')) return;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('marketing-app').style.display = 'none';
+  document.getElementById('mk-senha').value = '';
+}
+
+// ─── AUTO-LOGIN VINDO DO /painel.html ───
+(function(){
+  try {
+    const raw = sessionStorage.getItem('guadix_painel_auth');
+    if(raw) {
+      const s = JSON.parse(raw);
+      const recente = (Date.now() - (s.ts||0)) < 5*60*1000;
+      if(s.role === 'marketing' && recente) {
+        sessionStorage.removeItem('guadix_painel_auth');
+        window.addEventListener('DOMContentLoaded', entrarMkApp);
+      }
+    }
+  } catch(e){}
+})();
+
+async function sb(path) {
+  const r = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY }
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function carregarLojasSelect() {
+  try {
+    const lojas = await sb('lojas?select=id,nome&ativo=eq.true&order=nome');
+    document.getElementById('mkLoja').innerHTML =
+      '<option>Sem loja específica</option>' + lojas.map(l=>`<option value="${l.id}">${l.nome}</option>`).join('');
+  } catch(e) { /* mantém fallback estático */ }
+}
 
 function showTab(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -426,12 +410,10 @@ function showTab(id) {
   document.getElementById('tab-' + id).classList.add('active');
   event.currentTarget.classList.add('active');
 }
-
 function selectCanal(el) {
   document.querySelectorAll('.canal-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
 }
-
 function updateMkPreview() {
   const t = document.getElementById('mkTitulo')?.value;
   const m = document.getElementById('mkMensagem')?.value;
@@ -441,9 +423,8 @@ function updateMkPreview() {
   }
   if (m) document.getElementById('mkPrevMensagem').textContent = m;
 }
-
-document.getElementById('topDate').textContent =
-  new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+document.getElementById('topDate') && (document.getElementById('topDate').textContent =
+  new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'}));
 </script>
 </body>
 </html>
