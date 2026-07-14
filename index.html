@@ -10584,8 +10584,8 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
 
 <!-- ══════ SCREEN LOGIN ══════ -->
 <div id="screen-login" class="screen active" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;background:linear-gradient(160deg,var(--teal-light) 0%,var(--white) 50%)">
-  <img id="login-logo" class="logo-big" src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" style="width:220px;object-fit:contain;margin-bottom:4px" onerror="this.style.display='none'">
-  <img id="login-mascot" class="mascot" src="https://bernardocassel.github.io/patioguadix/assets/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:80px;margin-bottom:24px>🦎</div>'">
+  <img id="login-logo" class="logo-big" src="https://bernardocassel.github.io/patioguadix/logo.png" alt="Pátio Guadix" style="width:220px;object-fit:contain;margin-bottom:4px" onerror="this.style.display='none'">
+  <img id="login-mascot" class="mascot" src="https://bernardocassel.github.io/patioguadix/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:80px;margin-bottom:24px>🦎</div>'">
   <h1>Clube Guadix</h1>
   <p>Acumule pontos, ganhe Guadis e concorra a uma viagem ao Rio!</p>
   <div style="width:100%">
@@ -10615,7 +10615,7 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
   <!-- HOME -->
   <div id="screen-home" class="screen active">
     <div class="topbar">
-      <img class="topbar-logo" src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
+      <img class="topbar-logo" src="https://bernardocassel.github.io/patioguadix/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
       <div class="topbar-right">
         <button class="btn-notif">🔔<span class="notif-dot" id="notif-dot"></span></button>
         <div class="avatar" id="home-avatar" onclick="navTo('perfil')">?</div>
@@ -10636,7 +10636,7 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
             <button class="btn btn-orange" style="width:auto;padding:11px 18px;font-size:13px" onclick="navTo('colecao')">🎁 Saiba como ganhar</button>
           </div>
           <div class="banner-img">
-            <img src="https://bernardocassel.github.io/patioguadix/assets/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:72px>🦎</div>'">
+            <img src="https://bernardocassel.github.io/patioguadix/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:72px>🦎</div>'">
           </div>
         </div>
         <div class="banner-slide banner-rio">
@@ -10760,7 +10760,7 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
     <div class="section-title" style="padding-top:4px">Últimas notas</div>
     <div class="history-list" id="history-list"><div style="padding:16px 0;color:var(--gray-400);font-size:13px;text-align:center">Carregando...</div></div>
     <div class="dica-guadi">
-      <img src="https://bernardocassel.github.io/patioguadix/assets/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:32px>🦎</div>'">
+      <img src="https://bernardocassel.github.io/patioguadix/guadi.png" alt="Guadi" onerror="this.outerHTML='<div style=font-size:32px>🦎</div>'">
       <div class="dica-guadi-text"><strong>💡 Dica do Guadi</strong><p>Notas acima de R$300 desbloqueiam o Guadi colecionável! Não esqueça de pedir CPF na nota.</p></div>
     </div>
     <div style="height:20px"></div>
@@ -10853,7 +10853,7 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
   <!-- ════════ SCREEN: SHOPPING ════════ -->
   <div id="screen-shopping" class="screen">
     <div class="topbar">
-      <img class="topbar-logo" src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
+      <img class="topbar-logo" src="https://bernardocassel.github.io/patioguadix/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
       <div class="topbar-right">
         <div class="avatar" id="shopping-avatar" onclick="navTo('perfil')">?</div>
       </div>
@@ -10954,7 +10954,7 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
   <!-- ════════ SCREEN: CUPONS ════════ -->
   <div id="screen-cupons" class="screen">
     <div class="topbar">
-      <img class="topbar-logo" src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
+      <img class="topbar-logo" src="https://bernardocassel.github.io/patioguadix/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
       <div class="topbar-right">
         <div class="avatar" id="cupons-avatar" onclick="navTo('perfil')">?</div>
       </div>
@@ -11673,9 +11673,9 @@ function atualizarNivel(pts) {
 
 // ─── SELECIONADOS PARA VOCÊ ───
 const SELECIONADOS_FIXOS = [
-  { id:'s1', titulo:'Promoção de Carnes — Terça Feira', descricao:'Cortes especiais com preços exclusivos toda terça', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/sel_carnes.jpg', loja_nome:'Bistek Supermercados', pontos_bonus:50 },
-  { id:'s2', titulo:'Puff Estofado por R$29,99', descricao:'Arraial de Ofertas — De R$39 por R$29,99', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/sel_puff.jpg', loja_nome:'Casa Maria', pontos_bonus:30 },
-  { id:'s3', titulo:'Álbum Copa 2026 — 100% Atualizado!', descricao:'Kit de Atualização com 120 cromos oficiais Panini ⚽', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/sel_copa.jpg', loja_nome:'Momentus Tabacaria', pontos_bonus:20 },
+  { id:'s1', titulo:'Promoção de Carnes — Terça Feira', descricao:'Cortes especiais com preços exclusivos toda terça', imagem_url:'https://bernardocassel.github.io/patioguadix/sel_carnes.jpg', loja_nome:'Bistek Supermercados', pontos_bonus:50 },
+  { id:'s2', titulo:'Puff Estofado por R$29,99', descricao:'Arraial de Ofertas — De R$39 por R$29,99', imagem_url:'https://bernardocassel.github.io/patioguadix/sel_puff.jpg', loja_nome:'Casa Maria', pontos_bonus:30 },
+  { id:'s3', titulo:'Álbum Copa 2026 — 100% Atualizado!', descricao:'Kit de Atualização com 120 cromos oficiais Panini ⚽', imagem_url:'https://bernardocassel.github.io/patioguadix/sel_copa.jpg', loja_nome:'Momentus Tabacaria', pontos_bonus:20 },
 ];
 
 async function carregarSelecionados() {
@@ -11745,12 +11745,12 @@ function renderLojasShop(lojas, cat) {
   if(!filtradas.length) { grid.innerHTML='<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;grid-column:1/-1">Nenhuma loja nesta categoria</div>'; return; }
   // Mapa de logos por nome
   const LOGO_MAP = {
-    'Bistek':'https://bernardocassel.github.io/patioguadix/assets/logo_bistek.png','QuieroCafé':'https://bernardocassel.github.io/patioguadix/assets/logo_quierocafe.png',
-    "McDonald's":'https://bernardocassel.github.io/patioguadix/assets/logo_mcdonalds.png','CacauShow':'https://bernardocassel.github.io/patioguadix/assets/logo_cacaushow.png',
-    'Casa Maria':'https://bernardocassel.github.io/patioguadix/assets/logo_casamaria.png','Momentus Tabacaria':'https://bernardocassel.github.io/patioguadix/assets/logo_momentus.png',
-    'Natura':'https://bernardocassel.github.io/patioguadix/assets/logo_natura.png','Avon':'https://bernardocassel.github.io/patioguadix/assets/logo_avon.png',
-    'Bellafast Salão':'https://bernardocassel.github.io/patioguadix/assets/logo_bellafast.jpg','BigKey Chaveiro':'https://bernardocassel.github.io/patioguadix/assets/logo_bigkey.png',
-    'Supertec Assistência':'https://bernardocassel.github.io/patioguadix/assets/logo_supertec.png','Agropet Patas e Garras':'https://bernardocassel.github.io/patioguadix/assets/logo_patas.png',
+    'Bistek':'https://bernardocassel.github.io/patioguadix/logo_bistek.png','QuieroCafé':'https://bernardocassel.github.io/patioguadix/logo_quierocafe.png',
+    "McDonald's":'https://bernardocassel.github.io/patioguadix/logo_mcdonalds.png','CacauShow':'https://bernardocassel.github.io/patioguadix/logo_cacaushow.png',
+    'Casa Maria':'https://bernardocassel.github.io/patioguadix/logo_casamaria.png','Momentus Tabacaria':'https://bernardocassel.github.io/patioguadix/logo_momentus.png',
+    'Natura':'https://bernardocassel.github.io/patioguadix/logo_natura.png','Avon':'https://bernardocassel.github.io/patioguadix/logo_avon.png',
+    'Bellafast Salão':'https://bernardocassel.github.io/patioguadix/logo_bellafast.jpg','BigKey Chaveiro':'https://bernardocassel.github.io/patioguadix/logo_bigkey.png',
+    'Supertec Assistência':'https://bernardocassel.github.io/patioguadix/logo_supertec.png','Agropet Patas e Garras':'https://bernardocassel.github.io/patioguadix/logo_patas.png',
   };
   grid.innerHTML = filtradas.map(l => {
     const logoUrl = LOGO_MAP[l.nome];
@@ -11775,10 +11775,10 @@ function filtrarLojas(cat) {
 
 // ─── EVENTOS ───
 const EVENTOS_FIXOS = [
-  { id:'1', titulo:'Aniversário Pátio Guadix 🎂', descricao:'Comemore conosco! Atrações especiais, brindes e muito mais para toda a família.', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/ev_aniversario.jpg', data_inicio:'2026-11-15T15:30:00', local:'Pátio Guadix — Área Central', ativo:true },
-  { id:'2', titulo:'Black Friday no Pátio Guadix 🛍️', descricao:'As melhores ofertas do ano em todas as lojas parceiras. Não perca!', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/ev_blackfriday.png', data_inicio:'2026-11-27T09:00:00', local:'Todas as lojas participantes', ativo:true },
-  { id:'3', titulo:'Dia das Crianças no Pátio Guadix 🎈', descricao:'Muitas atrações para as crianças: show, brinquedos e surpresas especiais!', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/ev_criancas.jpg', data_inicio:'2026-10-12T10:30:00', local:'Praça Central — Pátio Guadix', ativo:true },
-  { id:'4', titulo:'Dia dos Pais — Churrasco & Carros Antigos 🚗🥩', descricao:'Evento com Chef Paulo Fumens: churrasco especial, encontro de carros antigos e atrações para toda a família!', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/ev_paisdias.jpg', data_inicio:'2026-08-09T11:00:00', local:'Estacionamento Principal', ativo:true },
+  { id:'1', titulo:'Aniversário Pátio Guadix 🎂', descricao:'Comemore conosco! Atrações especiais, brindes e muito mais para toda a família.', imagem_url:'https://bernardocassel.github.io/patioguadix/ev_aniversario.jpg', data_inicio:'2026-11-15T15:30:00', local:'Pátio Guadix — Área Central', ativo:true },
+  { id:'2', titulo:'Black Friday no Pátio Guadix 🛍️', descricao:'As melhores ofertas do ano em todas as lojas parceiras. Não perca!', imagem_url:'https://bernardocassel.github.io/patioguadix/ev_blackfriday.png', data_inicio:'2026-11-27T09:00:00', local:'Todas as lojas participantes', ativo:true },
+  { id:'3', titulo:'Dia das Crianças no Pátio Guadix 🎈', descricao:'Muitas atrações para as crianças: show, brinquedos e surpresas especiais!', imagem_url:'https://bernardocassel.github.io/patioguadix/ev_criancas.jpg', data_inicio:'2026-10-12T10:30:00', local:'Praça Central — Pátio Guadix', ativo:true },
+  { id:'4', titulo:'Dia dos Pais — Churrasco & Carros Antigos 🚗🥩', descricao:'Evento com Chef Paulo Fumens: churrasco especial, encontro de carros antigos e atrações para toda a família!', imagem_url:'https://bernardocassel.github.io/patioguadix/ev_paisdias.jpg', data_inicio:'2026-08-09T11:00:00', local:'Estacionamento Principal', ativo:true },
 ];
 
 async function carregarEventos() {
@@ -11842,7 +11842,7 @@ function abrirEvento(e) {
 
 // ─── MINI BANNERS ───
 const BANNERS_FIXOS = [
-  { id:'b1', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/banner_quierocafe.png', link_url:'', ordem:1 },
+  { id:'b1', imagem_url:'https://bernardocassel.github.io/patioguadix/banner_quierocafe.png', link_url:'', ordem:1 },
   { id:'b2', titulo:'Ganhe mais pontos!', descricao:'Compras nas lojas parceiras valem o dobro neste mês!', botao_texto:'SAIBA MAIS', cor:'#1AAFA8', ordem:2 },
 ];
 
@@ -11878,18 +11878,18 @@ function renderMiniBanner(containerId, banner) {
 
 // ─── LOJAS DESTAQUE HOME ───
 const LOJAS_LOGOS = [
-  { nome:'Bistek', img:'https://bernardocassel.github.io/patioguadix/assets/logo_bistek.png' },
-  { nome:'QuieroCafé', img:'https://bernardocassel.github.io/patioguadix/assets/logo_quierocafe.png' },
-  { nome:"McDonald's", img:'https://bernardocassel.github.io/patioguadix/assets/logo_mcdonalds.png' },
-  { nome:'Cacau Show', img:'https://bernardocassel.github.io/patioguadix/assets/logo_cacaushow.png' },
-  { nome:'Casa Maria', img:'https://bernardocassel.github.io/patioguadix/assets/logo_casamaria.png' },
-  { nome:'Momentus', img:'https://bernardocassel.github.io/patioguadix/assets/logo_momentus.png' },
-  { nome:'Natura', img:'https://bernardocassel.github.io/patioguadix/assets/logo_natura.png' },
-  { nome:'Avon', img:'https://bernardocassel.github.io/patioguadix/assets/logo_avon.png' },
-  { nome:'Bella Fast', img:'https://bernardocassel.github.io/patioguadix/assets/logo_bellafast.jpg' },
-  { nome:'BigKey', img:'https://bernardocassel.github.io/patioguadix/assets/logo_bigkey.png' },
-  { nome:'Super Tec', img:'https://bernardocassel.github.io/patioguadix/assets/logo_supertec.png' },
-  { nome:'Patas & Garras', img:'https://bernardocassel.github.io/patioguadix/assets/logo_patas.png' },
+  { nome:'Bistek', img:'https://bernardocassel.github.io/patioguadix/logo_bistek.png' },
+  { nome:'QuieroCafé', img:'https://bernardocassel.github.io/patioguadix/logo_quierocafe.png' },
+  { nome:"McDonald's", img:'https://bernardocassel.github.io/patioguadix/logo_mcdonalds.png' },
+  { nome:'Cacau Show', img:'https://bernardocassel.github.io/patioguadix/logo_cacaushow.png' },
+  { nome:'Casa Maria', img:'https://bernardocassel.github.io/patioguadix/logo_casamaria.png' },
+  { nome:'Momentus', img:'https://bernardocassel.github.io/patioguadix/logo_momentus.png' },
+  { nome:'Natura', img:'https://bernardocassel.github.io/patioguadix/logo_natura.png' },
+  { nome:'Avon', img:'https://bernardocassel.github.io/patioguadix/logo_avon.png' },
+  { nome:'Bella Fast', img:'https://bernardocassel.github.io/patioguadix/logo_bellafast.jpg' },
+  { nome:'BigKey', img:'https://bernardocassel.github.io/patioguadix/logo_bigkey.png' },
+  { nome:'Super Tec', img:'https://bernardocassel.github.io/patioguadix/logo_supertec.png' },
+  { nome:'Patas & Garras', img:'https://bernardocassel.github.io/patioguadix/logo_patas.png' },
 ];
 
 async function carregarLojasDestaqueHome() {
