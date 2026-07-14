@@ -78,6 +78,7 @@
     border-top: 1px solid var(--gray-100);
     display: flex; z-index: 200;
     padding-bottom: env(safe-area-inset-bottom, 0);
+    align-items: flex-end;
   }
   .nav-item {
     flex: 1; display: flex; flex-direction: column;
@@ -89,6 +90,165 @@
   }
   .nav-item.active { color: var(--teal); }
   .nav-icon { font-size: 20px; line-height: 1; display:flex; align-items:center; justify-content:center; }
+  /* Botão Nota elevado */
+  .nav-nota-btn { padding-bottom: 8px; }
+  .nav-nota-circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 3px; margin-top: -20px;
+    box-shadow: 0 4px 16px rgba(26,175,168,.4);
+    flex-shrink: 0;
+  }
+  .nav-nota-btn { color: var(--teal); font-weight: 600; }
+
+  /* TELA SHOPPING */
+  #screen-shopping { padding-bottom: 90px; }
+  .shopping-hero {
+    background: var(--teal); color: var(--white);
+    padding: 20px; text-align: center;
+  }
+  .shopping-hero h2 { font-size: 18px; font-weight: 800; }
+  .shopping-hero p { font-size: 13px; opacity: .85; margin-top: 4px; }
+  .shopping-tabs {
+    display: flex; background: var(--white);
+    border-bottom: 1px solid var(--gray-100); overflow-x: auto;
+    scrollbar-width: none; position: sticky; top: 0; z-index: 10;
+  }
+  .shopping-tabs::-webkit-scrollbar { display: none; }
+  .shopping-tab {
+    flex-shrink: 0; padding: 14px 20px; font-size: 14px; font-weight: 600;
+    color: var(--gray-500); border: none; background: none; cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all .2s;
+    white-space: nowrap;
+  }
+  .shopping-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+  .info-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px;
+  }
+  .info-card {
+    background: var(--white); border: 1px solid var(--gray-100);
+    border-radius: var(--radius); padding: 16px; cursor: pointer;
+    transition: box-shadow .2s;
+  }
+  .info-card:hover { box-shadow: var(--shadow); }
+  .info-card-icon { font-size: 28px; margin-bottom: 8px; color: var(--teal); }
+  .info-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .info-card p { font-size: 12px; color: var(--gray-500); line-height: 1.4; }
+  .lojas-categorias {
+    display: flex; gap: 8px; padding: 12px 16px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .lojas-categorias::-webkit-scrollbar { display: none; }
+  .cat-pill {
+    flex-shrink: 0; padding: 7px 16px; border-radius: 50px;
+    font-size: 12px; font-weight: 600; cursor: pointer; border: none;
+    background: var(--gray-100); color: var(--gray-700); transition: all .2s;
+  }
+  .cat-pill.active { background: var(--teal); color: var(--white); }
+  .lojas-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+    padding: 0 16px 16px;
+  }
+  .loja-card-grid {
+    background: var(--white); border: 1px solid var(--gray-100);
+    border-radius: 10px; aspect-ratio: 1; display: flex;
+    align-items: center; justify-content: center; overflow: hidden;
+    cursor: pointer; transition: box-shadow .2s; padding: 8px;
+  }
+  .loja-card-grid:hover { box-shadow: var(--shadow); }
+  .loja-card-grid-emoji { font-size: 28px; }
+  .loja-card-grid img { width: 100%; height: 100%; object-fit: contain; }
+  .loja-card-nome { font-size: 10px; text-align: center; margin-top: 4px; color: var(--gray-700); font-weight: 600; }
+
+  /* EVENTOS */
+  .eventos-scroll { display: flex; gap: 12px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+  .eventos-scroll::-webkit-scrollbar { display: none; }
+  .evento-card {
+    min-width: 180px; flex-shrink: 0; background: var(--white);
+    border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow); cursor: pointer;
+  }
+  .evento-img { width: 100%; height: 110px; object-fit: cover; display: block; background: var(--teal-light); }
+  .evento-img-ph { width: 100%; height: 110px; background: linear-gradient(135deg,var(--teal),var(--teal-dark)); display: flex; align-items: center; justify-content: center; font-size: 36px; }
+  .evento-info { padding: 10px 12px; }
+  .evento-data { font-size: 11px; color: var(--teal); font-weight: 700; margin-bottom: 3px; }
+  .evento-nome { font-size: 13px; font-weight: 700; }
+
+  /* MINI BANNERS */
+  .mini-banner {
+    margin: 0 16px; border-radius: var(--radius); overflow: hidden;
+    cursor: pointer; position: relative;
+  }
+  .mini-banner img { width: 100%; height: 100px; object-fit: cover; display: block; }
+  .mini-banner-ph {
+    width: 100%; height: 100px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+  }
+  .mini-banner-text h3 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+  .mini-banner-text p { font-size: 12px; opacity: .85; }
+  .mini-banner-btn {
+    padding: 8px 16px; border-radius: 50px; border: none;
+    font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    background: var(--white); color: var(--teal);
+  }
+
+  /* CUPONS */
+  #screen-cupons { padding-bottom: 90px; }
+  .cupons-hero {
+    background: linear-gradient(135deg, var(--orange) 0%, #e08020 100%);
+    padding: 28px 24px; color: var(--white); text-align: center;
+  }
+  .cupons-hero h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .cupons-hero p { font-size: 13px; opacity: .9; }
+  .cupom-card {
+    margin: 0 16px 12px; background: var(--white);
+    border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow); border: 1px solid var(--gray-100);
+    display: flex;
+  }
+  .cupom-lado-esq {
+    width: 90px; background: var(--teal-light); display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+    padding: 16px 8px; flex-shrink: 0; position: relative;
+  }
+  .cupom-lado-esq::after {
+    content: ''; position: absolute; right: -8px; top: 50%;
+    transform: translateY(-50%); width: 16px; height: 16px;
+    background: var(--gray-100); border-radius: 50%;
+  }
+  .cupom-desconto { font-size: 22px; font-weight: 900; color: var(--teal); line-height: 1; }
+  .cupom-off { font-size: 11px; color: var(--teal); font-weight: 700; }
+  .cupom-loja-emoji { font-size: 24px; margin-bottom: 4px; }
+  .cupom-info { flex: 1; padding: 14px 16px; }
+  .cupom-loja { font-size: 11px; color: var(--teal); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .cupom-titulo { font-size: 14px; font-weight: 700; margin: 3px 0; }
+  .cupom-desc { font-size: 12px; color: var(--gray-500); }
+  .cupom-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+  .cupom-validade { font-size: 11px; color: var(--gray-400); }
+  .cupom-btn {
+    padding: 6px 14px; border-radius: 50px; border: none;
+    background: var(--teal); color: var(--white);
+    font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .cupom-btn:disabled { background: var(--gray-300); cursor: not-allowed; }
+  .cupom-btn.usado { background: var(--gray-200); color: var(--gray-500); }
+
+  /* MODAL CUPOM */
+  .modal-cupom-code {
+    background: var(--gray-100); border-radius: 8px;
+    padding: 16px; text-align: center; margin: 16px 0;
+    font-size: 24px; font-weight: 900; letter-spacing: 4px; color: var(--teal);
+    font-family: monospace;
+  }
+
+  /* HORÁRIOS */
+  .horario-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+  .horario-row:last-child { border-bottom: none; }
+  .horario-dia { font-size: 14px; color: var(--gray-700); }
+  .horario-hora { font-size: 14px; font-weight: 700; color: var(--gray-900); }
+  .horario-hoje { color: var(--teal); }
 
   /* BUTTONS */
   .btn {
@@ -10510,6 +10670,24 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
     </div>
     <div class="section-title">Ofertas de Hoje <a href="#" onclick="navTo('beneficios');return false">Ver todas</a></div>
     <div class="offers-scroll" id="offers-container"><div style="padding:8px 4px 16px;color:var(--gray-400);font-size:13px">Carregando...</div></div>
+    <!-- MINI BANNER 1 -->
+    <div id="mini-banner-1" style="margin:4px 0"></div>
+
+    <!-- EVENTOS -->
+    <div class="section-title" id="eventos-section-title" style="display:none">
+      Acontece no Guadix <a href="#" onclick="navTo('shopping');setShoppingTab('eventos');return false">Ver mais</a>
+    </div>
+    <div class="eventos-scroll" id="eventos-home"></div>
+
+    <!-- MINI BANNER 2 -->
+    <div id="mini-banner-2" style="margin:16px 0"></div>
+
+    <!-- LOJAS em destaque -->
+    <div class="section-title">
+      Lojas Parceiras <a href="#" onclick="navTo('shopping');return false">Ver todas</a>
+    </div>
+    <div style="display:flex;gap:10px;padding:0 16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch" id="lojas-destaque-home"></div>
+
     <div style="height:20px"></div>
   </div>
 
@@ -10643,13 +10821,177 @@ return { alignmentPattern: alignmentPattern, dimension: dimension };
     <div style="height:20px"></div>
   </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- ════════ SCREEN: SHOPPING ════════ -->
+  <div id="screen-shopping" class="screen">
+    <div class="topbar">
+      <img class="topbar-logo" src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
+      <div class="topbar-right">
+        <div class="avatar" id="shopping-avatar" onclick="navTo('perfil')">?</div>
+      </div>
+    </div>
+
+    <!-- Abas -->
+    <div class="shopping-tabs">
+      <button class="shopping-tab active" id="stab-lojas" onclick="setShoppingTab('lojas')">Lojas</button>
+      <button class="shopping-tab" id="stab-eventos" onclick="setShoppingTab('eventos')">Eventos</button>
+      <button class="shopping-tab" id="stab-mapa" onclick="setShoppingTab('mapa')">Mapa</button>
+      <button class="shopping-tab" id="stab-horarios" onclick="setShoppingTab('horarios')">Horários</button>
+      <button class="shopping-tab" id="stab-servicos" onclick="setShoppingTab('servicos')">Serviços</button>
+      <button class="shopping-tab" id="stab-comodidades" onclick="setShoppingTab('comodidades')">Comodidades</button>
+    </div>
+
+    <!-- LOJAS -->
+    <div id="stab-content-lojas">
+      <div class="lojas-categorias" id="cats-lojas">
+        <button class="cat-pill active" onclick="filtrarLojas('todos')">Todos</button>
+        <button class="cat-pill" onclick="filtrarLojas('alimentacao')">Alimentação</button>
+        <button class="cat-pill" onclick="filtrarLojas('beleza')">Beleza</button>
+        <button class="cat-pill" onclick="filtrarLojas('moda')">Moda</button>
+        <button class="cat-pill" onclick="filtrarLojas('saude')">Saúde</button>
+        <button class="cat-pill" onclick="filtrarLojas('servicos')">Serviços</button>
+        <button class="cat-pill" onclick="filtrarLojas('pet')">Pet</button>
+      </div>
+      <div class="lojas-grid" id="lojas-grid-shopping"></div>
+    </div>
+
+    <!-- EVENTOS -->
+    <div id="stab-content-eventos" style="display:none;padding:16px">
+      <div id="eventos-lista"></div>
+    </div>
+
+    <!-- MAPA -->
+    <div id="stab-content-mapa" style="display:none;padding:24px 16px;text-align:center">
+      <div style="background:var(--teal-light);border-radius:var(--radius);padding:32px;margin-bottom:16px">
+        <div style="font-size:48px;margin-bottom:12px">🗺️</div>
+        <div style="font-weight:700;font-size:16px;margin-bottom:8px">Mapa do Pátio Guadix</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-bottom:16px">Av. Juca Batista, 2600 — Zona Sul, Porto Alegre</div>
+        <a href="https://maps.google.com/?q=Pátio+Guadix+Porto+Alegre" target="_blank" class="btn btn-primary" style="display:inline-flex;text-decoration:none;padding:12px 24px">
+          Abrir no Google Maps
+        </a>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--gray-100);border-radius:var(--radius);padding:16px;text-align:left">
+        <div style="font-weight:700;margin-bottom:12px">Como chegar</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--gray-700)">
+          <div>🚗 <strong>De carro</strong> — Av. Juca Batista, 2600 — amplo estacionamento</div>
+          <div>🚌 <strong>Ônibus</strong> — Linhas T2, T3 pela Av. Juca Batista</div>
+          <div>🛵 <strong>Moto/Bicicleta</strong> — bicicletário disponível</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HORÁRIOS -->
+    <div id="stab-content-horarios" style="display:none;padding:16px">
+      <div style="background:var(--white);border:1px solid var(--gray-100);border-radius:var(--radius);padding:20px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:16px">Horário de Funcionamento</div>
+        <div class="horario-row"><span class="horario-dia">Segunda-feira</span><span class="horario-hora">10h às 22h</span></div>
+        <div class="horario-row"><span class="horario-dia">Terça-feira</span><span class="horario-hora">10h às 22h</span></div>
+        <div class="horario-row"><span class="horario-dia">Quarta-feira</span><span class="horario-hora">10h às 22h</span></div>
+        <div class="horario-row"><span class="horario-dia">Quinta-feira</span><span class="horario-hora">10h às 22h</span></div>
+        <div class="horario-row"><span class="horario-dia">Sexta-feira</span><span class="horario-hora">10h às 22h</span></div>
+        <div class="horario-row"><span class="horario-dia horario-hoje">Sábado</span><span class="horario-hora horario-hoje">10h às 22h</span></div>
+        <div class="horario-row"><span class="horario-dia">Domingo e Feriados</span><span class="horario-hora">12h às 20h</span></div>
+        <div style="margin-top:16px;padding:12px;background:var(--teal-light);border-radius:8px;font-size:12px;color:var(--teal-dark)">
+          ⚠️ Lojas âncora podem ter horários diferenciados
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVIÇOS -->
+    <div id="stab-content-servicos" style="display:none;padding:16px">
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div class="loja-item"><div class="loja-emoji" style="background:#e8f4fd">🏧</div><div class="loja-info"><strong>Caixas Eletrônicos</strong><span>Bradesco, Itaú, Banco do Brasil</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#fff0e8">💱</div><div class="loja-info"><strong>Casa de Câmbio</strong><span>Dólar, Euro e outras moedas</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#f0fff0">📮</div><div class="loja-info"><strong>Correios</strong><span>Envio e recebimento de encomendas</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#f5f0ff">🔧</div><div class="loja-info"><strong>Chaveiro / Assistência</strong><span>Supertec e BigKey</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#fff8e1">⚡</div><div class="loja-info"><strong>Eletroposto</strong><span>Carregamento para veículos elétricos</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#e8f7f7">🎰</div><div class="loja-info"><strong>Loterias</strong><span>Loterias Caixa</span></div></div>
+      </div>
+    </div>
+
+    <!-- COMODIDADES -->
+    <div id="stab-content-comodidades" style="display:none;padding:16px">
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div class="loja-item"><div class="loja-emoji" style="background:#e8f7f7">♿</div><div class="loja-info"><strong>Acessibilidade</strong><span>Rampas, elevadores e sanitários acessíveis</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#fff0f0">🚗</div><div class="loja-info"><strong>Estacionamento</strong><span>Coberto e descoberto, 24h</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#f0fff0">🍼</div><div class="loja-info"><strong>Fraldário</strong><span>Disponível nos banheiros masculino e feminino</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#fff8e1">🐾</div><div class="loja-info"><strong>Pet Friendly</strong><span>Animais de estimação bem-vindos</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#f5f0ff">📶</div><div class="loja-info"><strong>Wi-Fi Gratuito</strong><span>Rede Guadix_Free em todo o shopping</span></div></div>
+        <div class="loja-item"><div class="loja-emoji" style="background:#e8f4fd">🚿</div><div class="loja-info"><strong>Sanitários</strong><span>Em todos os pisos, com trocador</span></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════ SCREEN: CUPONS ════════ -->
+  <div id="screen-cupons" class="screen">
+    <div class="topbar">
+      <img class="topbar-logo" src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" style="height:36px;object-fit:contain" onerror="this.style.display='none'">
+      <div class="topbar-right">
+        <div class="avatar" id="cupons-avatar" onclick="navTo('perfil')">?</div>
+      </div>
+    </div>
+    <div class="cupons-hero">
+      <h2>Cupons de Desconto</h2>
+      <p>Ofertas exclusivas para membros do Clube Guadix</p>
+    </div>
+    <div style="padding:16px 0" id="cupons-lista">
+      <div style="text-align:center;padding:32px;color:var(--gray-400);font-size:13px">Carregando cupons...</div>
+    </div>
+  </div>
+
+  <!-- MODAL CUPOM RESGATADO -->
+  <div class="modal-overlay" id="modal-cupom">
+    <div class="modal-box" style="text-align:center">
+      <div class="modal-handle"></div>
+      <div style="font-size:40px;margin-bottom:8px">🎉</div>
+      <h3 style="margin-bottom:4px" id="modal-cupom-titulo">Cupom resgatado!</h3>
+      <p style="color:var(--gray-500);font-size:13px;margin-bottom:4px" id="modal-cupom-loja"></p>
+      <div class="modal-cupom-code" id="modal-cupom-code">GUADIX10</div>
+      <p style="font-size:12px;color:var(--gray-500);margin-bottom:20px">Apresente este código na loja para obter o desconto</p>
+      <button class="btn btn-primary" onclick="copiarCupom()">📋 Copiar código</button>
+      <button class="btn btn-ghost" style="margin-top:8px" onclick="closeModal('modal-cupom')">Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL EVENTO -->
+  <div class="modal-overlay" id="modal-evento">
+    <div class="modal-box">
+      <div class="modal-handle"></div>
+      <img id="modal-evento-img" style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:16px;display:none">
+      <div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:6px" id="modal-evento-data"></div>
+      <h3 id="modal-evento-titulo" style="margin-bottom:8px"></h3>
+      <p id="modal-evento-desc" style="font-size:14px;color:var(--gray-700);line-height:1.6;margin-bottom:20px"></p>
+      <div id="modal-evento-local" style="font-size:13px;color:var(--gray-500);margin-bottom:20px"></div>
+      <button class="btn btn-primary" onclick="closeModal('modal-evento')">Entendido!</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV — botão Nota elevado igual ao Multi -->
+  <!-- BOTTOM NAV — botão Nota elevado igual ao Multi -->
   <nav class="bottomnav">
-    <button class="nav-item active" id="nav-home" onclick="navTo('home')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>Início</button>
-    <button class="nav-item" id="nav-beneficios" onclick="navTo('beneficios')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></span>Benefícios</button>
-    <button class="nav-item" id="nav-nota" onclick="navTo('nota')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>Nota</button>
-    <button class="nav-item" id="nav-colecao" onclick="navTo('colecao')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 21 12 21 16 21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 4H4a2 2 0 0 0 0 4c0 5 3.5 7 8 7s8-2 8-7a2 2 0 0 0 0-4h-3"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg></span>Coleção</button>
-    <button class="nav-item" id="nav-perfil" onclick="navTo('perfil')"><span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Perfil</button>
+    <button class="nav-item active" id="nav-home" onclick="navTo('home')">
+      <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      Início
+    </button>
+    <button class="nav-item" id="nav-shopping" onclick="navTo('shopping')">
+      <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M3 9l2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"/><path d="M12 3v6"/></svg></span>
+      Shopping
+    </button>
+    <!-- BOTÃO NOTA ELEVADO -->
+    <button class="nav-item nav-nota-btn" id="nav-nota" onclick="navTo('nota')">
+      <div class="nav-nota-circle">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      Nota
+    </button>
+    <button class="nav-item" id="nav-cupons" onclick="navTo('cupons')">
+      <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg></span>
+      Cupons
+    </button>
+    <button class="nav-item" id="nav-perfil" onclick="navTo('perfil')">
+      <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      Perfil
+    </button>
   </nav>
 </div>
 
@@ -10769,6 +11111,8 @@ function navTo(screen) {
   if(screen==='colecao') loadColecao();
   if(screen==='beneficios') loadBeneficios();
   if(screen==='perfil') loadPerfil();
+  if(screen==='shopping') carregarShoppingScreen();
+  if(screen==='cupons') carregarCupons();
 }
 
 // ─── LOGIN TAB ───
@@ -11262,6 +11606,228 @@ function processarQRCode(url) {
     toast('QR Code lido mas chave inválida. Digite manualmente.','error');
     console.log('QR Code content:', url);
   }
+}
+
+// ─── SHOPPING ───
+let shoppingTabAtual = 'lojas';
+let todasLojasShop = [];
+
+function setShoppingTab(tab) {
+  shoppingTabAtual = tab;
+  document.querySelectorAll('.shopping-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('stab-'+tab)?.classList.add('active');
+  document.querySelectorAll('[id^="stab-content-"]').forEach(el => el.style.display='none');
+  const el = document.getElementById('stab-content-'+tab);
+  if(el) el.style.display='block';
+  if(tab==='lojas') renderLojasShop(todasLojasShop, 'todos');
+  if(tab==='eventos') carregarEventosShop();
+}
+
+async function carregarShoppingScreen() {
+  const ini = initials(currentUser?.nome||'?');
+  document.getElementById('shopping-avatar').textContent = ini;
+  try {
+    todasLojasShop = await sb('lojas?select=*&ativo=eq.true&order=nome');
+    renderLojasShop(todasLojasShop, 'todos');
+  } catch(e) {}
+}
+
+function renderLojasShop(lojas, cat) {
+  const filtradas = cat==='todos' ? lojas : lojas.filter(l=>l.categoria===cat);
+  document.querySelectorAll('.cat-pill').forEach(p => {
+    p.classList.toggle('active', p.onclick?.toString().includes("'"+cat+"'"));
+  });
+  const grid = document.getElementById('lojas-grid-shopping');
+  if(!grid) return;
+  if(!filtradas.length) { grid.innerHTML='<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;grid-column:1/-1">Nenhuma loja nesta categoria</div>'; return; }
+  grid.innerHTML = filtradas.map(l => {
+    const em = getEmoji(l.nome);
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div class="loja-card-grid">
+        <span class="loja-card-grid-emoji">${em}</span>
+      </div>
+      <div class="loja-card-nome">${l.nome.split(' ')[0]}</div>
+    </div>`;
+  }).join('');
+}
+
+function filtrarLojas(cat) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  renderLojasShop(todasLojasShop, cat);
+}
+
+// ─── EVENTOS ───
+async function carregarEventos() {
+  try {
+    const eventos = await sb('eventos?ativo=eq.true&select=*&order=data_inicio&limit=6');
+    renderEventosHome(eventos||[]);
+    renderEventosShop(eventos||[]);
+  } catch(e) {
+    // Sem tabela de eventos ainda — mostra vazio
+    renderEventosHome([]);
+  }
+}
+
+function renderEventosHome(eventos) {
+  const container = document.getElementById('eventos-home');
+  const title = document.getElementById('eventos-section-title');
+  if(!eventos.length) { if(title) title.style.display='none'; return; }
+  if(title) title.style.display='flex';
+  container.innerHTML = eventos.map(e => `
+    <div class="evento-card" onclick="abrirEvento(${JSON.stringify(e).replace(/"/g,"'")})">
+      ${e.imagem_url
+        ? `<img class="evento-img" src="${e.imagem_url}" loading="lazy" onerror="this.outerHTML='<div class=evento-img-ph>🎭</div>'">`
+        : '<div class="evento-img-ph">🎭</div>'
+      }
+      <div class="evento-info">
+        ${e.data_inicio ? `<div class="evento-data">${new Date(e.data_inicio).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</div>` : ''}
+        <div class="evento-nome">${e.titulo}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function carregarEventosShop() {
+  const container = document.getElementById('eventos-lista');
+  if(!container) return;
+  try {
+    const eventos = await sb('eventos?ativo=eq.true&select=*&order=data_inicio');
+    if(!eventos?.length) { container.innerHTML='<div style="text-align:center;padding:32px;color:var(--gray-400);font-size:13px">Nenhum evento programado</div>'; return; }
+    container.innerHTML = eventos.map(e => `
+      <div style="background:var(--white);border:1px solid var(--gray-100);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;cursor:pointer" onclick="abrirEvento(${JSON.stringify(e).replace(/"/g,"'")})">
+        ${e.imagem_url ? `<img src="${e.imagem_url}" style="width:100%;height:160px;object-fit:cover;display:block" loading="lazy">` : '<div style="height:100px;background:linear-gradient(135deg,var(--teal),var(--teal-dark));display:flex;align-items:center;justify-content:center;font-size:48px">🎭</div>'}
+        <div style="padding:14px">
+          ${e.data_inicio ? `<div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:4px">${new Date(e.data_inicio).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'})}</div>` : ''}
+          <div style="font-size:16px;font-weight:700;margin-bottom:4px">${e.titulo}</div>
+          <div style="font-size:13px;color:var(--gray-500)">${e.descricao||''}</div>
+          ${e.local ? `<div style="font-size:12px;color:var(--gray-400);margin-top:6px">📍 ${e.local}</div>` : ''}
+        </div>
+      </div>`).join('');
+  } catch(e) { container.innerHTML='<div style="text-align:center;padding:32px;color:var(--gray-400);font-size:13px">Eventos em breve</div>'; }
+}
+
+function abrirEvento(e) {
+  document.getElementById('modal-evento-titulo').textContent = e.titulo||'';
+  document.getElementById('modal-evento-desc').textContent = e.descricao||'';
+  document.getElementById('modal-evento-data').textContent = e.data_inicio
+    ? new Date(e.data_inicio).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})
+    : '';
+  document.getElementById('modal-evento-local').textContent = e.local ? '📍 '+e.local : '';
+  const img = document.getElementById('modal-evento-img');
+  if(e.imagem_url) { img.src=e.imagem_url; img.style.display='block'; } else { img.style.display='none'; }
+  openModal('modal-evento');
+}
+
+// ─── MINI BANNERS ───
+async function carregarBanners() {
+  try {
+    const banners = await sb('banners?ativo=eq.true&select=*&order=ordem&limit=4');
+    if(!banners?.length) return;
+    // Banner 1 — depois das ofertas
+    if(banners[0]) renderMiniBanner('mini-banner-1', banners[0]);
+    // Banner 2 — depois dos eventos
+    if(banners[1]) renderMiniBanner('mini-banner-2', banners[1]);
+  } catch(e) { /* sem tabela ainda */ }
+}
+
+function renderMiniBanner(containerId, banner) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const cores = ['var(--teal)','var(--orange)','#6c3fdb','#e84b3c'];
+  const cor = banner.cor || cores[0];
+  el.innerHTML = `
+    <div class="mini-banner" onclick="${banner.link_url?`window.open('${banner.link_url}','_blank')`:''}">
+      ${banner.imagem_url
+        ? `<img src="${banner.imagem_url}" alt="${banner.titulo||''}" onerror="this.parentElement.innerHTML=''">`
+        : `<div class="mini-banner-ph" style="background:${cor};color:#fff">
+            <div class="mini-banner-text">
+              <h3>${banner.titulo||''}</h3>
+              <p>${banner.descricao||''}</p>
+            </div>
+            ${banner.botao_texto?`<button class="mini-banner-btn">${banner.botao_texto}</button>`:''}
+          </div>`
+      }
+    </div>`;
+}
+
+// ─── LOJAS DESTAQUE HOME ───
+async function carregarLojasDestaqueHome() {
+  try {
+    const lojas = await sb('lojas?ativo=eq.true&select=*&order=nome&limit=8');
+    const el = document.getElementById('lojas-destaque-home');
+    if(!el||!lojas?.length) return;
+    el.innerHTML = lojas.map(l => `
+      <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer" onclick="navTo('shopping')">
+        <div style="width:60px;height:60px;border-radius:14px;background:var(--gray-100);border:1px solid var(--gray-200);display:flex;align-items:center;justify-content:center;font-size:26px">
+          ${getEmoji(l.nome)}
+        </div>
+        <div style="font-size:10px;font-weight:600;color:var(--gray-700);text-align:center;width:64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.nome.split(' ')[0]}</div>
+      </div>`).join('');
+    el.style.paddingBottom = '16px';
+  } catch(e) {}
+}
+
+// ─── CUPONS ───
+async function carregarCupons() {
+  if(!currentUser) return;
+  const ini = initials(currentUser?.nome||'?');
+  document.getElementById('cupons-avatar').textContent = ini;
+  const container = document.getElementById('cupons-lista');
+  try {
+    const [cupons, resgates] = await Promise.all([
+      sb('cupons?ativo=eq.true&select=*,lojas(nome)&order=created_at.desc'),
+      sb('resgates_cupons?cliente_id=eq.'+currentUser.id+'&select=cupom_id,status')
+    ]);
+    const resgatesIds = new Set((resgates||[]).filter(r=>r.status!=='expirado').map(r=>r.cupom_id));
+    if(!cupons?.length) {
+      container.innerHTML='<div style="text-align:center;padding:48px 24px"><div style="font-size:48px;margin-bottom:12px">🎟️</div><p style="color:var(--gray-500);font-size:14px">Nenhum cupom disponível no momento</p></div>';
+      return;
+    }
+    container.innerHTML = cupons.map(cu => {
+      const usado = resgatesIds.has(cu.id);
+      const em = getEmoji(cu.lojas?.nome||'');
+      const vencido = cu.validade && new Date(cu.validade) < new Date();
+      return `<div class="cupom-card" style="opacity:${vencido?'.5':'1'}">
+        <div class="cupom-lado-esq">
+          <div class="cupom-loja-emoji">${em}</div>
+          <div class="cupom-desconto">${cu.desconto||'OFF'}</div>
+          <div class="cupom-off">${cu.tipo==='percent'?'%':'R$'}</div>
+        </div>
+        <div class="cupom-info">
+          <div class="cupom-loja">${cu.lojas?.nome||'Loja parceira'}</div>
+          <div class="cupom-titulo">${cu.titulo||'Cupom de desconto'}</div>
+          <div class="cupom-desc">${cu.descricao||''}</div>
+          <div class="cupom-footer">
+            <span class="cupom-validade">${cu.validade?'até '+new Date(cu.validade).toLocaleDateString('pt-BR'):''}</span>
+            <button class="cupom-btn ${usado?'usado':''}" ${usado||vencido?'disabled':''} onclick="resgatarCupom('${cu.id}','${cu.codigo||cu.id.substring(0,8).toUpperCase()}','${cu.titulo||''}','${cu.lojas?.nome||''}')">
+              ${vencido?'Expirado':usado?'Usado':'Resgatar'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    container.innerHTML='<div style="text-align:center;padding:32px;color:var(--gray-400);font-size:13px">Cupons em breve</div>';
+  }
+}
+
+async function resgatarCupom(id, codigo, titulo, loja) {
+  if(!currentUser) return;
+  try {
+    await sb('resgates_cupons','POST',{
+      cliente_id: currentUser.id, cupom_id: id, status: 'resgatado'
+    });
+  } catch(e) { /* pode já ter resgatado */ }
+  document.getElementById('modal-cupom-titulo').textContent = titulo || 'Cupom resgatado!';
+  document.getElementById('modal-cupom-loja').textContent = loja;
+  document.getElementById('modal-cupom-code').textContent = codigo;
+  openModal('modal-cupom');
+  setTimeout(() => carregarCupons(), 500);
+}
+
+function copiarCupom() {
+  const code = document.getElementById('modal-cupom-code').textContent;
+  navigator.clipboard?.writeText(code).then(()=>toast('Código copiado!','success')).catch(()=>toast('Código: '+code,''));
 }
 
 // ─── SESSION RESTORE ───
