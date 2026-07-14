@@ -11672,11 +11672,22 @@ function atualizarNivel(pts) {
 }
 
 // ─── SELECIONADOS PARA VOCÊ ───
+const SELECIONADOS_FIXOS = [
+  { id:'s1', titulo:'Promoção de Carnes — Terça Feira', descricao:'Cortes especiais com preços exclusivos toda terça', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/sel_carnes.jpg', loja_nome:'Bistek Supermercados', pontos_bonus:50 },
+  { id:'s2', titulo:'Puff Estofado por R$29,99', descricao:'Arraial de Ofertas — De R$39 por R$29,99', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/sel_puff.jpg', loja_nome:'Casa Maria', pontos_bonus:30 },
+  { id:'s3', titulo:'Álbum Copa 2026 — 100% Atualizado!', descricao:'Kit de Atualização com 120 cromos oficiais Panini ⚽', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/sel_copa.jpg', loja_nome:'Momentus Tabacaria', pontos_bonus:20 },
+];
+
 async function carregarSelecionados() {
+  let ofertas = SELECIONADOS_FIXOS;
   try {
-    const ofertas = await sb('ofertas?ativa=eq.true&select=*,lojas(nome)&order=pontos_bonus.desc&limit=6');
-    renderSelecionados(ofertas||[]);
-  } catch(e) { renderSelecionados([]); }
+    const dbOfertas = await sb('ofertas?ativa=eq.true&select=*,lojas(nome)&order=pontos_bonus.desc&limit=6');
+    if(dbOfertas && dbOfertas.length) {
+      const mapped = dbOfertas.map(o=>({...o, loja_nome:o.lojas?.nome||''}));
+      ofertas = [...mapped, ...SELECIONADOS_FIXOS].slice(0,6);
+    }
+  } catch(e) {}
+  renderSelecionados(ofertas);
 }
 
 function renderSelecionados(ofertas) {
@@ -11684,7 +11695,7 @@ function renderSelecionados(ofertas) {
   if(!el) return;
   if(!ofertas.length) { el.innerHTML=''; return; }
   el.innerHTML = ofertas.map(o => {
-    const sn = o.lojas?.nome||'Loja';
+    const sn = o.loja_nome || o.lojas?.nome||'Loja';
     const em = getEmoji(sn);
     return `<div style="min-width:160px;flex-shrink:0;background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--gray-100);cursor:pointer">
       ${o.imagem_url
@@ -11732,11 +11743,24 @@ function renderLojasShop(lojas, cat) {
   const grid = document.getElementById('lojas-grid-shopping');
   if(!grid) return;
   if(!filtradas.length) { grid.innerHTML='<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;grid-column:1/-1">Nenhuma loja nesta categoria</div>'; return; }
+  // Mapa de logos por nome
+  const LOGO_MAP = {
+    'Bistek':'https://bernardocassel.github.io/patioguadix/assets/logo_bistek.png','QuieroCafé':'https://bernardocassel.github.io/patioguadix/assets/logo_quierocafe.png',
+    "McDonald's":'https://bernardocassel.github.io/patioguadix/assets/logo_mcdonalds.png','CacauShow':'https://bernardocassel.github.io/patioguadix/assets/logo_cacaushow.png',
+    'Casa Maria':'https://bernardocassel.github.io/patioguadix/assets/logo_casamaria.png','Momentus Tabacaria':'https://bernardocassel.github.io/patioguadix/assets/logo_momentus.png',
+    'Natura':'https://bernardocassel.github.io/patioguadix/assets/logo_natura.png','Avon':'https://bernardocassel.github.io/patioguadix/assets/logo_avon.png',
+    'Bellafast Salão':'https://bernardocassel.github.io/patioguadix/assets/logo_bellafast.jpg','BigKey Chaveiro':'https://bernardocassel.github.io/patioguadix/assets/logo_bigkey.png',
+    'Supertec Assistência':'https://bernardocassel.github.io/patioguadix/assets/logo_supertec.png','Agropet Patas e Garras':'https://bernardocassel.github.io/patioguadix/assets/logo_patas.png',
+  };
   grid.innerHTML = filtradas.map(l => {
+    const logoUrl = LOGO_MAP[l.nome];
     const em = getEmoji(l.nome);
     return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">
       <div class="loja-card-grid">
-        <span class="loja-card-grid-emoji">${em}</span>
+        ${logoUrl
+          ? `<img src="${logoUrl}" alt="${l.nome}" style="width:80%;height:80%;object-fit:contain" loading="lazy" onerror="this.outerHTML='<span class=loja-card-grid-emoji>${em}</span>'">`
+          : `<span class="loja-card-grid-emoji">${em}</span>`
+        }
       </div>
       <div class="loja-card-nome">${l.nome.split(' ')[0]}</div>
     </div>`;
@@ -11750,15 +11774,21 @@ function filtrarLojas(cat) {
 }
 
 // ─── EVENTOS ───
+const EVENTOS_FIXOS = [
+  { id:'1', titulo:'Aniversário Pátio Guadix 🎂', descricao:'Comemore conosco! Atrações especiais, brindes e muito mais para toda a família.', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/ev_aniversario.jpg', data_inicio:'2026-11-15T15:30:00', local:'Pátio Guadix — Área Central', ativo:true },
+  { id:'2', titulo:'Black Friday no Pátio Guadix 🛍️', descricao:'As melhores ofertas do ano em todas as lojas parceiras. Não perca!', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/ev_blackfriday.png', data_inicio:'2026-11-27T09:00:00', local:'Todas as lojas participantes', ativo:true },
+  { id:'3', titulo:'Dia das Crianças no Pátio Guadix 🎈', descricao:'Muitas atrações para as crianças: show, brinquedos e surpresas especiais!', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/ev_criancas.jpg', data_inicio:'2026-10-12T10:30:00', local:'Praça Central — Pátio Guadix', ativo:true },
+  { id:'4', titulo:'Dia dos Pais — Churrasco & Carros Antigos 🚗🥩', descricao:'Evento com Chef Paulo Fumens: churrasco especial, encontro de carros antigos e atrações para toda a família!', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/ev_paisdias.jpg', data_inicio:'2026-08-09T11:00:00', local:'Estacionamento Principal', ativo:true },
+];
+
 async function carregarEventos() {
+  let eventos = EVENTOS_FIXOS;
   try {
-    const eventos = await sb('eventos?ativo=eq.true&select=*&order=data_inicio&limit=6');
-    renderEventosHome(eventos||[]);
-    renderEventosShop(eventos||[]);
-  } catch(e) {
-    // Sem tabela de eventos ainda — mostra vazio
-    renderEventosHome([]);
-  }
+    const dbEventos = await sb('eventos?ativo=eq.true&select=*&order=data_inicio&limit=6');
+    if(dbEventos && dbEventos.length) eventos = [...dbEventos, ...EVENTOS_FIXOS];
+  } catch(e) {}
+  renderEventosHome(eventos);
+  renderEventosShop(eventos);
 }
 
 function renderEventosHome(eventos) {
@@ -11811,15 +11841,19 @@ function abrirEvento(e) {
 }
 
 // ─── MINI BANNERS ───
+const BANNERS_FIXOS = [
+  { id:'b1', imagem_url:'https://bernardocassel.github.io/patioguadix/assets/banner_quierocafe.png', link_url:'', ordem:1 },
+  { id:'b2', titulo:'Ganhe mais pontos!', descricao:'Compras nas lojas parceiras valem o dobro neste mês!', botao_texto:'SAIBA MAIS', cor:'#1AAFA8', ordem:2 },
+];
+
 async function carregarBanners() {
+  let banners = BANNERS_FIXOS;
   try {
-    const banners = await sb('banners?ativo=eq.true&select=*&order=ordem&limit=4');
-    if(!banners?.length) return;
-    // Banner 1 — depois das ofertas
-    if(banners[0]) renderMiniBanner('mini-banner-1', banners[0]);
-    // Banner 2 — depois dos eventos
-    if(banners[1]) renderMiniBanner('mini-banner-2', banners[1]);
-  } catch(e) { /* sem tabela ainda */ }
+    const dbBanners = await sb('banners?ativo=eq.true&select=*&order=ordem&limit=4');
+    if(dbBanners && dbBanners.length) banners = dbBanners;
+  } catch(e) {}
+  if(banners[0]) renderMiniBanner('mini-banner-1', banners[0]);
+  if(banners[1]) renderMiniBanner('mini-banner-2', banners[1]);
 }
 
 function renderMiniBanner(containerId, banner) {
@@ -11843,20 +11877,32 @@ function renderMiniBanner(containerId, banner) {
 }
 
 // ─── LOJAS DESTAQUE HOME ───
+const LOJAS_LOGOS = [
+  { nome:'Bistek', img:'https://bernardocassel.github.io/patioguadix/assets/logo_bistek.png' },
+  { nome:'QuieroCafé', img:'https://bernardocassel.github.io/patioguadix/assets/logo_quierocafe.png' },
+  { nome:"McDonald's", img:'https://bernardocassel.github.io/patioguadix/assets/logo_mcdonalds.png' },
+  { nome:'Cacau Show', img:'https://bernardocassel.github.io/patioguadix/assets/logo_cacaushow.png' },
+  { nome:'Casa Maria', img:'https://bernardocassel.github.io/patioguadix/assets/logo_casamaria.png' },
+  { nome:'Momentus', img:'https://bernardocassel.github.io/patioguadix/assets/logo_momentus.png' },
+  { nome:'Natura', img:'https://bernardocassel.github.io/patioguadix/assets/logo_natura.png' },
+  { nome:'Avon', img:'https://bernardocassel.github.io/patioguadix/assets/logo_avon.png' },
+  { nome:'Bella Fast', img:'https://bernardocassel.github.io/patioguadix/assets/logo_bellafast.jpg' },
+  { nome:'BigKey', img:'https://bernardocassel.github.io/patioguadix/assets/logo_bigkey.png' },
+  { nome:'Super Tec', img:'https://bernardocassel.github.io/patioguadix/assets/logo_supertec.png' },
+  { nome:'Patas & Garras', img:'https://bernardocassel.github.io/patioguadix/assets/logo_patas.png' },
+];
+
 async function carregarLojasDestaqueHome() {
-  try {
-    const lojas = await sb('lojas?ativo=eq.true&select=*&order=nome&limit=8');
-    const el = document.getElementById('lojas-destaque-home');
-    if(!el||!lojas?.length) return;
-    el.innerHTML = lojas.map(l => `
-      <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer" onclick="navTo('shopping')">
-        <div style="width:60px;height:60px;border-radius:14px;background:var(--gray-100);border:1px solid var(--gray-200);display:flex;align-items:center;justify-content:center;font-size:26px">
-          ${getEmoji(l.nome)}
-        </div>
-        <div style="font-size:10px;font-weight:600;color:var(--gray-700);text-align:center;width:64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.nome.split(' ')[0]}</div>
-      </div>`).join('');
-    el.style.paddingBottom = '16px';
-  } catch(e) {}
+  const el = document.getElementById('lojas-destaque-home');
+  if(!el) return;
+  el.innerHTML = LOJAS_LOGOS.map(l => `
+    <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer" onclick="navTo('shopping')">
+      <div style="width:64px;height:64px;border-radius:14px;background:#fff;border:1px solid var(--gray-200);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px">
+        <img src="${l.img}" alt="${l.nome}" style="width:100%;height:100%;object-fit:contain" loading="lazy" onerror="this.outerHTML='<span style=font-size:24px>${getEmoji(l.nome)}</span>'">
+      </div>
+      <div style="font-size:10px;font-weight:600;color:var(--gray-700);text-align:center;width:68px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.nome}</div>
+    </div>`).join('');
+  el.style.paddingBottom = '16px';
 }
 
 // ─── CUPONS ───
