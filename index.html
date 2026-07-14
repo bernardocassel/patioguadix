@@ -11679,15 +11679,16 @@ const SELECIONADOS_FIXOS = [
 ];
 
 async function carregarSelecionados() {
-  let ofertas = SELECIONADOS_FIXOS;
+  // Renderiza imediatamente com dados fixos
+  renderSelecionados(SELECIONADOS_FIXOS);
+  // Enriquece com banco em background
   try {
     const dbOfertas = await sb('ofertas?ativa=eq.true&select=*,lojas(nome)&order=pontos_bonus.desc&limit=6');
     if(dbOfertas && dbOfertas.length) {
       const mapped = dbOfertas.map(o=>({...o, loja_nome:o.lojas?.nome||''}));
-      ofertas = [...mapped, ...SELECIONADOS_FIXOS].slice(0,6);
+      renderSelecionados([...mapped, ...SELECIONADOS_FIXOS].slice(0,6));
     }
   } catch(e) {}
-  renderSelecionados(ofertas);
 }
 
 function renderSelecionados(ofertas) {
@@ -11729,10 +11730,15 @@ function setShoppingTab(tab) {
 async function carregarShoppingScreen() {
   const ini = initials(currentUser?.nome||'?');
   document.getElementById('shopping-avatar').textContent = ini;
+  // Usa lojas do LOGO_URLS para evitar duplicatas do banco
+  todasLojasShop = Object.keys(LOGO_URLS)
+    .filter((n,i,arr) => arr.findIndex(x => x.split(' ')[0]===n.split(' ')[0]) === i)
+    .map(nome => ({ nome, categoria: 'todos', ativo: true }));
   try {
-    todasLojasShop = await sb('lojas?select=*&ativo=eq.true&order=nome');
-    renderLojasShop(todasLojasShop, 'todos');
+    const dbLojas = await sb('lojas?select=*&ativo=eq.true&order=nome');
+    if(dbLojas?.length) todasLojasShop = dbLojas;
   } catch(e) {}
+  renderLojasShop(todasLojasShop, 'todos');
 }
 
 function renderLojasShop(lojas, cat) {
@@ -11743,17 +11749,8 @@ function renderLojasShop(lojas, cat) {
   const grid = document.getElementById('lojas-grid-shopping');
   if(!grid) return;
   if(!filtradas.length) { grid.innerHTML='<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px;grid-column:1/-1">Nenhuma loja nesta categoria</div>'; return; }
-  // Mapa de logos por nome
-  const LOGO_MAP = {
-    'Bistek':'https://bernardocassel.github.io/patioguadix/logo_bistek.png','QuieroCafé':'https://bernardocassel.github.io/patioguadix/logo_quierocafe.png',
-    "McDonald's":'https://bernardocassel.github.io/patioguadix/logo_mcdonalds.png','CacauShow':'https://bernardocassel.github.io/patioguadix/logo_cacaushow.png',
-    'Casa Maria':'https://bernardocassel.github.io/patioguadix/logo_casamaria.png','Momentus Tabacaria':'https://bernardocassel.github.io/patioguadix/logo_momentus.png',
-    'Natura':'https://bernardocassel.github.io/patioguadix/logo_natura.png','Avon':'https://bernardocassel.github.io/patioguadix/logo_avon.png',
-    'Bellafast Salão':'https://bernardocassel.github.io/patioguadix/logo_bellafast.jpg','BigKey Chaveiro':'https://bernardocassel.github.io/patioguadix/logo_bigkey.png',
-    'Supertec Assistência':'https://bernardocassel.github.io/patioguadix/logo_supertec.png','Agropet Patas e Garras':'https://bernardocassel.github.io/patioguadix/logo_patas.png',
-  };
   grid.innerHTML = filtradas.map(l => {
-    const logoUrl = LOGO_MAP[l.nome];
+    const logoUrl = LOGO_URLS[l.nome] || LOGO_URLS[l.nome.split(' ')[0]];
     const em = getEmoji(l.nome);
     return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">
       <div class="loja-card-grid">
@@ -11782,13 +11779,17 @@ const EVENTOS_FIXOS = [
 ];
 
 async function carregarEventos() {
-  let eventos = EVENTOS_FIXOS;
+  // Carrega imediatamente com dados fixos
+  renderEventosHome(EVENTOS_FIXOS);
+  renderEventosShop(EVENTOS_FIXOS);
+  // Tenta enriquecer com banco em background
   try {
     const dbEventos = await sb('eventos?ativo=eq.true&select=*&order=data_inicio&limit=6');
-    if(dbEventos && dbEventos.length) eventos = [...dbEventos, ...EVENTOS_FIXOS];
+    if(dbEventos && dbEventos.length) {
+      renderEventosHome([...dbEventos, ...EVENTOS_FIXOS]);
+      renderEventosShop([...dbEventos, ...EVENTOS_FIXOS]);
+    }
   } catch(e) {}
-  renderEventosHome(eventos);
-  renderEventosShop(eventos);
 }
 
 function renderEventosHome(eventos) {
@@ -11847,13 +11848,16 @@ const BANNERS_FIXOS = [
 ];
 
 async function carregarBanners() {
-  let banners = BANNERS_FIXOS;
+  // Renderiza imediatamente
+  if(BANNERS_FIXOS[0]) renderMiniBanner('mini-banner-1', BANNERS_FIXOS[0]);
+  if(BANNERS_FIXOS[1]) renderMiniBanner('mini-banner-2', BANNERS_FIXOS[1]);
   try {
     const dbBanners = await sb('banners?ativo=eq.true&select=*&order=ordem&limit=4');
-    if(dbBanners && dbBanners.length) banners = dbBanners;
+    if(dbBanners && dbBanners.length) {
+      if(dbBanners[0]) renderMiniBanner('mini-banner-1', dbBanners[0]);
+      if(dbBanners[1]) renderMiniBanner('mini-banner-2', dbBanners[1]);
+    }
   } catch(e) {}
-  if(banners[0]) renderMiniBanner('mini-banner-1', banners[0]);
-  if(banners[1]) renderMiniBanner('mini-banner-2', banners[1]);
 }
 
 function renderMiniBanner(containerId, banner) {
@@ -11877,19 +11881,46 @@ function renderMiniBanner(containerId, banner) {
 }
 
 // ─── LOJAS DESTAQUE HOME ───
+// Mapa global de logos (usado em home E shopping)
+const LOGO_URLS = {
+  'Bistek': 'https://bernardocassel.github.io/patioguadix/logo_bistek.png',
+  'Bistek Supermercados': 'https://bernardocassel.github.io/patioguadix/logo_bistek.png',
+  'QuieroCafé': 'https://bernardocassel.github.io/patioguadix/logo_quierocafe.png',
+  "McDonald's": 'https://bernardocassel.github.io/patioguadix/logo_mcdonalds.png',
+  'CacauShow': 'https://bernardocassel.github.io/patioguadix/logo_cacaushow.png',
+  'Cacau Show': 'https://bernardocassel.github.io/patioguadix/logo_cacaushow.png',
+  'Casa Maria': 'https://bernardocassel.github.io/patioguadix/logo_casamaria.png',
+  'Momentus Tabacaria': 'https://bernardocassel.github.io/patioguadix/logo_momentus.png',
+  'Momentus': 'https://bernardocassel.github.io/patioguadix/logo_momentus.png',
+  'Natura': 'https://bernardocassel.github.io/patioguadix/logo_natura.png',
+  'Avon': 'https://bernardocassel.github.io/patioguadix/logo_avon.png',
+  'Bellafast Salão': 'https://bernardocassel.github.io/patioguadix/logo_bellafast.jpg',
+  'Bella Fast': 'https://bernardocassel.github.io/patioguadix/logo_bellafast.jpg',
+  'BigKey Chaveiro': 'https://bernardocassel.github.io/patioguadix/logo_bigkey.png',
+  'BigKey': 'https://bernardocassel.github.io/patioguadix/logo_bigkey.png',
+  'Supertec Assistência': 'https://bernardocassel.github.io/patioguadix/logo_supertec.png',
+  'Super Tec': 'https://bernardocassel.github.io/patioguadix/logo_supertec.png',
+  'Agropet Patas e Garras': 'https://bernardocassel.github.io/patioguadix/logo_patas.png',
+  'Patas & Garras': 'https://bernardocassel.github.io/patioguadix/logo_patas.png',
+  'Farmácia São João': 'https://bernardocassel.github.io/patioguadix/logo_farmaciasaojoao.png',
+  'Chuá Lavanderia': 'https://bernardocassel.github.io/patioguadix/logo_chua.png',
+};
+
 const LOJAS_LOGOS = [
-  { nome:'Bistek', img:'https://bernardocassel.github.io/patioguadix/logo_bistek.png' },
+  { nome:'Bistek Supermercados', img:'https://bernardocassel.github.io/patioguadix/logo_bistek.png' },
   { nome:'QuieroCafé', img:'https://bernardocassel.github.io/patioguadix/logo_quierocafe.png' },
   { nome:"McDonald's", img:'https://bernardocassel.github.io/patioguadix/logo_mcdonalds.png' },
-  { nome:'Cacau Show', img:'https://bernardocassel.github.io/patioguadix/logo_cacaushow.png' },
+  { nome:'CacauShow', img:'https://bernardocassel.github.io/patioguadix/logo_cacaushow.png' },
   { nome:'Casa Maria', img:'https://bernardocassel.github.io/patioguadix/logo_casamaria.png' },
-  { nome:'Momentus', img:'https://bernardocassel.github.io/patioguadix/logo_momentus.png' },
+  { nome:'Momentus Tabacaria', img:'https://bernardocassel.github.io/patioguadix/logo_momentus.png' },
   { nome:'Natura', img:'https://bernardocassel.github.io/patioguadix/logo_natura.png' },
   { nome:'Avon', img:'https://bernardocassel.github.io/patioguadix/logo_avon.png' },
-  { nome:'Bella Fast', img:'https://bernardocassel.github.io/patioguadix/logo_bellafast.jpg' },
-  { nome:'BigKey', img:'https://bernardocassel.github.io/patioguadix/logo_bigkey.png' },
-  { nome:'Super Tec', img:'https://bernardocassel.github.io/patioguadix/logo_supertec.png' },
-  { nome:'Patas & Garras', img:'https://bernardocassel.github.io/patioguadix/logo_patas.png' },
+  { nome:'Bellafast Salão', img:'https://bernardocassel.github.io/patioguadix/logo_bellafast.jpg' },
+  { nome:'BigKey Chaveiro', img:'https://bernardocassel.github.io/patioguadix/logo_bigkey.png' },
+  { nome:'Supertec Assistência', img:'https://bernardocassel.github.io/patioguadix/logo_supertec.png' },
+  { nome:'Agropet Patas e Garras', img:'https://bernardocassel.github.io/patioguadix/logo_patas.png' },
+  { nome:'Farmácia São João', img:'https://bernardocassel.github.io/patioguadix/logo_farmaciasaojoao.png' },
+  { nome:'Chuá Lavanderia', img:'https://bernardocassel.github.io/patioguadix/logo_chua.png' },
 ];
 
 async function carregarLojasDestaqueHome() {
@@ -11897,10 +11928,11 @@ async function carregarLojasDestaqueHome() {
   if(!el) return;
   el.innerHTML = LOJAS_LOGOS.map(l => `
     <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer" onclick="navTo('shopping')">
-      <div style="width:64px;height:64px;border-radius:14px;background:#fff;border:1px solid var(--gray-200);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px">
-        <img src="${l.img}" alt="${l.nome}" style="width:100%;height:100%;object-fit:contain" loading="lazy" onerror="this.outerHTML='<span style=font-size:24px>${getEmoji(l.nome)}</span>'">
+      <div style="width:64px;height:64px;border-radius:14px;background:#fff;border:1px solid var(--gray-200);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px">
+        <img src="${l.img}" alt="${l.nome}" style="width:100%;height:100%;object-fit:contain" loading="lazy"
+          onerror="this.parentElement.innerHTML='<span style=font-size:26px>${getEmoji(l.nome)}</span>'">
       </div>
-      <div style="font-size:10px;font-weight:600;color:var(--gray-700);text-align:center;width:68px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.nome}</div>
+      <div style="font-size:10px;font-weight:600;color:var(--gray-700);text-align:center;width:68px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.nome.split(' ')[0]}</div>
     </div>`).join('');
   el.style.paddingBottom = '16px';
 }
