@@ -93,9 +93,24 @@ Deno.serve(async (req) => {
     // CNPJ: SEFAZ > chave
     const cnpjFinal = sefaz.cnpj || cnpjChave
 
-    // Busca loja pelo CNPJ
+    // ── Valida se o CNPJ é de uma loja parceira ──
     const { data: loja } = await supabase
-      .from('lojas').select('id, nome').eq('cnpj', cnpjFinal).maybeSingle()
+      .from('lojas')
+      .select('id, nome, cnpj')
+      .eq('cnpj', cnpjFinal)
+      .eq('ativo', true)
+      .maybeSingle()
+
+    if (!loja) {
+      return new Response(
+        JSON.stringify({
+          error: 'Esta nota não é de uma loja parceira do Pátio Guadix. Apenas compras nas lojas participantes geram pontos.',
+          cnpj: cnpjFinal,
+          lojas_participantes: true
+        }),
+        { status: 422, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
 
     // Data emissão da chave: AAMM = posição 2-6
     const ano = '20' + aamm.substring(0,2)
