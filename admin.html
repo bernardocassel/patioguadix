@@ -19,7 +19,7 @@
   .sidebar {
     position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
     background: var(--gray-900); color: var(--white);
-    display: flex; flex-direction: column; z-index: 100;
+    display: flex; flex-direction: column; z-index: 100; overflow-y: auto;
   }
   .sidebar-logo {
     padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.1);
@@ -119,6 +119,7 @@
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,.5);
     z-index: 500; display: none; align-items: center; justify-content: center;
+    padding: 20px;
   }
   .modal-overlay.show { display: flex; }
   .modal-box {
@@ -168,18 +169,25 @@
 .month-bar-val { font-size:10px; font-weight:700; color:var(--teal); }
   .empty-icon { font-size: 40px; margin-bottom: 8px; }
 
-  .search-bar {
-    display: flex; gap: 8px; margin-bottom: 20px;
-  }
+  .search-bar { display: flex; gap: 8px; margin-bottom: 20px; }
   .search-bar input {
     flex: 1; padding: 10px 14px; border: 1.5px solid var(--gray-300);
     border-radius: 8px; font-size: 14px; outline: none;
   }
   .search-bar input:focus { border-color: var(--teal); }
 
-  .cnpj-status-dot {
-    width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px;
+  .cnpj-status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+  /* UPLOAD genérico (banners, eventos, logo loja) */
+  .upload-box { display: flex; gap: 8px; align-items: center; }
+  .upload-box input[type=url] { flex: 1; }
+  .upload-box label.upload-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px;
+    background: var(--teal); color: #fff; border-radius: 8px; cursor: pointer;
+    font-size: 13px; font-weight: 600; white-space: nowrap;
   }
+  .thumb-preview { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; display: block; margin-bottom: 8px; }
+  .table-thumb { width: 34px; height: 34px; border-radius: 6px; object-fit: contain; background: var(--gray-100); vertical-align: middle; margin-right: 8px; }
 </style>
 </head>
 <body>
@@ -194,6 +202,7 @@
     <p>Painel de administração do Clube Guadix</p>
     <div class="field"><label>Senha de acesso</label><input type="password" id="admin-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
     <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="doAdminLogin()">Entrar</button>
+    <p style="text-align:center;margin-top:16px"><a href="painel.html" style="font-size:12px;color:var(--gray-500)">← Voltar ao painel único</a></p>
   </div>
 </div>
 
@@ -207,6 +216,8 @@
     <button class="nav-item" id="nav-notas" onclick="goTo('notas')"><span class="nav-icon">📄</span>Notas Fiscais</button>
     <button class="nav-item" id="nav-lojas" onclick="goTo('lojas')"><span class="nav-icon">🏪</span>Lojas & CNPJs</button>
     <button class="nav-item" id="nav-ofertas" onclick="goTo('ofertas')"><span class="nav-icon">🎁</span>Ofertas</button>
+    <button class="nav-item" id="nav-banners" onclick="goTo('banners')"><span class="nav-icon">🖼️</span>Banners</button>
+    <button class="nav-item" id="nav-eventos" onclick="goTo('eventos')"><span class="nav-icon">🎉</span>Eventos</button>
     <button class="nav-item" id="nav-lojistas" onclick="goTo('lojistas')"><span class="nav-icon">🔑</span>Lojistas</button>
     <button class="nav-item" id="nav-guadis" onclick="goTo('guadis')"><span class="nav-icon">🏆</span>Coleção Guadi</button>
     <div style="flex:1"></div>
@@ -225,8 +236,6 @@
 
       <!-- DASHBOARD -->
       <div id="section-dashboard" class="section active">
-
-        <!-- KPIs principais -->
         <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
           <div class="stat-card">
             <div style="font-size:13px;color:var(--gray-500);margin-bottom:4px">Clientes cadastrados</div>
@@ -250,7 +259,6 @@
           </div>
         </div>
 
-        <!-- Filtro de período -->
         <div class="card" style="margin-bottom:20px">
           <div class="card-body" style="padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
             <span style="font-size:13px;font-weight:700;color:var(--gray-700)">Período:</span>
@@ -263,12 +271,10 @@
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
-          <!-- Faixa etária -->
           <div class="card">
             <div class="card-header"><h2>👥 Faixa Etária dos Clientes</h2></div>
             <div class="card-body" id="grafico-idade"></div>
           </div>
-          <!-- Bairros -->
           <div class="card">
             <div class="card-header"><h2>📍 Bairros / CEP</h2></div>
             <div class="card-body" id="grafico-bairros" style="max-height:280px;overflow-y:auto"></div>
@@ -276,19 +282,16 @@
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
-          <!-- Lojas mais frequentadas -->
           <div class="card">
             <div class="card-header"><h2>🏪 Lojas Mais Frequentadas</h2></div>
             <div class="card-body" id="grafico-lojas" style="max-height:280px;overflow-y:auto"></div>
           </div>
-          <!-- Faturamento mensal -->
           <div class="card">
             <div class="card-header"><h2>📈 Faturamento Mensal</h2></div>
             <div class="card-body" id="grafico-faturamento"></div>
           </div>
         </div>
 
-        <!-- Tabela notas -->
         <div class="card">
           <div class="card-header">
             <h2>📋 Notas Fiscais Cadastradas</h2>
@@ -301,7 +304,6 @@
             </table>
           </div>
         </div>
-
       </div>
 
       <!-- CLIENTES -->
@@ -373,6 +375,41 @@
         </div>
       </div>
 
+      <!-- BANNERS -->
+      <div id="section-banners" class="section">
+        <div class="card">
+          <div class="card-header">
+            <h2>🖼️ Banners</h2>
+            <button class="btn btn-primary btn-sm" onclick="abrirModalBanner()">+ Novo banner</button>
+          </div>
+          <div class="card-body" style="background:var(--teal-light);border-radius:8px;margin:0;padding:12px 16px;font-size:13px;color:var(--teal-dark)">
+            🏠 <strong>Hero</strong> = carrossel grande no topo da home. <strong>Mini</strong> = banners menores entre as seções. A ordem controla a sequência de exibição.
+          </div>
+          <div style="padding:0;margin-top:1px">
+            <table>
+              <thead><tr><th>Prévia</th><th>Tipo</th><th>Título</th><th>Ordem</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="tb-banners"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVENTOS -->
+      <div id="section-eventos" class="section">
+        <div class="card">
+          <div class="card-header">
+            <h2>🎉 Eventos</h2>
+            <button class="btn btn-primary btn-sm" onclick="abrirModalEvento()">+ Novo evento</button>
+          </div>
+          <div style="padding:0">
+            <table>
+              <thead><tr><th>Prévia</th><th>Título</th><th>Data</th><th>Local</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="tb-eventos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- LOJISTAS -->
       <div id="section-lojistas" class="section">
         <div class="card">
@@ -411,6 +448,18 @@
   <div class="modal-box">
     <div class="modal-title" id="modal-loja-title">Nova Loja</div>
     <input type="hidden" id="loja-id">
+
+    <div class="field">
+      <label>Logo da loja</label>
+      <img id="loja-logo-preview" class="thumb-preview" style="display:none;object-fit:contain;background:var(--gray-100)">
+      <div class="upload-box">
+        <input type="url" id="loja-logo" placeholder="URL da logo (ou faça upload)">
+        <label class="upload-btn">📤 Upload
+          <input type="file" accept="image/*" style="display:none" onchange="uploadGenerico(this,'loja-logo','loja-logo-preview','logo')">
+        </label>
+      </div>
+    </div>
+
     <div class="field"><label>Nome da loja</label><input type="text" id="loja-nome" placeholder="Ex: Bistek Supermercados"></div>
     <div class="field"><label>CNPJ (14 dígitos, sem pontuação)</label><input type="tel" id="loja-cnpj" placeholder="Ex: 88212113060269" maxlength="14" oninput="this.value=this.value.replace(/\D/g,'')"></div>
     <div class="field"><label>Categoria</label>
@@ -475,13 +524,12 @@
     <div class="field">
       <label>Foto da oferta</label>
       <div id="foto-preview-box" style="display:none;margin-bottom:8px">
-        <img id="foto-preview" style="width:100%;height:140px;object-fit:cover;border-radius:8px;display:block">
+        <img id="foto-preview" class="thumb-preview" style="height:140px">
       </div>
-      <div style="display:flex;gap:8px">
-        <input type="url" id="oferta-img" placeholder="URL da imagem" style="flex:1;padding:10px 14px;border:1.5px solid var(--gray-300);border-radius:8px;font-size:13px;outline:none">
-        <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--teal);color:#fff;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap">
-          📤 Upload
-          <input type="file" id="foto-upload" accept="image/*" style="display:none" onchange="uploadFotoOferta(this)">
+      <div class="upload-box">
+        <input type="url" id="oferta-img" placeholder="URL da imagem">
+        <label class="upload-btn">📤 Upload
+          <input type="file" accept="image/*" style="display:none" onchange="uploadFotoOferta(this)">
         </label>
       </div>
       <div id="foto-upload-status" style="font-size:12px;color:var(--gray-500);margin-top:6px"></div>
@@ -503,6 +551,84 @@
   </div>
 </div>
 
+<!-- MODAL BANNER -->
+<div class="modal-overlay" id="modal-banner">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-banner-title">Novo Banner</div>
+    <input type="hidden" id="banner-id">
+    <div class="field"><label>Tipo</label>
+      <select id="banner-tipo">
+        <option value="hero">🏠 Hero — carrossel grande da home</option>
+        <option value="mini">📐 Mini — banner pequeno entre seções</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Imagem (opcional — se vazio, usa cor de fundo + texto)</label>
+      <img id="banner-img-preview" class="thumb-preview" style="display:none">
+      <div class="upload-box">
+        <input type="url" id="banner-img" placeholder="URL da imagem">
+        <label class="upload-btn">📤 Upload
+          <input type="file" accept="image/*" style="display:none" onchange="uploadGenerico(this,'banner-img','banner-img-preview','banner')">
+        </label>
+      </div>
+    </div>
+    <div class="field"><label>Título</label><input type="text" id="banner-titulo" placeholder="Ex: Ganhe um Guadi!"></div>
+    <div class="field"><label>Descrição</label><input type="text" id="banner-desc" placeholder="Ex: Compras acima de R$300 em uma nota"></div>
+    <div class="form-row">
+      <div class="field"><label>Cor de fundo (se sem imagem)</label><input type="text" id="banner-cor" placeholder="#1AAFA8"></div>
+      <div class="field"><label>Texto do botão</label><input type="text" id="banner-botao" placeholder="SAIBA MAIS"></div>
+    </div>
+    <div class="field"><label>Link (opcional, abre em nova aba)</label><input type="url" id="banner-link" placeholder="https://..."></div>
+    <div class="form-row">
+      <div class="field"><label>Ordem</label><input type="number" id="banner-ordem" value="0" min="0"></div>
+      <div class="field"><label>Status</label>
+        <select id="banner-ativo">
+          <option value="true">✅ Ativo</option>
+          <option value="false">⛔ Inativo</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-banner')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="salvarBanner()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EVENTO -->
+<div class="modal-overlay" id="modal-evento">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-evento-title">Novo Evento</div>
+    <input type="hidden" id="evento-id">
+    <div class="field">
+      <label>Imagem do evento</label>
+      <img id="evento-img-preview" class="thumb-preview" style="display:none">
+      <div class="upload-box">
+        <input type="url" id="evento-img" placeholder="URL da imagem">
+        <label class="upload-btn">📤 Upload
+          <input type="file" accept="image/*" style="display:none" onchange="uploadGenerico(this,'evento-img','evento-img-preview','evento')">
+        </label>
+      </div>
+    </div>
+    <div class="field"><label>Título</label><input type="text" id="evento-titulo" placeholder="Ex: Aniversário Pátio Guadix"></div>
+    <div class="field"><label>Descrição</label><textarea id="evento-desc" rows="2" placeholder="Detalhe o evento"></textarea></div>
+    <div class="form-row">
+      <div class="field"><label>Data e hora</label><input type="datetime-local" id="evento-data"></div>
+      <div class="field"><label>Local</label><input type="text" id="evento-local" placeholder="Ex: Praça Central"></div>
+    </div>
+    <div class="field"><label>Status</label>
+      <select id="evento-ativo">
+        <option value="true">✅ Ativo — aparece no app</option>
+        <option value="false">⛔ Inativo</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-evento')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="salvarEvento()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://nkfawcjautqgkyrvakpd.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rZmF3Y2phdXRxZ2t5cnZha3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NjUwMTMsImV4cCI6MjA5ODE0MTAxM30.WNEwvxpgVbid9vx05S9k8bRI6JWeLHXBU0WFW0EuV68';
@@ -512,18 +638,36 @@ const ADMIN_SENHA = 'guadix2025admin'; // Troque por uma senha segura
 function doAdminLogin() {
   const s = document.getElementById('admin-senha').value;
   if(s === ADMIN_SENHA) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-app').style.display = 'block';
-    carregarDashboard();
+    entrarAdminApp();
   } else {
     toast('Senha incorreta','error');
   }
+}
+function entrarAdminApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-app').style.display = 'block';
+  carregarDashboard();
 }
 function doLogout() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('admin-app').style.display = 'none';
   document.getElementById('admin-senha').value = '';
 }
+
+// ─── AUTO-LOGIN VINDO DO /painel.html ───
+(function(){
+  try {
+    const raw = sessionStorage.getItem('guadix_painel_auth');
+    if(raw) {
+      const s = JSON.parse(raw);
+      const recente = (Date.now() - (s.ts||0)) < 5*60*1000;
+      if(s.role === 'admin' && recente) {
+        sessionStorage.removeItem('guadix_painel_auth');
+        window.addEventListener('DOMContentLoaded', entrarAdminApp);
+      }
+    }
+  } catch(e){}
+})();
 
 // ─── UTILS ───
 function toast(msg, type) {
@@ -562,13 +706,15 @@ function goTo(section) {
   document.getElementById('section-'+section).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('nav-'+section).classList.add('active');
-  const titles = {dashboard:'Dashboard',clientes:'Clientes',notas:'Notas Fiscais',lojas:'Lojas & CNPJs',ofertas:'Ofertas',lojistas:'Lojistas',guadis:'Coleção Guadi'};
+  const titles = {dashboard:'Dashboard',clientes:'Clientes',notas:'Notas Fiscais',lojas:'Lojas & CNPJs',ofertas:'Ofertas',banners:'Banners',eventos:'Eventos',lojistas:'Lojistas',guadis:'Coleção Guadi'};
   document.getElementById('page-title').textContent = titles[section]||section;
   if(section==='dashboard') carregarDashboard();
   if(section==='clientes') carregarClientes();
   if(section==='notas') carregarNotas();
   if(section==='lojas') carregarLojas();
   if(section==='ofertas') carregarOfertas();
+  if(section==='banners') carregarBannersAdmin();
+  if(section==='eventos') carregarEventosAdmin();
   if(section==='lojistas') carregarLojistas();
   if(section==='guadis') carregarGuadis();
 }
@@ -576,17 +722,14 @@ function goTo(section) {
 // ─── DASHBOARD ───
 let filtroDias = 7;
 let dadosGlobais = {};
-const cepCache = {}; // CEP -> "Bairro - Cidade"
+const cepCache = {};
 
 async function buscarBairrosCEPs(clientes) {
-  // Pega CEPs únicos que ainda não estão no cache
   const cepsUnicos = [...new Set(
-    clientes
-      .map(c => c.cep ? c.cep.replace(/\D/g,'') : null)
+    clientes.map(c => c.cep ? c.cep.replace(/\D/g,'') : null)
       .filter(cep => cep && cep.length === 8 && !cepCache[cep])
-  )].slice(0, 20); // máx 20 por vez
+  )].slice(0, 20);
 
-  // Busca em paralelo (até 5 por vez para não sobrecarregar)
   for(let i = 0; i < cepsUnicos.length; i += 5) {
     const lote = cepsUnicos.slice(i, i+5);
     await Promise.all(lote.map(async cep => {
@@ -594,14 +737,10 @@ async function buscarBairrosCEPs(clientes) {
         const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const d = await r.json();
         if(!d.erro) {
-          cepCache[cep] = (d.bairro || d.logradouro?.split(' ')[0] || '') + 
-                          (d.bairro ? '' : '') + 
-                          ' — ' + (d.localidade || '');
-          // Simplifica: só bairro + cidade
           cepCache[cep] = [d.bairro, d.localidade].filter(Boolean).join(', ');
           if(!cepCache[cep]) cepCache[cep] = cep.substring(0,5)+'-xxx';
         }
-      } catch(e) { /* ignora erro de CEP individual */ }
+      } catch(e) {}
     }));
   }
 }
@@ -625,7 +764,6 @@ async function carregarDashboard() {
       sb('lojas?select=id,nome')
     ]);
     dadosGlobais = { clientes, notas, lojas };
-    // Busca nomes de bairros pelos CEPs (em background)
     await buscarBairrosCEPs(clientes);
     renderDashboard(dadosGlobais, filtroDias);
   } catch(e){ toast('Erro ao carregar dashboard','error'); console.error(e); }
@@ -638,12 +776,10 @@ function renderDashboard(dados, dias) {
   const corte = dias > 0 ? new Date(agora - dias*86400000) : new Date(0);
   const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
 
-  // Filtra notas pelo período
   const notasFiltradas = notas.filter(n => new Date(n.created_at) >= corte);
   const notasMes = notas.filter(n => new Date(n.created_at) >= inicioMes);
   const clientesMes = clientes.filter(c => new Date(c.created_at) >= inicioMes);
 
-  // ── KPIs ──
   document.getElementById('s-clientes').textContent = clientes.length.toLocaleString('pt-BR');
   document.getElementById('s-clientes-mes').textContent = '+'+clientesMes.length+' este mês';
 
@@ -655,7 +791,6 @@ function renderDashboard(dados, dias) {
   document.getElementById('s-faturamento').textContent = fmtMoney(totalFat);
   document.getElementById('s-fat-mes').textContent = fmtMoney(fatMes)+' este mês';
 
-  // Média de visitas por cliente por mês
   const notasPorCliente = {};
   notasFiltradas.forEach(n => {
     const id = n.cliente_id;
@@ -663,12 +798,9 @@ function renderDashboard(dados, dias) {
     notasPorCliente[id]++;
   });
   const ids = Object.keys(notasPorCliente);
-  const mediaVisitas = ids.length
-    ? (ids.reduce((a,id)=>a+notasPorCliente[id],0)/ids.length).toFixed(1)
-    : 0;
+  const mediaVisitas = ids.length ? (ids.reduce((a,id)=>a+notasPorCliente[id],0)/ids.length).toFixed(1) : 0;
   document.getElementById('s-visitas').textContent = mediaVisitas;
 
-  // ── FAIXA ETÁRIA ──
   const faixas = {'Menor de 18':0,'18-24':0,'25-34':0,'35-44':0,'45-54':0,'55-64':0,'65+':0,'Não informado':0};
   clientes.forEach(c => {
     if(!c.data_nascimento){ faixas['Não informado']++; return; }
@@ -690,7 +822,6 @@ function renderDashboard(dados, dias) {
         <div class="bar-value">${v} (${clientes.length?Math.round(v/clientes.length*100):0}%)</div>
       </div>`).join('') || '<div class="empty">Sem dados</div>';
 
-  // ── BAIRROS / CEP ──
   const bairros = {};
   clientes.forEach(cl => {
     const cep = cl.cep ? cl.cep.replace(/\D/g,'') : null;
@@ -707,7 +838,6 @@ function renderDashboard(dados, dias) {
         <div class="bar-value">${v} clientes</div>
       </div>`).join('') || '<div class="empty">Sem dados de CEP</div>';
 
-  // ── LOJAS MAIS FREQUENTADAS ──
   const porLoja = {};
   const fatLoja = {};
   notasFiltradas.forEach(n => {
@@ -725,7 +855,6 @@ function renderDashboard(dados, dias) {
         <div class="bar-value">${v} notas<br><span style="font-size:10px;color:var(--gray-500)">${fmtMoney(fatLoja[k])}</span></div>
       </div>`).join('') || '<div class="empty">Sem notas no período</div>';
 
-  // ── FATURAMENTO MENSAL (últimos 6 meses) ──
   const meses = {};
   for(let i=5;i>=0;i--) {
     const d = new Date(agora.getFullYear(), agora.getMonth()-i, 1);
@@ -748,7 +877,6 @@ function renderDashboard(dados, dias) {
         </div>`).join('')}
     </div>`;
 
-  // ── TABELA NOTAS ──
   document.getElementById('tb-notas-dash').innerHTML =
     notasFiltradas.slice(0,50).map(n=>`
       <tr>
@@ -834,9 +962,7 @@ async function carregarNotas() {
   finally { loading(false); }
 }
 
-function exportarNotas() {
-  toast('Exportação disponível em breve','');
-}
+function exportarNotas() { toast('Exportação disponível em breve',''); }
 
 // ─── LOJAS & CNPJs ───
 async function carregarLojas() {
@@ -845,7 +971,10 @@ async function carregarLojas() {
     const lojas = await sb('lojas?select=*&order=nome');
     document.getElementById('tb-lojas').innerHTML = lojas.map(l=>`
       <tr>
-        <td><strong>${l.nome}</strong></td>
+        <td style="display:flex;align-items:center">
+          ${l.logo_url ? `<img src="${l.logo_url}" class="table-thumb" onerror="this.style.display='none'">` : ''}
+          <strong>${l.nome}</strong>
+        </td>
         <td>
           ${l.cnpj
             ? `<span style="font-family:monospace;font-size:13px">${fmtCNPJ(l.cnpj)}</span>
@@ -863,13 +992,15 @@ async function carregarLojas() {
   finally { loading(false); }
 }
 
-function abrirModalLoja(loja) {
+function abrirModalLoja() {
   document.getElementById('modal-loja-title').textContent = 'Nova Loja';
   document.getElementById('loja-id').value = '';
   document.getElementById('loja-nome').value = '';
   document.getElementById('loja-cnpj').value = '';
   document.getElementById('loja-categoria').value = 'outros';
   document.getElementById('loja-ativo').value = 'true';
+  document.getElementById('loja-logo').value = '';
+  document.getElementById('loja-logo-preview').style.display = 'none';
   openModal('modal-loja');
 }
 
@@ -880,6 +1011,9 @@ function editarLoja(l) {
   document.getElementById('loja-cnpj').value = l.cnpj||'';
   document.getElementById('loja-categoria').value = l.categoria||'outros';
   document.getElementById('loja-ativo').value = String(l.ativo !== false);
+  document.getElementById('loja-logo').value = l.logo_url||'';
+  const prev = document.getElementById('loja-logo-preview');
+  if(l.logo_url) { prev.src = l.logo_url; prev.style.display = 'block'; } else { prev.style.display = 'none'; }
   openModal('modal-loja');
 }
 
@@ -889,6 +1023,7 @@ async function salvarLoja() {
   const cnpj = document.getElementById('loja-cnpj').value.replace(/\D/g,'');
   const categoria = document.getElementById('loja-categoria').value;
   const ativo = document.getElementById('loja-ativo').value === 'true';
+  const logo_url = document.getElementById('loja-logo').value.trim() || null;
 
   if(!nome){ toast('Digite o nome da loja','error'); return; }
   if(cnpj && cnpj.length !== 14){ toast('CNPJ deve ter 14 dígitos','error'); return; }
@@ -896,10 +1031,10 @@ async function salvarLoja() {
   loading(true);
   try {
     if(id) {
-      await sb('lojas?id=eq.'+id, 'PATCH', { nome, cnpj: cnpj||null, categoria, ativo });
+      await sb('lojas?id=eq.'+id, 'PATCH', { nome, cnpj: cnpj||null, categoria, ativo, logo_url });
       toast('✅ Loja atualizada!','success');
     } else {
-      await sb('lojas', 'POST', { nome, cnpj: cnpj||null, categoria, ativo });
+      await sb('lojas', 'POST', { nome, cnpj: cnpj||null, categoria, ativo, logo_url });
       toast('✅ Loja cadastrada!','success');
     }
     closeModal('modal-loja');
@@ -916,8 +1051,6 @@ async function carregarOfertas() {
       sb('ofertas?select=*,lojas(nome)&order=created_at.desc'),
       sb('lojas?select=id,nome&order=nome')
     ]);
-
-    // Popula select de lojas no modal
     document.getElementById('oferta-loja').innerHTML = lojas.map(l=>`<option value="${l.id}">${l.nome}</option>`).join('');
 
     document.getElementById('tb-ofertas').innerHTML = ofertas.map(o=>`
@@ -928,7 +1061,7 @@ async function carregarOfertas() {
         <td>${o.validade?fmtDate(o.validade):'Sem prazo'}</td>
         <td><span class="status-badge ${o.ativa?'status-ok':'status-off'}">${o.ativa?'✅ Ativa':'⛔ Inativa'}</span></td>
         <td>
-          <button class="btn btn-ghost btn-sm" onclick='editarOferta(${JSON.stringify(o)})'>✏️</button>
+          <button class="btn btn-ghost btn-sm" onclick='editarOferta(${JSON.stringify(o)})'>✏️ Editar</button>
           <button class="btn btn-danger btn-sm" onclick="toggleOferta('${o.id}',${!o.ativa})">${o.ativa?'Desativar':'Ativar'}</button>
         </td>
       </tr>`).join('') || '<tr><td colspan="6" class="empty">Nenhuma oferta</td></tr>';
@@ -999,6 +1132,175 @@ async function toggleOferta(id, ativa) {
   } catch(e){ toast('Erro','error'); }
 }
 
+// ─── BANNERS ───
+async function carregarBannersAdmin() {
+  loading(true);
+  try {
+    const banners = await sb('banners?select=*&order=tipo.asc,ordem.asc');
+    document.getElementById('tb-banners').innerHTML = banners.map(b=>`
+      <tr>
+        <td>
+          ${b.imagem_url
+            ? `<img src="${b.imagem_url}" class="table-thumb" style="width:52px;height:34px;border-radius:4px" onerror="this.style.display='none'">`
+            : `<span style="display:inline-block;width:52px;height:34px;border-radius:4px;background:${b.cor||'#1AAFA8'}"></span>`
+          }
+        </td>
+        <td><span class="status-badge ${b.tipo==='hero'?'status-ok':'status-warn'}">${b.tipo==='hero'?'🏠 Hero':'📐 Mini'}</span></td>
+        <td><strong>${b.titulo||'(sem título)'}</strong></td>
+        <td>${b.ordem}</td>
+        <td><span class="status-badge ${b.ativo?'status-ok':'status-off'}">${b.ativo?'✅ Ativo':'⛔ Inativo'}</span></td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick='editarBanner(${JSON.stringify(b)})'>✏️ Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="excluirBanner('${b.id}')">🗑️</button>
+        </td>
+      </tr>`).join('') || '<tr><td colspan="6" class="empty">Nenhum banner cadastrado. Rode o novas_tabelas.sql se ainda não rodou.</td></tr>';
+  } catch(e){ toast('Erro ao carregar banners — verifique se a tabela "banners" existe','error'); console.error(e); }
+  finally { loading(false); }
+}
+
+function abrirModalBanner() {
+  document.getElementById('modal-banner-title').textContent = 'Novo Banner';
+  document.getElementById('banner-id').value = '';
+  document.getElementById('banner-tipo').value = 'mini';
+  document.getElementById('banner-img').value = '';
+  document.getElementById('banner-img-preview').style.display = 'none';
+  document.getElementById('banner-titulo').value = '';
+  document.getElementById('banner-desc').value = '';
+  document.getElementById('banner-cor').value = '#1AAFA8';
+  document.getElementById('banner-botao').value = '';
+  document.getElementById('banner-link').value = '';
+  document.getElementById('banner-ordem').value = '0';
+  document.getElementById('banner-ativo').value = 'true';
+  openModal('modal-banner');
+}
+
+function editarBanner(b) {
+  document.getElementById('modal-banner-title').textContent = 'Editar Banner';
+  document.getElementById('banner-id').value = b.id;
+  document.getElementById('banner-tipo').value = b.tipo||'mini';
+  document.getElementById('banner-img').value = b.imagem_url||'';
+  const prev = document.getElementById('banner-img-preview');
+  if(b.imagem_url) { prev.src = b.imagem_url; prev.style.display='block'; } else { prev.style.display='none'; }
+  document.getElementById('banner-titulo').value = b.titulo||'';
+  document.getElementById('banner-desc').value = b.descricao||'';
+  document.getElementById('banner-cor').value = b.cor||'#1AAFA8';
+  document.getElementById('banner-botao').value = b.botao_texto||'';
+  document.getElementById('banner-link').value = b.link_url||'';
+  document.getElementById('banner-ordem').value = b.ordem||0;
+  document.getElementById('banner-ativo').value = String(b.ativo!==false);
+  openModal('modal-banner');
+}
+
+async function salvarBanner() {
+  const id = document.getElementById('banner-id').value;
+  const dados = {
+    tipo: document.getElementById('banner-tipo').value,
+    imagem_url: document.getElementById('banner-img').value.trim()||null,
+    titulo: document.getElementById('banner-titulo').value.trim()||null,
+    descricao: document.getElementById('banner-desc').value.trim()||null,
+    cor: document.getElementById('banner-cor').value.trim()||null,
+    botao_texto: document.getElementById('banner-botao').value.trim()||null,
+    link_url: document.getElementById('banner-link').value.trim()||null,
+    ordem: parseInt(document.getElementById('banner-ordem').value)||0,
+    ativo: document.getElementById('banner-ativo').value === 'true'
+  };
+  loading(true);
+  try {
+    if(id) { await sb('banners?id=eq.'+id,'PATCH',dados); toast('✅ Banner atualizado!','success'); }
+    else { await sb('banners','POST',dados); toast('✅ Banner criado!','success'); }
+    closeModal('modal-banner');
+    carregarBannersAdmin();
+  } catch(e){ toast('Erro: '+e.message,'error'); }
+  finally { loading(false); }
+}
+
+async function excluirBanner(id) {
+  if(!confirm('Excluir este banner?')) return;
+  loading(true);
+  try { await sb('banners?id=eq.'+id,'DELETE'); toast('Banner removido','success'); carregarBannersAdmin(); }
+  catch(e){ toast('Erro','error'); }
+  finally { loading(false); }
+}
+
+// ─── EVENTOS ───
+async function carregarEventosAdmin() {
+  loading(true);
+  try {
+    const eventos = await sb('eventos?select=*&order=data_inicio.desc');
+    document.getElementById('tb-eventos').innerHTML = eventos.map(e=>`
+      <tr>
+        <td>${e.imagem_url ? `<img src="${e.imagem_url}" class="table-thumb" style="width:52px;height:34px;border-radius:4px" onerror="this.style.display='none'">` : '🎉'}</td>
+        <td><strong>${e.titulo}</strong></td>
+        <td>${e.data_inicio ? new Date(e.data_inicio).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+        <td>${e.local||'—'}</td>
+        <td><span class="status-badge ${e.ativo?'status-ok':'status-off'}">${e.ativo?'✅ Ativo':'⛔ Inativo'}</span></td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick='editarEvento(${JSON.stringify(e)})'>✏️ Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="excluirEvento('${e.id}')">🗑️</button>
+        </td>
+      </tr>`).join('') || '<tr><td colspan="6" class="empty">Nenhum evento cadastrado. Rode o novas_tabelas.sql se ainda não rodou.</td></tr>';
+  } catch(e){ toast('Erro ao carregar eventos — verifique se a tabela "eventos" existe','error'); console.error(e); }
+  finally { loading(false); }
+}
+
+function abrirModalEvento() {
+  document.getElementById('modal-evento-title').textContent = 'Novo Evento';
+  document.getElementById('evento-id').value = '';
+  document.getElementById('evento-img').value = '';
+  document.getElementById('evento-img-preview').style.display = 'none';
+  document.getElementById('evento-titulo').value = '';
+  document.getElementById('evento-desc').value = '';
+  document.getElementById('evento-data').value = '';
+  document.getElementById('evento-local').value = '';
+  document.getElementById('evento-ativo').value = 'true';
+  openModal('modal-evento');
+}
+
+function editarEvento(e) {
+  document.getElementById('modal-evento-title').textContent = 'Editar Evento';
+  document.getElementById('evento-id').value = e.id;
+  document.getElementById('evento-img').value = e.imagem_url||'';
+  const prev = document.getElementById('evento-img-preview');
+  if(e.imagem_url) { prev.src = e.imagem_url; prev.style.display='block'; } else { prev.style.display='none'; }
+  document.getElementById('evento-titulo').value = e.titulo||'';
+  document.getElementById('evento-desc').value = e.descricao||'';
+  document.getElementById('evento-data').value = e.data_inicio ? e.data_inicio.substring(0,16) : '';
+  document.getElementById('evento-local').value = e.local||'';
+  document.getElementById('evento-ativo').value = String(e.ativo!==false);
+  openModal('modal-evento');
+}
+
+async function salvarEvento() {
+  const id = document.getElementById('evento-id').value;
+  const titulo = document.getElementById('evento-titulo').value.trim();
+  if(!titulo){ toast('Digite o título','error'); return; }
+  const dataVal = document.getElementById('evento-data').value;
+  const dados = {
+    imagem_url: document.getElementById('evento-img').value.trim()||null,
+    titulo,
+    descricao: document.getElementById('evento-desc').value.trim()||null,
+    data_inicio: dataVal ? new Date(dataVal).toISOString() : null,
+    local: document.getElementById('evento-local').value.trim()||null,
+    ativo: document.getElementById('evento-ativo').value === 'true'
+  };
+  loading(true);
+  try {
+    if(id) { await sb('eventos?id=eq.'+id,'PATCH',dados); toast('✅ Evento atualizado!','success'); }
+    else { await sb('eventos','POST',dados); toast('✅ Evento criado!','success'); }
+    closeModal('modal-evento');
+    carregarEventosAdmin();
+  } catch(e){ toast('Erro: '+e.message,'error'); }
+  finally { loading(false); }
+}
+
+async function excluirEvento(id) {
+  if(!confirm('Excluir este evento?')) return;
+  loading(true);
+  try { await sb('eventos?id=eq.'+id,'DELETE'); toast('Evento removido','success'); carregarEventosAdmin(); }
+  catch(e){ toast('Erro','error'); }
+  finally { loading(false); }
+}
+
 // ─── GUADIS ───
 async function carregarGuadis() {
   loading(true);
@@ -1014,66 +1316,70 @@ async function carregarGuadis() {
   finally { loading(false); }
 }
 
-// ─── UPLOAD FOTO OFERTA ───
+// ─── UPLOAD GENÉRICO (banners, eventos, logo loja) ───
+async function uploadGenerico(input, urlFieldId, previewId, prefixo) {
+  const file = input.files[0];
+  if(!file) return;
+  const preview = document.getElementById(previewId);
+  const localUrl = URL.createObjectURL(file);
+  preview.src = localUrl; preview.style.display = 'block';
+
+  try {
+    const ext = file.name.split('.').pop().toLowerCase();
+    const nome = prefixo + '_' + Date.now() + '.' + ext;
+    const res = await fetch(SUPABASE_URL + '/storage/v1/object/imagens/' + nome, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type, 'x-upsert': 'true' },
+      body: file
+    });
+    if(!res.ok) throw new Error(await res.text());
+    const url = SUPABASE_URL + '/storage/v1/object/public/imagens/' + nome;
+    document.getElementById(urlFieldId).value = url;
+    preview.src = url;
+    toast('✅ Upload concluído!','success');
+  } catch(e) {
+    console.error(e);
+    toast('Erro no upload: '+e.message,'error');
+    preview.style.display = 'none';
+  }
+  input.value = '';
+}
+
+// ─── UPLOAD FOTO OFERTA (mantido para compatibilidade) ───
 async function uploadFotoOferta(input) {
   const file = input.files[0];
   if(!file) return;
-
   const status = document.getElementById('foto-upload-status');
   const preview = document.getElementById('foto-preview');
   const previewBox = document.getElementById('foto-preview-box');
-
-  // Mostra preview local imediatamente
   const localUrl = URL.createObjectURL(file);
   preview.src = localUrl;
   previewBox.style.display = 'block';
   status.textContent = '⏳ Fazendo upload...';
   status.style.color = 'var(--gray-500)';
-
   try {
-    // Gera nome único para o arquivo
     const ext = file.name.split('.').pop().toLowerCase();
     const nome = 'oferta_' + Date.now() + '.' + ext;
-
-    // Upload para Supabase Storage
-    const res = await fetch(
-      SUPABASE_URL + '/storage/v1/object/imagens/' + nome,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': file.type,
-          'x-upsert': 'true'
-        },
-        body: file
-      }
-    );
-
-    if(!res.ok) {
-      const err = await res.text();
-      throw new Error(err);
-    }
-
-    // URL pública da imagem
+    const res = await fetch(SUPABASE_URL + '/storage/v1/object/imagens/' + nome, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type, 'x-upsert': 'true' },
+      body: file
+    });
+    if(!res.ok) throw new Error(await res.text());
     const url = SUPABASE_URL + '/storage/v1/object/public/imagens/' + nome;
     document.getElementById('oferta-img').value = url;
-
-    // Atualiza preview com URL do Supabase
     preview.src = url;
     status.textContent = '✅ Upload concluído!';
     status.style.color = 'var(--green)';
-
   } catch(e) {
     console.error(e);
     status.textContent = '❌ Erro no upload: ' + e.message;
     status.style.color = 'var(--red)';
     previewBox.style.display = 'none';
   }
-
   input.value = '';
 }
 
-// Atualiza preview quando URL é digitada manualmente
 document.addEventListener('DOMContentLoaded', () => {
   const imgInput = document.getElementById('oferta-img');
   if(imgInput) {
@@ -1081,12 +1387,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const url = this.value.trim();
       const preview = document.getElementById('foto-preview');
       const previewBox = document.getElementById('foto-preview-box');
-      if(url.startsWith('http')) {
-        preview.src = url;
-        previewBox.style.display = 'block';
-      } else {
-        previewBox.style.display = 'none';
-      }
+      if(url.startsWith('http')) { preview.src = url; previewBox.style.display = 'block'; }
+      else { previewBox.style.display = 'none'; }
     });
   }
 });
@@ -1106,11 +1408,7 @@ async function carregarLojistas() {
       sb('lojistas?select=*,lojas(nome)&order=created_at.desc'),
       sb('lojas?select=id,nome&order=nome')
     ]);
-
-    // Popula select de lojas no modal
-    document.getElementById('lojista-loja-sel').innerHTML =
-      lojas.map(l=>`<option value="${l.id}">${l.nome}</option>`).join('');
-
+    document.getElementById('lojista-loja-sel').innerHTML = lojas.map(l=>`<option value="${l.id}">${l.nome}</option>`).join('');
     document.getElementById('tb-lojistas').innerHTML = lojistas.map(l=>`
       <tr>
         <td><strong>${l.nome}</strong></td>
@@ -1128,11 +1426,8 @@ async function carregarLojistas() {
 }
 
 async function abrirModalLojista() {
-  // Carrega lojas no select
   const lojas = await sb('lojas?select=id,nome&order=nome');
-  document.getElementById('lojista-loja-sel').innerHTML =
-    lojas.map(l=>`<option value="${l.id}">${l.nome}</option>`).join('');
-
+  document.getElementById('lojista-loja-sel').innerHTML = lojas.map(l=>`<option value="${l.id}">${l.nome}</option>`).join('');
   document.getElementById('modal-lojista-title').textContent = 'Novo Lojista';
   document.getElementById('lojista-id').value = '';
   document.getElementById('lojista-nome').value = '';
@@ -1146,7 +1441,6 @@ async function editarLojista(l) {
   const lojas = await sb('lojas?select=id,nome&order=nome');
   document.getElementById('lojista-loja-sel').innerHTML =
     lojas.map(lo=>`<option value="${lo.id}" ${lo.id===l.loja_id?'selected':''}>${lo.nome}</option>`).join('');
-
   document.getElementById('modal-lojista-title').textContent = 'Editar Lojista — '+l.nome;
   document.getElementById('lojista-id').value = l.id;
   document.getElementById('lojista-nome').value = l.nome||'';
@@ -1172,19 +1466,9 @@ async function salvarLojista() {
   loading(true);
   try {
     const dados = { nome, loja_id: lojaId, email: email||null, ativo };
-
-    // Só atualiza senha se foi preenchida
-    if(senha) {
-      dados.senha_hash = await hashSenha(senha);
-    }
-
-    if(id) {
-      await sb('lojistas?id=eq.'+id, 'PATCH', dados);
-      toast('✅ Lojista atualizado!','success');
-    } else {
-      await sb('lojistas', 'POST', dados);
-      toast('✅ Lojista criado! Senha: '+senha,'success');
-    }
+    if(senha) dados.senha_hash = await hashSenha(senha);
+    if(id) { await sb('lojistas?id=eq.'+id, 'PATCH', dados); toast('✅ Lojista atualizado!','success'); }
+    else { await sb('lojistas', 'POST', dados); toast('✅ Lojista criado! Senha: '+senha,'success'); }
     closeModal('modal-lojista');
     carregarLojistas();
   } catch(e){ toast('Erro: '+e.message,'error'); }
@@ -1194,11 +1478,8 @@ async function salvarLojista() {
 async function excluirLojista(id) {
   if(!confirm('Excluir este lojista?')) return;
   loading(true);
-  try {
-    await sb('lojistas?id=eq.'+id, 'DELETE');
-    toast('Lojista removido','success');
-    carregarLojistas();
-  } catch(e){ toast('Erro','error'); }
+  try { await sb('lojistas?id=eq.'+id, 'DELETE'); toast('Lojista removido','success'); carregarLojistas(); }
+  catch(e){ toast('Erro','error'); }
   finally { loading(false); }
 }
 
