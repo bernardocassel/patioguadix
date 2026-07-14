@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel — Clube Guadix</title>
+<style>
+  :root {
+    --teal: #1AAFA8; --teal-light: #e8f7f7; --teal-dark: #148f89;
+    --orange: #F39C34; --gray-900: #1a1a1a; --gray-700: #444;
+    --gray-500: #888; --gray-300: #ccc; --gray-100: #f5f5f5; --white: #fff;
+    --radius: 14px; --shadow: 0 4px 24px rgba(0,0,0,.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(160deg, var(--teal-light) 0%, var(--white) 55%);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    color: var(--gray-900); padding: 24px;
+  }
+  .box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; max-width: 420px; padding: 36px 32px; }
+  .box img { height: 44px; object-fit: contain; margin-bottom: 16px; }
+  .box h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .box p { color: var(--gray-500); font-size: 14px; margin-bottom: 24px; }
+
+  .perfil-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 22px; }
+  .perfil-btn {
+    border: 1.5px solid var(--gray-300); border-radius: 10px; background: var(--white);
+    padding: 14px 6px; text-align: center; cursor: pointer; transition: all .15s;
+  }
+  .perfil-btn.active { border-color: var(--teal); background: var(--teal-light); }
+  .perfil-icon { font-size: 22px; margin-bottom: 4px; }
+  .perfil-label { font-size: 11px; font-weight: 700; color: var(--gray-700); }
+  .perfil-btn.active .perfil-label { color: var(--teal-dark); }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--gray-700); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .3px; }
+  .field select, .field input {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-300);
+    border-radius: 8px; font-size: 14px; outline: none; transition: border-color .2s;
+    font-family: inherit;
+  }
+  .field select:focus, .field input:focus { border-color: var(--teal); }
+
+  .btn {
+    width: 100%; padding: 13px; border: none; border-radius: 50px;
+    background: var(--teal); color: var(--white); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn:hover { background: var(--teal-dark); }
+  .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+  .msg { font-size: 13px; text-align: center; margin-top: 14px; min-height: 18px; }
+  .msg.error { color: #E84B3C; }
+  .msg.success { color: #4CAF50; }
+
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; display: inline-block; animation: spin .7s linear infinite; vertical-align: -3px; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <img src="https://bernardocassel.github.io/patioguadix/assets/logo.png" alt="Pátio Guadix" onerror="this.style.display='none'">
+  <h1>Painel Clube Guadix</h1>
+  <p>Selecione seu perfil e entre com sua senha</p>
+
+  <div class="perfil-grid">
+    <div class="perfil-btn active" data-perfil="admin" onclick="selecionarPerfil('admin')">
+      <div class="perfil-icon">🦎</div><div class="perfil-label">Admin</div>
+    </div>
+    <div class="perfil-btn" data-perfil="marketing" onclick="selecionarPerfil('marketing')">
+      <div class="perfil-icon">📣</div><div class="perfil-label">Marketing</div>
+    </div>
+    <div class="perfil-btn" data-perfil="lojista" onclick="selecionarPerfil('lojista')">
+      <div class="perfil-icon">🏪</div><div class="perfil-label">Lojista</div>
+    </div>
+  </div>
+
+  <div id="campo-loja" class="field" style="display:none">
+    <label>Sua loja</label>
+    <select id="sel-loja"><option value="">Carregando lojas...</option></select>
+  </div>
+
+  <div class="field">
+    <label>Senha</label>
+    <input type="password" id="senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrar()">
+  </div>
+
+  <button class="btn" id="btn-entrar" onclick="entrar()">Entrar</button>
+  <div class="msg" id="msg"></div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://nkfawcjautqgkyrvakpd.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rZmF3Y2phdXRxZ2t5cnZha3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NjUwMTMsImV4cCI6MjA5ODE0MTAxM30.WNEwvxpgVbid9vx05S9k8bRI6JWeLHXBU0WFW0EuV68';
+
+// Estas senhas precisam bater com as mesmas constantes em admin.html / marketing.html.
+// Se você trocar uma, troque nos dois lugares.
+const ADMIN_SENHA = 'guadix2025admin';
+const MARKETING_SENHA = 'marketing2025guadix';
+
+let perfilAtual = 'admin';
+
+function selecionarPerfil(p) {
+  perfilAtual = p;
+  document.querySelectorAll('.perfil-btn').forEach(b => b.classList.toggle('active', b.dataset.perfil === p));
+  document.getElementById('campo-loja').style.display = p === 'lojista' ? 'block' : 'none';
+  document.getElementById('msg').textContent = '';
+  if (p === 'lojista' && !lojasCarregadas) carregarLojas();
+}
+
+async function sb(path) {
+  const r = await fetch(SUPABASE_URL+'/rest/v1/'+path, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY }
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+let lojasCarregadas = false;
+async function carregarLojas() {
+  const sel = document.getElementById('sel-loja');
+  try {
+    const lojistas = await sb('lojistas?select=loja_id,lojas(id,nome)&ativo=eq.true');
+    const ids = new Set(); const lojas = [];
+    lojistas.forEach(l => { if(l.lojas && !ids.has(l.lojas.id)){ ids.add(l.lojas.id); lojas.push(l.lojas); } });
+    lojas.sort((a,b) => a.nome.localeCompare(b.nome));
+    sel.innerHTML = '<option value="">Selecione sua loja</option>' +
+      lojas.map(l => `<option value="${l.id}" data-nome="${l.nome}">${l.nome}</option>`).join('');
+    lojasCarregadas = true;
+  } catch(e) {
+    sel.innerHTML = '<option value="">Erro ao carregar lojas</option>';
+  }
+}
+
+async function hashSenha(senha) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(senha + '_guadix_salt');
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function setMsg(text, type) {
+  const m = document.getElementById('msg');
+  m.textContent = text; m.className = 'msg ' + (type||'');
+}
+
+async function entrar() {
+  const senha = document.getElementById('senha').value;
+  if (!senha) { setMsg('Digite a senha', 'error'); return; }
+
+  const btn = document.getElementById('btn-entrar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Verificando...';
+  setMsg('', '');
+
+  try {
+    if (perfilAtual === 'admin') {
+      if (senha === ADMIN_SENHA) {
+        salvarSessaoEIr({ role: 'admin', ts: Date.now() }, 'admin.html');
+      } else {
+        setMsg('Senha incorreta', 'error');
+      }
+    }
+
+    else if (perfilAtual === 'marketing') {
+      if (senha === MARKETING_SENHA) {
+        salvarSessaoEIr({ role: 'marketing', ts: Date.now() }, 'marketing.html');
+      } else {
+        setMsg('Senha incorreta', 'error');
+      }
+    }
+
+    else if (perfilAtual === 'lojista') {
+      const sel = document.getElementById('sel-loja');
+      const lojaId = sel.value;
+      const lojaNome = sel.options[sel.selectedIndex]?.dataset.nome || '';
+      if (!lojaId) { setMsg('Selecione sua loja', 'error'); btn.disabled=false; btn.textContent='Entrar'; return; }
+
+      const hash = await hashSenha(senha);
+      const lojistas = await sb('lojistas?loja_id=eq.'+lojaId+'&senha_hash=eq.'+hash+'&ativo=eq.true&select=id,nome');
+      if (!lojistas || !lojistas.length) {
+        setMsg('Senha incorreta ou usuário inativo', 'error');
+      } else {
+        salvarSessaoEIr({
+          role: 'lojista', ts: Date.now(),
+          loja_id: lojaId, loja_nome: lojaNome, lojista_id: lojistas[0].id
+        }, 'lojista.html');
+      }
+    }
+  } catch(e) {
+    setMsg('Erro de conexão. Tente novamente.', 'error');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+}
+
+function salvarSessaoEIr(sessao, destino) {
+  try { sessionStorage.setItem('guadix_painel_auth', JSON.stringify(sessao)); } catch(e){}
+  setMsg('✅ Entrando...', 'success');
+  window.location.href = destino;
+}
+</script>
+</body>
+</html>
